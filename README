@@ -5,6 +5,14 @@ Based on Linux Scanner Server 1.2 Beta
 
 Released under the GPL 2.0
 
+This uses 3 other projects that are included they deserve some credit for there work
+	imgareaselect
+		http://odyniec.net/projects/imgareaselect/
+	phpmailer
+		https://code.google.com/a/apache-extras.org/p/phpmailer/
+	scanner-access-enabler
+		http://jhansonxi.blogspot.com/2010/10/scanner-access-enabler.html
+
 Last Update: 03/13/2012
 For Version: 1.2-8
 
