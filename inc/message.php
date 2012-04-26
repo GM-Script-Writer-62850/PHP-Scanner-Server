@@ -1,0 +1,1 @@
+<script type="text/javascript">printMsg('<?php echo $TITLE; ?>','<?php echo $MESSAGE; ?>','<?php echo $ALIGN; ?>',-1);</script>
