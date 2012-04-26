@@ -49,7 +49,7 @@ _ curl                  - for making url request via command line through the ne
 	sudo apt-get install imagemagick sane-utils apache2 php5 php5-curl tesseract-ocr tesseract-ocr-* tar zip php-fpdf libpaper-utils
 
 Permissions:
-	The user www-data needs write permissions to the following folders (depending on how you downloaded this you may need to create these folders)
+	The user www-data needs write permissions to the following folders (Depending on how you downloaded this you may need to create these directories)
 		./scans
 		./config
 		./config/parallel
