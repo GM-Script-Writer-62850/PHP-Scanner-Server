@@ -1,13 +1,13 @@
 <?php
-$Fpdf_loc="/usr/share/php/fpdf/fpdf.php";
-function ext2mime($ext){
+//$Fpdf_loc="/usr/share/php/fpdf/fpdf.php";
+/*function ext2mime($ext){
 	switch($ext){
 		case "png": return "image/png";
 		case "jpg": return "image/jpg";
 		case "tiff": return "image/tiff";
 		case "txt": return "text/plane";
 	}
-}
+}*/
 if(isset($_GET['file'])){
 	if(strrpos($_GET['file'], "/")>-1)
 		$_GET['file']=substr($_GET['file'],strrpos($_GET['file'],"/")+1);
@@ -17,7 +17,7 @@ if(isset($_GET['downloadServer'])){
 	header("Content-type: application/x-bzip");
 	$t=time();
 	header("Content-Disposition: attachment; filename=\"PHP-Server-Scanner-".addslashes($_GET['ver']).".tar.bz2\"");
-	shell_exec("tar cjf /tmp/scanner-$t.tar.bz2 --exclude=\"scans/*\" --exclude=\"*.json\" --exclude=\"IMGUR_API_KEY.txt\" --exclude=\"password.md5\" ./");
+	shell_exec("tar cjf /tmp/scanner-$t.tar.bz2 --exclude=\"scans/*\" --exclude=\"config/*.json\" --exclude=\"IMGUR_API_KEY.txt\" --exclude=\"password.md5\" ./");
 	$file=file_get_contents("/tmp/scanner-$t.tar.bz2");
 	header('Content-Length: '.strlen($file));
 	echo $file;
@@ -36,9 +36,11 @@ else if(isset($_GET['file'])){
 		else{
 			$ext=substr($_GET['file'],strrpos($_GET['file'],".")+1);
 			if(isset($_GET['pdf'])){
+				
 				header("Content-type: application/pdf");
 				header("Content-Disposition: attachment; filename=\"".substr($_GET['file'],0,strlen($ext)*-1)."pdf\"");
-				if(!isset($_GET['full'])){
+				echo file_get_contents("scans/".$_GET['file']);
+				/* if(!isset($_GET['full'])){
 					$fontSize=16;
 					$marginLeft=10;
 					$marginTop=20;
@@ -71,6 +73,8 @@ else if(isset($_GET['file'])){
 					$pdf->Output(substr($_GET['file'],0,strlen($ext)*-1)."pdf",'D');
 				}
 				else{
+					
+									
 					$fontSize=16;
 					$marginLeft=0;
 					$marginTop=0;
@@ -96,16 +100,24 @@ else if(isset($_GET['file'])){
 							$width=0;
 						$pdf->Image('scans/'.$_GET['file'],$marginLeft,$marginTop,$width,$height);
 					}
+					//$tmp= $_GET['file'];
+					//echo $tmp;
+					//die();
+					
 					$pdf->Output(substr($_GET['file'],0,strlen($ext)*-1)."pdf",'D');
-				}
-			}
+					//$tmp= $_GET['file'];
+					//echo $tmp;
+					//die();
+				} */
+			} 
 			else{
-				header("Content-type: ".ext2mime($ext));
-				header("Content-Disposition: attachment; filename=\"".$_GET['file']."\"");
-				echo file_get_contents("scans/".$_GET['file']);
+				
+				//header("Content-type: ".ext2mime($ext));
+				//header("Content-Disposition: attachment; filename=\"".$_GET['file']."\"");
+				//echo file_get_contents("scans/".$_GET['file']);
 			}
 			
-		}
+		} 
 	}
 	else{
 		header($_SERVER['SERVER_PROTOCOL']." 404 Not Found");
