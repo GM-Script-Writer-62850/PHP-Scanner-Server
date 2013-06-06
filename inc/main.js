@@ -16,8 +16,8 @@ $(document).ready(function () {
 	});
 	if(previewIMG){
 		if(previewIMG.src.indexOf('inc/images/blank.png')>-1){
-			getID('sel').style.display='none';
-			document.scanning.rotate.title="If you plan to crop do this on the final scan";
+			//getID('sel').style.display='none';
+			//document.scanning.rotate.title="If you plan to crop do this on the final scan";
 		}
 	}
 });
@@ -291,6 +291,12 @@ function scannerChange(ele){
 		document.scanning.size.innerHTML=html;
 		document.scanning.mode.innerHTML=html2;
 	}
+	if(info['ADF'])
+		getID('batch').removeAttribute('style');
+	else{
+		getID('batch').style.display="none";
+		document.scanning.batch.selectedIndex=0;
+	}
 	sendE(document.scanning.size,'change');
 }
 function paperChange(ele){
@@ -325,7 +331,7 @@ function Debug(html,show){
 		div.style.display='inline';
 	}
 	div.className="box box-full";
-	div.innerHTML='<h2>Debug Console</h2><pre>'+html+'</pre>';
+	div.innerHTML='<h2>Debug Console</h2><pre>'+decodeURIComponent(html)+'</pre>';
 	var nojs=getID('nojs');
 	nojs.parentNode.insertBefore(div,nojs);
 }
@@ -348,6 +354,11 @@ function toggleDebug(keyboard){
 			return true;
 		}
 	}
+}
+function toggleFortune(e){
+	e=(e=='Hide'?false:true)
+	Set_Cookie( 'fortune', e, 1, '/', '', '' );
+	return e;
 }
 function scanReset(){
 	sendE(document.scanning.scanner,'change');
@@ -479,12 +490,9 @@ function popup(windowname,width){
 	blanket_size(windowname);
 }
 /* end http://www.pat-burt.com/csspopup.js */
-function PDF_popup(file){
-	getID("blanket").childNodes[0].innerHTML='How would you prefer for your PDF download?<br/>\
-		A scan placed on the page with a title or<br/>\
-		a would you prefer the scan as the page.<br/>\
-		<a href="download.php?file='+file+'&pdf" onclick="setTimeout(\'toggle(\\\'blanket\\\')\',100);">\
-		<button><img src="inc/images/pdf-scaled.png" width="106" height="128"/></button></a>\
+function PDF_popup(file)
+{
+	getID("blanket").childNodes[0].innerHTML='Confirm your PDF file download<br/>\
 		<a href="download.php?file='+file+'&pdf&full" onclick="setTimeout(\'toggle(\\\'blanket\\\')\',100);">\
 			<button><img src="inc/images/pdf-full.png" width="106" height="128"/></button></a>\
 		<br/><input type="button" value="Cancel" style="width:261px;" onclick="toggle(\'blanket\')"/>';
