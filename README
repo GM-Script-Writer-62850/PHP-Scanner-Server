@@ -14,11 +14,11 @@ This uses 3 other projects that are included they deserve some credit for there 
 		http://jhansonxi.blogspot.com/2010/10/scanner-access-enabler.html
 
 Last Update: 03/13/2012
-For Version: 1.2-8
+For Version: 1.2-9
 
 PHP Linux Scanner Server is a PHP web application that allows you to share multiple scanners (supported by SANE) over a network.
 
-The following packages need to be installed:
+the following packages need to be installed:
 * imagemagick (6.5.9+)  - For image conversion
 * sane-utils            - For accessing scanners
 * tesseract-ocr         - For image to text conversion
