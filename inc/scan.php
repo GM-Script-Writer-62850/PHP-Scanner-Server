@@ -22,14 +22,20 @@
 			//echo '<!-- '.$_SERVER['SERVER_NAME'].' -->';
 			$loc=$_SERVER['SERVER_NAME'];
 		}
-		echo '<option class="{&quot;DPI&quot;:&quot;'.$CANNERS[$i]->{"DPI"}.'&quot;,&quot;WIDTH&quot;:'.$CANNERS[$i]->{"WIDTH"}.',&quot;HEIGHT&quot;:'.$CANNERS[$i]->{"HEIGHT"}.',&quot;MODE&quot;:&quot;'.$CANNERS[$i]->{"MODE"}.'&quot;}"'.($CANNERS[$i]->{"INUSE"}==1?' disabled="disabled"':'').(isset($CANNERS[$i]->{"SELECTED"})&&$CANNERS[$i]->{"INUSE"}!=1?' selected="selected"':'').' value="'.$CANNERS[$i]->{"ID"}.'">'.$CANNERS[$i]->{"NAME"}.' on '.$loc.'</option>';
+		echo '<option class="{&quot;DPI&quot;:&quot;'.$CANNERS[$i]->{"DPI"}.'&quot;,&quot;WIDTH&quot;:'.$CANNERS[$i]->{"WIDTH"}.',&quot;HEIGHT&quot;:'.$CANNERS[$i]->{"HEIGHT"}.',&quot;MODE&quot;:&quot;'.$CANNERS[$i]->{"MODE"}.'&quot;,&quot;ADF&quot;:'.($CANNERS[$i]->{"ADF"}?"true":"false").'}"'.($CANNERS[$i]->{"INUSE"}==1?' disabled="disabled"':'').(isset($CANNERS[$i]->{"SELECTED"})&&$CANNERS[$i]->{"INUSE"}!=1?' selected="selected"':'').' value="'.$CANNERS[$i]->{"ID"}.'">'.$CANNERS[$i]->{"NAME"}.' on '.$loc.'</option>';
 	}
 ?></select></p></div><!-- AJAX in scanner data -->
 <script type="text/javascript">scanners=JSON.parse('<?php echo json_encode($CANNERS); ?>');setTimeout("checkScanners()",5000);</script>
 
 </div>
 
+
+
+
+
+
 <div class="side_box" id="opt">
+	
 <h2>Scanning Options</h2>
 
 <div class="label">
@@ -110,8 +116,23 @@ for(var i=modes.length-1;i>-1;i--){
 </select></div>
 </div>
 
+<div id="batch" style="display:none;">
+<div class="label">
+Source:
+</div>
+<div class="control">
+<div class="ie_276228"><select name="batch" class="title">
+<option value="false">Flatbed</option>
+<option value="true">ADF</option>
+</script>
+</select></div>
+</div>
 </div>
 
+</div>
+
+
+<!--
 <div class="side_box">
 <h2>Output Options</h2>
 
@@ -174,17 +195,19 @@ for(var i=0;i<=200;i+=10){
 </select>
 </div>
 
+
 <div class="label">
-File Type:
+	File Type:
 </div>
-<div class="control">
-<select name="filetype" onchange="fileChange(this.value)">
-<option value="png">*.png</option>
+	<div class="control">
+		<select name="filetype" onchange="fileChange(this.value)">
+		<option value="png">*.png</option>
 <option value="jpg">*.jpg</option>
 <option value="tiff">*.tiff</option>
 <option value="txt">*.txt</option>
 </select>
 </div>
+
 
 <div style="display:none" id="lang">
 <div class="label">
@@ -192,21 +215,20 @@ Language:
 </div>
 <div class="control">
 <select name="lang">
-<option value="eng">English</option>
-<option value="deu">German</option>
-<option value="deu-f">German fraktur</option>
-<option value="fra">French</option>
-<option value="ita">Italian</option>
-<option value="nld">Dutch</option>
-<option value="por">Portuguese</option>
-<option value="spa">Spanish</option>
-<option value="vie">Vietnamese</option>
+<?php include('inc/langs.php'); ?>
 </select>
 </div>
+
+
 </div>
 
-<p><small>Do not rotate unless this is the final scan.</small></p>
+<p><small>Do not rotate unless this is the final scan.</small></p> 
 </div>
+
+-->
+
+
+<!--
 
 <div class="side_box" id="sel">
 <h2>
@@ -231,6 +253,11 @@ Select Region
 </p>
 </div>
 
+-->
+
+
+
+
 <div class="side_box">
 <h2>
 Scan Image
@@ -238,7 +265,7 @@ Scan Image
 <p align="center"><input type="submit" value="Scan Image" name="action"><input name="reset" type="reset" value="Reset Options" onclick="clearRegion(ias,false);setTimeout(scanReset,1);"/></p>
 </div>
 
-<!-- Save Settings -->
+<!-- Save Settings 
 <div class="side_box">
 <h2>Settings</h2>
 <p>
@@ -267,6 +294,9 @@ Scan Image
 ?>
 </p>
 </div>
+
+-->
+
 </form>
 
 </div>		
@@ -276,26 +306,10 @@ Scan Image
 <div id="preview_links">
 <h2>Preview Pane</h2>
 <p>
-<span class="tool icon download-off"><span class="tip">Download (Disabled)</span></span>
-<span class="tool icon zip-off"><span class="tip">Download Zip (Disabled)</span></span>
-<span class="tool icon pdf-off"><span class="tip">Download PDF (Disabled)</span></span>
-<span class="tool icon print-off"><span class="tip">Print (Disabled)</span></span>
-<span class="tool icon del-off"><span class="tip">Delete (Disabled)</span></span>
-<span class="tool icon edit-off"><span class="tip">Edit (Disabled)</span></span>
-<span class="tool icon view-off"><span class="tip">View (Disabled)</span></span>
-<span class="tool icon upload-off"><span class="tip">Upload to Imgur (Disabled)</span></span>
-<span class="tool icon email-off"><span class="tip">Email (Disabled)</span></span>
-<?php
-$ls='<span class="tool icon recent-off"><span class="tip">Last Scan (Disabled)</span></span>';
-if(isset($_COOKIE["scan"])&&isset($_COOKIE["preview"])){
-	if(file_exists("scans/".$_COOKIE["scan"])&&file_exists("scans/".$_COOKIE["preview"]))
-		echo "<a class=\"tool icon recent\" onclick=\"lastScan('".html($_COOKIE["scan"])."','".html($_COOKIE["preview"])."','".html($_COOKIE["scanner"])."',this,".(file_exists('config/IMGUR_API_KEY.txt')?'true':'false').");\" href=\"javascript:void(null)\"><span class=\"tip\">Last Scan</span></a>";
-	else 
-		echo $ls;
-}
-else
-	echo $ls;
-?>
+<span class="tool icon1 pdf-off1"><span class="tip">Download PDF (Disabled)</span></span>
+
+
+
 </p></div><!-- there are no line breaks on the next line to make the javascript ever so slightly faster -->
 <div id="preview_img"><p><img src="inc/images/blank.png" title="Preview"/><img src="inc/images/blank.png" title="Scanning" style="z-index:-1;"/></p></div>
 </div>
