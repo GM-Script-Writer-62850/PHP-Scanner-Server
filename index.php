@@ -5,7 +5,7 @@ $Fortune=true;// Enable/disable fortunes in the debug console
 // Sorry for the lack of explanations in the code feel free to ask what something does
 
 $NAME="PHP Scanner Server";
-$VER="1.2-9";
+$VER="1.2-9.1";
 $SAE_VER="1.4"; // scanner access enabler version
 
 # ****************

@@ -14,7 +14,7 @@ This uses 3 other projects that are included they deserve some credit for there 
 		http://jhansonxi.blogspot.com/2010/10/scanner-access-enabler.html
 
 Last Update: 06 June 2013
-For Version: 1.2-9-adf-add-hp
+For Version: 1.2-9.1  ADF support HP printer
 
 tested on 3.5.0-31-generic / x86_64  GNU/Linux / Ubuntu 12.04.2 LTS Precise /  imagemagick  8:6.6.9.7-5ubuntu3.2 
 edit from the original realease : https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server
