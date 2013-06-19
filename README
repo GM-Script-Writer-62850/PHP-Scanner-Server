@@ -1,4 +1,4 @@
-PHP Linux Scanner Server
+PHP Linux Scanne Server
 	by pqwoerituytrueiwoq (at) ubuntuforums.org
 Based on Linux Scanner Server 1.2 Beta
 	by PHiLLIP KLiEWER (http://scannerserver.online02.com)
@@ -13,12 +13,21 @@ This uses 3 other projects that are included they deserve some credit for there 
 	scanner-access-enabler
 		http://jhansonxi.blogspot.com/2010/10/scanner-access-enabler.html
 
-Last Update: 03/13/2012
-For Version: 1.2-8
+Last Update: 06 June 2013
+For Version: 1.2-9.1  ADF support HP printer
+
+tested on 3.5.0-31-generic / x86_64  GNU/Linux / Ubuntu 12.04.2 LTS Precise /  imagemagick  8:6.6.9.7-5ubuntu3.2 
+edit from the original realease : https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server
+
+-ADF support for HP printer/scanner, tested and working on  HP LaserJet 100 colorMFP M175nw
+-edit also the interface and made it simple (most of the extra functions are comment to make compatible with ADF)
+-only file PDF type output after scan
+ 
+
 
 PHP Linux Scanner Server is a PHP web application that allows you to share multiple scanners (supported by SANE) over a network.
 
-The following packages need to be installed:
+the following packages need to be installed:
 * imagemagick (6.5.9+)  - For image conversion
 * sane-utils            - For accessing scanners
 * tesseract-ocr         - For image to text conversion

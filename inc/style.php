@@ -259,6 +259,7 @@ a:hover {
 	background-color: #<?php echo $BG_COLOR==383838?'000000':'383838'?>;
 	color: #ffffff;
 	margin: 0;
+	max-height: 500px;
 	padding: 10px;
 	width: auto;
 }
@@ -274,6 +275,22 @@ a:hover {
 	background-repeat: no-repeat;
 	background-image: url("images/buttons.png");
 	border: 1px solid #<?php echo $BG_COLOR; ?>;
+	
+}
+
+.icon1{
+	padding: 50px 151px 0 0;
+	background-repeat: no-repeat;
+	background-image: url("images/buttons1.jpg");
+	border: 1px solid #<?php echo $BG_COLOR; ?>;
+	}
+	
+.pdf-off1{
+	background-position: -150px 0;
+}
+
+.pdf1{
+	background-position: 0 0;
 }
 
 .zip-off{
@@ -377,7 +394,7 @@ a:hover {
 	margin: 0;
 	padding: 0.5em;
 	background: #<?php echo $BG_COLOR; ?>;
-}
+} 
 
 .side_box input {
 	font-size: 12px;
@@ -393,7 +410,7 @@ div.ie_276228{/* http://support.microsoft.com/kb/276228 */
 	width: 155px;
 }
 
-.side_box select option[disabled="disabled"]{
+.side_box select[name="scanner"] option[disabled="disabled"]{
 	background-color: yellow;
 }
 
@@ -439,12 +456,11 @@ select.title, select.title option{
 }
 
 #preview_img img{
-	height: 471px;
 	width: 450px;
 	position: relative;
 }
 
-#preview_img p{
+#preview_img p {
 	position: relative;
 }
 
