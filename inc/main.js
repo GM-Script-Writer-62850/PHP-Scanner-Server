@@ -1,4 +1,4 @@
-var ias, previewIMG, scanners, paper, password;
+var ias, previewIMG, scanners, paper, password, files={};
 $(document).ready(function () {
 	e=$('img[title="Preview"]');
 	previewIMG=e[0];
@@ -9,13 +9,13 @@ $(document).ready(function () {
 		onSelectEnd: storeRegion,
 		instance: true,
 		enable: true,
-		disable: ((previewIMG.src.indexOf('inc/images/blank.png')>-1)?true:false),
+		disable: ((previewIMG.src.indexOf('inc/images/blank.gif')>-1)?true:false),
 		fadeSpeed: 850,
 		parent: 'div#select',
 		zIndex: 1
 	});
 	if(previewIMG){
-		if(previewIMG.src.indexOf('inc/images/blank.png')>-1){
+		if(previewIMG.src.indexOf('inc/images/blank.gif')>-1){
 			getID('sel').style.display='none';
 			document.scanning.rotate.title="If you plan to crop do this on the final scan";
 		}
@@ -252,7 +252,7 @@ function parseJSON(jsonTXT){
 	}
 }
 function scannerChange(ele){
-	var info,dpi,html,html2,text,width,height;
+	var info,dpi,html,html2,html3,text,width,height;
 	info=parseJSON(ele.childNodes[ele.selectedIndex].className);
 	dpi=info['DPI'].split('|');
 	for(var i=0,max=dpi.length;i<max;i++)
@@ -283,20 +283,21 @@ function scannerChange(ele){
 		}
 		html2+='<option value="'+modes[i]+'">'+text+'</option>';
 	}
+	html3='';
+	sources=info['SOURCE'].split('|');
+	for(i=0,s=sources.length;i<s;i++){
+		html3+='<option value="'+sources[i]+'">'+(sources[i]=='ADF'?'Automatic Document Feeder':sources[i])+'</option>';
+	}
 	if(document.all){// http://support.microsoft.com/kb/276228
 		document.scanning.size.parentNode.innerHTML='<select onchange="paperChange(this);" name="size">'+html+'</select>';
 		document.scanning.mode.parentNode.innerHTML='<select name="mode" class="title">'+html2+'</select>';
+		document.scanning.source.parentNode.innerHTML='<select name="source" class="title">'+html3+'</select>';
 	}
 	else{
 		document.scanning.size.innerHTML=html;
 		document.scanning.mode.innerHTML=html2;
+		document.scanning.source.innerHTML=html3;
 	}
-	/*if(info['ADF'])
-		getID('batch').removeAttribute('style');
-	else{
-		getID('batch').style.display="none";
-		document.scanning.batch.selectedIndex=0;
-	}*/
 	sendE(document.scanning.size,'change');
 }
 function paperChange(ele){
@@ -502,6 +503,35 @@ function PDF_popup(file){
 	popup('blanket',290);
 	return false;
 }
+function toggleFile(file){
+	if(!files[file.textContent]){
+		files[file.textContent]=1;
+		file.setAttribute('selected',true);
+	}
+	else{
+		delete(files[file.textContent]);
+		file.setAttribute('selected',false);
+	}
+}
+function makePDF(link){
+	var ct=0;
+	for(var i in files)
+		ct++;
+	if(ct>0){
+		link.href="download.php?json="+encodeURIComponent(JSON.stringify(files));
+		return true;
+	}
+	else{
+		printMsg('Error','No files selected','center',-1);
+		return false;
+	}
+}
+function selectScans(b){
+	var scans=document.evaluate("//div[@id='scans']/div/h2[@selected='"+b+"']",document,null,6,null);
+	for(var i=0;i<scans.snapshotLength;i++)
+		toggleFile(scans.snapshotItem(i));
+	return false;
+}
 function upload(file){
 	if(typeof XMLHttpRequest!='function'){
 		printMsg('Sorry',"Your browser does not support the XMLHttpRequest function so you can not upload scans with that button.<br/>You have 3 choices: ignore, update your browser, and switch browsers",'center',0);
@@ -624,12 +654,12 @@ function emailManager(file){
 	(document.location.protocol=='http:'?'<li>This does not use a secure connection to get your login from your browser to the server.</li>':'')+'</ul></div>'+
 	'<form name="email" target="_blank" action="email.php" onsubmit="return validateEmail(this);">'+
 	'<input type="hidden" name="file" value="'+file+'"/>'+
-	'<div class="label">'+(file?'From':'Email')+':</div><div class="control"><input type="text" name="from" value="johndoe@gmail.com"/></div>'+
+	'<div class="label">'+(file?'From':'Email')+':</div><div class="control"><input type="text" onchange="configEmail(this.value)" name="from" value="johndoe@gmail.com"/></div>'+
 	(file?'<div class="label">Subject:</div><div class="control"><input type="text" name="title" value="[Scanned '+(file.substr(-3)!='txt'?'Image':'Text')+'] '+file.substr(5)+'"/></div>':'')+
 	(file?'<div class="label">To:</div><div class="control"><input type="text" name="to" value=""/></div>':'')+
 	'<div class="label">Password:</div><div class="control"><input type="password" name="pass" ondblclick="this.type=(this.type==\'text\'?\'password\':\'text\')" autocomplete="off"/></div>'+
 	'<div class="label">Host:</div><div class="control"><input type="text" name="host" value="smtp.gmail.com"/></div>'+
-	'<div class="label">Prefix:</div><div class="control"><input type="text" name="prefix" value="tls"/></div>'+
+	'<div class="label">Prefix:</div><div class="control"><select name="prefix"><option value="tls">TLS</option><option value="ssl">SSL</option></select></div>'+
 	'<div class="label">Port:</div><div class="control"><input type="text" name="port" value="587"/></div>';
 	if(storeSupport){
 		html+='<div class="label">Remember Me:</div><div class="control"><input '+(file?'':'checked="checked" ')+'id="email-nopass" onchange="if(this.checked){getID(\'email-pass\').checked=false}'+(file?'':'else if(getID(\'email-nopass\').checked){getID(\'email-pass\').checked=true}')+'" type="checkbox" name="store"/> <small>(Exclude Password)</small></div>'+
@@ -686,6 +716,28 @@ function validateEmail(ele){
 		sendEmail(ele);
 	toggle('blanket');
 	return false;
+}
+function configEmail(addr){
+	if(addr.indexOf('@')==-1)
+		return;
+	else
+		addr=addr.substr(addr.indexOf('@')+1);
+	var httpRequest = new XMLHttpRequest();
+	httpRequest.onreadystatechange = function(){
+		if(httpRequest.readyState==4){
+			if(httpRequest.status==200){
+				var data=parseJSON(httpRequest.responseText);
+				if(!data["error"]){
+					document.email.port.value=data["port"];
+					document.email.host.value=data["host"];
+					if(data['type']!='smtp')
+						printMsg('Please File a bug report','Your email provider is not supported, if you do support can be added for it','center',-1);
+				}
+			}
+		}
+	};
+	httpRequest.open('GET', 'email.php?domain='+encodeURIComponent(addr));
+	httpRequest.send(null);
 }
 function sendEmail(ele){
 	var now=new Date().getTime();

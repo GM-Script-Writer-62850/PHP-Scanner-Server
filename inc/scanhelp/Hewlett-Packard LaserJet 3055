@@ -1,0 +1,64 @@
+Usage: scanimage [OPTION]...
+
+Start image acquisition on a scanner device and write image data to
+standard output.
+
+Parameters are separated by a blank from single-character options (e.g.
+-d epson) and by a "=" from multi-character options (e.g. --device-name=epson).
+-d, --device-name=DEVICE   use a given scanner device (e.g. hp:/dev/scanner)
+    --format=pnm|tiff      file format of output file
+-i, --icc-profile=PROFILE  include this ICC profile into TIFF file
+-L, --list-devices         show available scanner devices
+-f, --formatted-device-list=FORMAT similar to -L, but the FORMAT of the output
+                           can be specified: %d (device name), %v (vendor),
+                           %m (model), %t (type), %i (index number), and
+                           %n (newline)
+-b, --batch[=FORMAT]       working in batch mode, FORMAT is `out%d.pnm' or
+                           `out%d.tif' by default depending on --format
+    --batch-start=#        page number to start naming files with
+    --batch-count=#        how many pages to scan in batch mode
+    --batch-increment=#    increase page number in filename by #
+    --batch-double         increment page number by two, same as
+                           --batch-increment=2
+    --batch-prompt         ask for pressing a key before scanning a page
+    --accept-md5-only      only accept authorization requests using md5
+-p, --progress             print progress messages
+-n, --dont-scan            only set options, don't actually scan
+-T, --test                 test backend thoroughly
+-h, --help                 display this help message and exit
+-v, --verbose              give even more status messages
+-B, --buffer-size=#        change input buffer size (in kB, default 32)
+-V, --version              print version information
+
+
+Options specific to device `hpaio:/net/HP_LaserJet_3055?zc=LJ3055':
+  Scan mode:
+    --mode Lineart|Gray|Color [Color]
+        Selects the scan mode (e.g., lineart, monochrome, or color).
+    --resolution 75|100|150|200|300|600|1200dpi [75]
+        Sets the resolution of the scanned image.
+  Advanced:
+    --contrast 0..100 [inactive]
+        Controls the contrast of the acquired image.
+    --compression None|JPEG [JPEG]
+        Selects the scanner compression method for faster scans, possibly at
+        the expense of image quality.
+    --jpeg-quality 0..100 [10]
+        Sets the scanner JPEG compression factor. Larger numbers mean better
+        compression, and smaller numbers mean better image quality.
+    --batch-scan[=(yes|no)] [no]
+        Enables continuous scanning with automatic document feeder (ADF).
+    --source Auto|ADF [Auto]
+        Selects the scan source (such as a document-feeder).
+  Geometry:
+    --length-measurement Unknown|Unlimited|Approximate|Padded [Padded]
+        Selects how the scanned image length is measured and reported, which
+        is impossible to know in advance for scrollfed scans.
+    -l 0..228.6mm [0]
+        Top-left x position of scan area.
+    -t 0..381mm [0]
+        Top-left y position of scan area.
+    -x 0..228.6mm [228.6]
+        Width of scan-area.
+    -y 0..381mm [381]
+        Height of scan-area.

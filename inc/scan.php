@@ -22,7 +22,7 @@
 			//echo '<!-- '.$_SERVER['SERVER_NAME'].' -->';
 			$loc=$_SERVER['SERVER_NAME'];
 		}// ,&quot;ADF&quot;:'.($CANNERS[$i]->{"ADF"}?"true":"false").'
-		echo '<option class="{&quot;DPI&quot;:&quot;'.$CANNERS[$i]->{"DPI"}.'&quot;,&quot;WIDTH&quot;:'.$CANNERS[$i]->{"WIDTH"}.',&quot;HEIGHT&quot;:'.$CANNERS[$i]->{"HEIGHT"}.',&quot;MODE&quot;:&quot;'.$CANNERS[$i]->{"MODE"}.'&quot;}"'.($CANNERS[$i]->{"INUSE"}==1?' disabled="disabled"':'').(isset($CANNERS[$i]->{"SELECTED"})&&$CANNERS[$i]->{"INUSE"}!=1?' selected="selected"':'').' value="'.$CANNERS[$i]->{"ID"}.'">'.$CANNERS[$i]->{"NAME"}.' on '.$loc.'</option>';
+		echo '<option class="{&quot;DPI&quot;:&quot;'.$CANNERS[$i]->{"DPI"}.'&quot;,&quot;WIDTH&quot;:'.$CANNERS[$i]->{"WIDTH"}.',&quot;HEIGHT&quot;:'.$CANNERS[$i]->{"HEIGHT"}.',&quot;MODE&quot;:&quot;'.$CANNERS[$i]->{"MODE"}.'&quot;,&quot;SOURCE&quot;:&quot;'.$CANNERS[$i]->{"SOURCE"}.'&quot;}"'.($CANNERS[$i]->{"INUSE"}==1?' disabled="disabled"':'').(isset($CANNERS[$i]->{"SELECTED"})&&$CANNERS[$i]->{"INUSE"}!=1?' selected="selected"':'').' value="'.$CANNERS[$i]->{"ID"}.'">'.$CANNERS[$i]->{"NAME"}.' on '.$loc.'</option>';
 	}
 ?></select></p></div><!-- AJAX in scanner data -->
 <script type="text/javascript">scanners=JSON.parse('<?php echo json_encode($CANNERS); ?>');setTimeout("checkScanners()",5000);</script>
@@ -110,18 +110,22 @@ for(var i=modes.length-1;i>-1;i--){
 </select></div>
 </div>
 
-<!--<div id="batch" style="display:none;">
+<div id="source">
 <div class="label">
-Multi-page:
+Source:
 </div>
 <div class="control">
-<div class="ie_276228"><select name="batch" class="title">
-<option value="false">No</option>
-<option value="true">Yes</option>
+<div class="ie_276228"><select name="source" class="title">
+<script type="text/JavaScript">
+var sources='<?php echo $CANNERS[$SEL]->{"SOURCE"}; ?>'.split('|');
+for(var i=0,s=sources.length;i<s;i++){
+	document.write('<option value="'+sources[i]+'">'+(sources[i]=='ADF'?'Automatic Document Feeder':sources[i])+'</option>');
+}
+</script>
 </script>
 </select></div>
 </div>
-</div>-->
+</div>
 
 </div>
 
@@ -302,5 +306,5 @@ else
 	echo $ls;
 ?>
 </p></div><!-- there are no line breaks on the next line to make the javascript ever so slightly faster -->
-<div id="preview_img"><p><img src="inc/images/blank.png" title="Preview"/><img src="inc/images/blank.png" title="Scanning" style="z-index:-1;"/></p></div>
+<div id="preview_img"><p><img src="inc/images/blank.gif" title="Preview"/><img src="inc/images/blank.gif" title="Scanning" style="z-index:-1;"/></p></div>
 </div>

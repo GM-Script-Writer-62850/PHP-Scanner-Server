@@ -1,11 +1,12 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"><html><?php
 // Warning is displayed if there is less then the anmout specifyed
-$FreeSpaceWarn=100;// In Megabytes
+$FreeSpaceWarn=2048;// In Megabytes
 $Fortune=true;// Enable/disable fortunes in the debug console
+$ExtraScanners=false;// Adds sample scanners from ./inc/scanhelp
 // Sorry for the lack of explanations in the code feel free to ask what something does
 
 $NAME="PHP Scanner Server";
-$VER="1.2-9";
+$VER="1.3-0";
 $SAE_VER="1.4"; // scanner access enabler version
 
 # ****************
@@ -34,7 +35,7 @@ $X_1=Get_Values('loc_x1');
 $Y_1=Get_Values('loc_y1');
 #$X_2=Get_Values('loc_x2'); Un-used
 #$Y_2=Get_Values('loc_y2'); Un-used
-//$ADF=Get_Values('batch');
+$SOURCE=Get_Values('source'); // scan.php main.js index.php
 
 $notes='Please read the <a href="index.php?page=About">release notes</a> for more information.';
 $user=posix_getpwuid(posix_geteuid());
@@ -62,6 +63,7 @@ function Put_Values() { # Update values back to form (There is no redo for cropi
 	"config({'scanner':".addslashes($GLOBALS['SCANNER']).
 		",'quality':".addslashes($GLOBALS['QUALITY']).
 		",'size':'".addslashes($GLOBALS['SIZE'])."'".
+		",'source':'".addslashes($GLOBALS['SOURCE'])."'".
 		",'ornt':'".addslashes($GLOBALS['ORNT'])."'".
 		",'mode':'".addslashes($GLOBALS['MODE'])."'".
 		",'bright':".addslashes($GLOBALS['BRIGHT']).
@@ -133,7 +135,7 @@ function validNum($arr){
 
 function exe($shell,$force){
 	$output=str_replace("\\n","\n",shell_exec($shell.($force?' 2>&1':'')).($force?'':'The output of this command unfortunately has to be suppressed to prevent errors :(\nRun `sudo -u www-data '.$shell.'` for output info'));
-	$GLOBALS['debug'].=$GLOBALS['here'].'$ '.addslashes($shell)."\n".$output.(substr($output,-1)=="\n"?"":"\n");
+	$GLOBALS['debug'].=$GLOBALS['here'].'$ '.$shell."\n".$output.(substr($output,-1)=="\n"?"":"\n");
 	return $output;
 }
 
@@ -231,6 +233,12 @@ if($PAGE=="Scans"){
 		Print_Message("No Images","All files have been removed. There are no scanned images to display.",'center');
 	}
 	else{
+		echo '<div class="box box-full"><h2>PDF Downloader</h2><p style="text-align:center;">Double Click a file name to select/deselect it for download<br/>'.
+			'The order they are selected determines the page order<br/>'.
+			'<a href="#" onclick="return selectScans(false);"><button>Select All</button></a> '.
+			'<a href="#" onclick="return makePDF(this);"><button>Download</button></a> '.
+			'<a href="#" onclick="return selectScans(true);"><button>Select None</button></a>'.
+			'</p></div>';
 		$FILES=explode("\n",substr(exe('cd "scans"; ls "Preview"*',true),0,-1));
 		echo '<div id="scans">';
 		for($i=0,$max=count($FILES);$i<$max;$i++){
@@ -305,7 +313,6 @@ else if($PAGE=="Config"){
 		else{
 			Print_Message("Imgur:","Failed to save your Imgur API key<br/><code>$user</code> does not have permission to write files to the <code>".html(getcwd()).'/config</code> folder.','center');
 		}
-		
 	}
 	else if($ACTION=="Imgur-Key-Delete"){
 		if(@unlink("config/IMGUR_API_KEY.txt")){
@@ -341,8 +348,24 @@ else if($PAGE=="Config"){
 			$OP[$ct]->{'ID'}=$ct;
 			$OP[$ct]->{'INUSE'}=0;
 		}
+		$FakeCt=0;
+		if($ExtraScanners){
+			$sample=scandir('inc/scanhelp');
+			unset($sample[0]);unset($sample[1]);// Delete ./ and ../ from the list
+			foreach($sample as $key => $val){
+				$ct=count($OP);
+				$help=file_get_contents('inc/scanhelp/'.$val);
+				$help=substr($help,strpos($help,'Options specific to device `')+28);
+				$help=substr($help,0,strpos($help,"':"));
+				$OP[$ct]=json_decode('{"ID":'.$ct.',"INUSE":0,"DEVICE":"'.$help.'","NAME":"'.$val.'"}');
+				$FakeCt++;
+			}
+		}
 		for($i=0,$max=count($OP);$i<$max;$i++){//get scanner specific data
-			$help=exe("scanimage --help -d \"".addslashes($OP[$i]->{"DEVICE"})."\"",true);
+			if($i<$max-$FakeCt)
+				$help=exe("scanimage --help -d \"".addslashes($OP[$i]->{"DEVICE"})."\"",true);
+			else
+				$help=file_get_contents('inc/scanhelp/'.$OP[$i]->{"NAME"});
 			// get dpi
 			$res=substr($help,strpos($help,'--resolution ')+13);
 			$res=substr($res,0,strpos($res,'dpi'));
@@ -377,8 +400,8 @@ else if($PAGE=="Config"){
 			}
 			// lamp on/off
 			//$OP[$i]->{"LAMP"}=(!is_bool(strpos($help,'--lamp-switch[=(yes|no)]'))&&!is_bool(strpos($help,'--lamp-off-at-exit[=(yes|no)]')))?true:false;
-			// ADF capable
-			//$OP[$i]->{"ADF"}=is_bool(strpos($help,'--batch-scan'))?false:true;
+			$sources=substr($help,strpos($help,'--source ')+9);
+			$OP[$i]->{"SOURCE"}=substr($sources,0,strpos($sources,' ['));
 		}
 		$save=SaveFile("config/scanners.json",json_encode($OP));
 		$CANNERS='<table border="1" align="center"><tbody><tr><th>Name</th><th>Device</th></tr>';
@@ -553,7 +576,7 @@ else if($PAGE=="Edit"){
 					  !in_array($LANG,$langs)){
 						echo "<h1>No, you can not do that</h1>Input data is invalid and most likely an attempt to run malicious code on the server <i>denied<i/>";
 						Footer();
-						die();
+						die('</body></html>');
 					}
 					$tmpFile="/tmp/Scan_".addslashes($file);
 					$file='scans/Scan_'.addslashes($file);
@@ -670,8 +693,7 @@ else{
 		if(!validNum(Array($SCANNER,$BRIGHT,$CONTRAST,$SCALE,$ROTATE))||!in_array($LANG,$langs)||!in_array($QUALITY,explode("|",$CANNERS[$SCANNER]->{"DPI"}))){//security check
 			echo "<h1>No, you can not do that</h1>Input data is invalid and most likely an attempt to run malicious code on the server <i>denied<i/>";
 			Footer();
-			echo '</body></html>';
-			die();
+			die('</body></html>');
 		}
 	}
 	if(strlen($SAVEAS)>0){ # Save settings to conf file
@@ -724,36 +746,39 @@ else{
 	if($ACTION=="Scan Image"){ # Scan Image!
 		if(file_exists("/tmp/scan_file$SCANNER.ppm")){ # Make sure we can save the scan
 			@unlink("/tmp/scan_file$SCANNER.ppm");
-			if(file_exists("/tmp/scan_file$SCANNER.ppm")){ 
+			if(file_exists("/tmp/scan_file$SCANNER.ppm")){
 				Print_Message("Permission Error:","<code>$user</code> does not have permission to delete <code>/tmp/scan_file$SCANNER.ppm</code>.<br/>".
 					"This can be easly fixed by running the following command at the Scanner Server.<br/><code>rm /tmp/scan_file$SCANNER.ppm</code><br/>".
 					"Once you have done that you can press F5 (Refresh) to try again with your prevously entered settings.",'center');
-				echo '</body></html>';
-				die();
+				die('</body></html>');
 			}
 		}
-		
+
 		$sizes=explode('-',$SIZE);
 		if((!validNum(Array($SCANNER,$WIDTH,$HEIGHT,$X_1,$Y_1,$BRIGHT,$CONTRAST,$SCALE,$ROTATE)))||
 		   (count($sizes)!=2&&$SIZE!='full')||
 		   (!in_array($MODE,explode('|',$CANNERS[$SCANNER]->{"MODE"})))||
+		   (!in_array($SOURCE,explode('|',$CANNERS[$SCANNER]->{"SOURCE"})))||
 		   ($FILETYPE!="txt"&&$FILETYPE!="png"&&$FILETYPE!="tiff"&&$FILETYPE!="jpg")){
 			Print_Message("No, you can not do that","Input data is invalid and most likely an attempt to run malicious code on the server. <i>Denied<i/>",'center');
-			echo '</body></html>';
-			die();
+			die('</body></html>');
 		}
 		else if((!is_numeric($sizes[0])||!is_numeric($sizes[1]))&&$SIZE!='full'){
 			Print_Message("No, you can not do that","Input data is invalid and most likely an attempt to run malicious code on the server. <i>Denied<i/>",'center');
-			echo '</body></html>';
-			die();
+			die('</body></html>');
+		}
+
+		$CANDIR="/tmp/scandir$SCANNER";
+		if(!@mkdir("$CANDIR")){
+			Print_Message('Error',"Unable to create directory $CANDIR.<br>Why does <code>$user</code> not have permission?",'center');
+			die('</body></html>');
 		}
 
 		# Scanner in Use
 		$CANNERS[$SCANNER]->{"INUSE"}=1;
 		if(!SaveFile("config/scanners.json",json_encode($CANNERS))){
 			Print_Message("Permission Error:","<code>$user</code> does not have permission to write files to the <code>".getcwd()."/config</code> folder.<br/>$notes",'center');
-			echo '</body></html>';
-			die();
+			die('</body></html>');
 		}
 		$X=0;
 		$Y=0;
@@ -825,44 +850,65 @@ else{
 		/*if($CANNERS[$SCANNER]->{'LAMP'}===true){
 			$LAMP='--lamp-switch=yes --lamp-off-at-exit=yes ';
 		}*/
-		$BATCH='';
-		/*if($CANNERS[$SCANNER]->{'ADF'}===true){
-			$BATCH='--batch-scan ';
-		}*/
 
-		exe("scanimage -d \"$DEVICE\" -l $X -t $Y -x $SIZE_X -y $SIZE_Y --resolution $QUALITY --mode $MODE $LAMP--format=ppm $BATCH> \"/tmp/scan_file$SCANNER.ppm\"",false);
-		if(file_exists("/tmp/scan_file$SCANNER.ppm")){
-			if(Get_Values('size')=='full'&&filesize("/tmp/scan_file$SCANNER.ppm")==0){
+		$cmd="scanimage -d \"$DEVICE\" -l $X -t $Y -x $SIZE_X -y $SIZE_Y --resolution $QUALITY --source $SOURCE --mode $MODE $LAMP--format=ppm";
+		if($SOURCE=='ADF'||$SOURCE=='Automatic Document Feeder') # Multi-page scan 
+			exe("cd $CANDIR;$cmd --batch",true);// be careful with this, doing this without a ADF feeder will result in scanning the flatbed over and over, include --batch-count=3 for testing
+		else # Single page scan
+			exe("$cmd > \"$CANDIR/scan_file$SCANNER.ppm\"",false);
+
+		if(file_exists("$CANDIR/scan_file$SCANNER.ppm")){
+			if(Get_Values('size')=='full'&&filesize("$CANDIR/scan_file$SCANNER.ppm")==0){
 				exe("echo \"Scan Failed...\"",true);
 				exe("echo \"Maybe this scanner does not report it size correctly, maybe the default scan size will work it may or may not be a full scan.\"",true);
 				exe("echo \"If it is not a full scan you are welcome to manually edit your $here/config/scanners.json file with the correct size.\"",true);
-				@unlink("/tmp/scan_file$SCANNER.ppm");
-				exe("scanimage -d \"$DEVICE\" --resolution $QUALITY --mode $MODE $LAMP--format=ppm > \"/tmp/scan_file$SCANNER.ppm\"",false);
+				@unlink("$CANDIR/scan_file$SCANNER.ppm");
+				exe("echo \"Attempting to scan without forcing full scan\"");
+				exe("scanimage -d \"$DEVICE\" --resolution $QUALITY --mode $MODE $LAMP--format=ppm > \"$CANDIR/scan_file$SCANNER.ppm\"",false);
 			}
 		}
+		$files=scandir($CANDIR);
+		for($i=2,$ct=count($files);$i<$ct;$i++){
+			$SCAN="$CANDIR/".$files[$i];
 
-		# Adjust Brightness
-		if($BRIGHT!="0"||$CONTRAST!="0"){
-			exe("convert \"/tmp/scan_file$SCANNER.ppm\" -brightness-contrast $BRIGHT".'x'."$CONTRAST \"/tmp/scan_file$SCANNER.ppm\"",true);
+			# Dated Filename for scan image & preview image
+			$FILENAME=date("M_j_Y~G-i-s",filemtime($SCAN));
+			$S_FILENAME="Scan_$SCANNER"."_"."$FILENAME.$FILETYPE";
+			$P_FILENAME="Preview_$SCANNER"."_"."$FILENAME.jpg";
+
+			# Adjust Brightness
+			if($BRIGHT!="0"||$CONTRAST!="0"){
+				exe("convert \"$SCAN\" -brightness-contrast $BRIGHT".'x'."$CONTRAST \"$SCAN\"",true);
+			}
+
+			# Rotate Image
+			if($ROTATE!="0"){
+				exe("convert \"$SCAN\" -rotate \"$ROTATE\" \"$SCAN\"",true);
+			}
+
+			# Scale Image
+			if($SCALE!="100"){
+				exe("convert \"$SCAN\" -scale $SCALE% \"$SCAN\"",true);
+			}
+
+			# Generate Preview Image
+			exe("convert \"$SCAN\" -scale 450x471 \"scans/$P_FILENAME\"",true);
+
+			# Convert scan to file type
+			if($FILETYPE=="txt"){
+				$S_FILENAMET=substr($S_FILENAME,0,strrpos($S_FILENAME,'.'));
+				exe("convert \"$SCAN\" -fx '(r+g+b)/3' \"/tmp/_scan_file$SCANNER.tif\"",true);
+				exe("tesseract \"/tmp/_scan_file$SCANNER.tif\" \"scans/$S_FILENAMET\" -l \"$LANG\"",true);
+				unlink("/tmp/_scan_file$SCANNER.tif");
+				if(!file_exists("scans/$S_FILENAMET.txt"))//in case tesseract fails
+					SaveFile("scans/$S_FILENAMET.txt","");
+			}
+			else{
+				exe("convert \"$SCAN\" -alpha off \"scans/$S_FILENAME\"",true);
+			}
+			@unlink("$SCAN");
 		}
-
-		# Rotate Image
-		if($ROTATE!="0"){
-			exe("convert \"/tmp/scan_file$SCANNER.ppm\" -rotate \"$ROTATE\" \"/tmp/scan_file$SCANNER.ppm\"",true);
-		}
-
-		# Scale Image
-		if($SCALE!="100"){
-			exe("convert \"/tmp/scan_file$SCANNER.ppm\" -scale $SCALE% \"/tmp/scan_file$SCANNER.ppm\"",true);
-		}
-
-		# Dated Filename for scan image & preview image
-		$FILENAME=date("M_j_Y~G-i-s");
-		$S_FILENAME="Scan_$SCANNER"."_"."$FILENAME.$FILETYPE";
-		$P_FILENAME="Preview_$SCANNER"."_"."$FILENAME.jpg";
-
-		# Generate Preview Image
-		exe("convert \"/tmp/scan_file$SCANNER.ppm\" -scale 450x471 \"scans/$P_FILENAME\"",true);
+		@rmdir($CANDIR);
 
 		# Remove Crop Option / set last scan / remember last orientation
 		echo '<script type="text/javascript">';
@@ -877,20 +923,6 @@ else{
 		$ORNT=($ORNT==''?'vert':$ORNT);
 		echo "var ornt=document.createElement('input');ornt.name='ornt0';ornt.value='$ORNT';ornt.type='hidden';document.scanning.appendChild(ornt);".
 			"var p=document.createElement('p');p.innerHTML='<small>Changing orientation will void select region.</small>';document.getElementById('opt').appendChild(p);</script>";
-
-		# Convert scan to file type
-		if($FILETYPE=="txt"){
-			$S_FILENAMET=substr($S_FILENAME,0,strrpos($S_FILENAME,'.'));
-			exe("convert \"/tmp/scan_file$SCANNER.ppm\" -fx '(r+g+b)/3' \"/tmp/_scan_file$SCANNER.tif\"",true);
-			exe("tesseract \"/tmp/_scan_file$SCANNER.tif\" \"scans/$S_FILENAMET\" -l \"$LANG\"",true);
-			unlink("/tmp/_scan_file$SCANNER.tif");
-			if(!file_exists("scans/$S_FILENAMET.txt"))//in case tesseract fails
-				SaveFile("scans/$S_FILENAMET.txt","");
-		}
-		else{
-			exe("convert \"/tmp/scan_file$SCANNER.ppm\" -alpha off \"scans/$S_FILENAME\"",true);
-		}
-		@unlink("/tmp/scan_file$SCANNER.ppm");
 
 		# Check if image is empty and post error, otherwise post image to page
 		if(!file_exists("scans/$P_FILENAME")){
@@ -909,6 +941,8 @@ else{
 			$CANNERS=json_decode(file_get_contents("config/scanners.json"));
 		$CANNERS[$SCANNER]->{"INUSE"}=0;
 		SaveFile("config/scanners.json",json_encode($CANNERS));
+		if($ct>3)
+			Print_Message("Info",'Multiple scans made, only displaying last one, go to <a href="index.php?page=Scans">Scanned Files</a> for the rest','center');
 	}
 	echo '<script type="text/javascript">if(document.scanning)document.scanning.action.disabled=false;</script>';
 	checkFreeSpace($FreeSpaceWarn);

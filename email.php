@@ -19,7 +19,7 @@ if(isset($_POST['file'])){
 	$mail->IsSMTP(); // telling the class to use SMTP
 	$mail->SMTPDebug = 0; // enables SMTP debug information (for testing) // 0 = no errors or messages // 1 = errors and messages // 2 = messages only
 	$mail->SMTPAuth = true; // enable SMTP authentication
-	$mail->SMTPSecure = $_POST['prefix']; // sets the prefix to the servier
+	$mail->SMTPSecure = $_POST['prefix']; // sets the prefix to the server
 	$mail->Host = $_POST['host']; // sets the host of the SMTP server
 	$mail->Port = $_POST['port']; // set the SMTP port for the email server
 	$mail->Username = $_POST['from']; // username
@@ -62,6 +62,22 @@ if(isset($_POST['file'])){
 		$json=json_decode('{"title":"Email sent!"}');
 		$json->{"message"}=$_POST['from']." has sent <i>".$_POST['title']."</i> to ".substr($list,0,-2);
 		echo json_encode($json);
+	}
+}
+else if(isset($_GET['domain'])){
+	$data=@file_get_contents("https://autoconfig.thunderbird.net/v1.1/".$_GET['domain']);
+	if($data){
+		$JSON=json_decode('{}');
+		$data=simplexml_load_string($data);
+		$data=$data->{"emailProvider"}->{"outgoingServer"};
+		$JSON->{"port"}=(int)$data->{"port"};
+		$JSON->{"host"}=(string)$data->{"hostname"};
+		//$JSON->{"prefix"}=(string)$data->{"prefixType"}; # No idea what this is good for @.@
+		$JSON->{"type"}=(string)$data->attributes()->{"type"};
+		echo json_encode($JSON);
+	}
+	else{
+		echo '{"error":404}';
 	}
 }
 else{

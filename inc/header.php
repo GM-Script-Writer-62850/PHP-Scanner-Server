@@ -12,9 +12,9 @@ if($GLOBALS['PAGE']=='Config')
 	echo '<link id="style_new" rel="stylesheet" href="inc/style.php'.(isset($_COOKIE["colors"])?'?colors='.$_COOKIE["colors"]:'').'" type="text/css"/>';
 ?>
 <link rel="shortcut icon" href="inc/images/favicon.png"/>
-<link rel="stylesheet" type="text/css" href="jquery.imgareaselect-0.9.3/css/imgareaselect-default.css"/>
-<script type="text/javascript" src="jquery.imgareaselect-0.9.3/scripts/jquery.min.js"></script>
-<script type="text/javascript" src="jquery.imgareaselect-0.9.3/scripts/jquery.imgareaselect.pack.js"></script>
+<link rel="stylesheet" type="text/css" href="jquery.imgareaselect-0.9.10/css/imgareaselect-animated.css"/>
+<script type="text/javascript" src="jquery.imgareaselect-0.9.10/scripts/jquery.min.js"></script>
+<script type="text/javascript" src="jquery.imgareaselect-0.9.10/scripts/jquery.imgareaselect.pack.js"></script>
 <script type="text/javascript" src="inc/main.js"></script>
 </head>
 

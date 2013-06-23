@@ -163,5 +163,5 @@ else
 ?> 
 <a href="#" onclick="return emailManager('Scan_<?php echo html($file); ?>');" class="tool icon email"><span class="tip">Email</span></a>
 </p></div><!-- There are no line breaks on the next line to make the javascript ever so slightly faster -->
-<div id="preview_img"><p><img src="scans/Preview_<?php echo html(substr($file,0,strrpos($file,'.'))); ?>.jpg" title="Preview"/><img style="z-index:-1;" src="inc/images/blank.png" title="Processing"/></p></div>
+<div id="preview_img"><p><img src="scans/Preview_<?php echo html(substr($file,0,strrpos($file,'.'))); ?>.jpg" title="Preview"/><img style="z-index:-1;" src="inc/images/blank.gif" title="Processing"/></p></div>
 </div>

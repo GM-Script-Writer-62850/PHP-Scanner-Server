@@ -23,6 +23,31 @@ if(isset($_GET['downloadServer'])){
 	echo $file;
 	unlink("/tmp/scanner-$t.tar.bz2");
 }
+else if(isset($_GET['json'])){
+	$files=json_decode($_GET['json']);
+	$cmd="convert ";
+	header("Pragma: public");
+	foreach($files as $key => $val){
+		$file="Scan_$key";
+		if(strrpos($file, "/")>-1)
+			$file=substr($file,strrpos($file,"/")+1);
+		if(is_file("scans/$file"))
+			$cmd.="scans/$file ";
+	}
+	if(strlen($cmd)>8){
+		$file=md5(time().rand()).'.pdf';
+		shell_exec($cmd."/tmp/$file");// -page Letter -gravity center
+		header("Content-type: application/pdf");
+		header("Content-Disposition: attachment; filename=\"Compilation.pdf\"");
+		echo file_get_contents("/tmp/$file");
+		@unlink("/tmp/$file");
+	}
+	else{
+		header("Content-type: plain/txt");
+		header("Content-Disposition: attachment; filename=\"Error.txt\"");
+		echo "No legit file names provided";
+	}
+}
 else if(isset($_GET['file'])){
 	if(file_exists("scans/".$_GET['file'])){
 		header("Pragma: public");

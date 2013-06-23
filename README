@@ -5,8 +5,8 @@ Based on Linux Scanner Server 1.2 Beta
 
 Released under the GPL 2.0
 
-Last Update: 07/09/2012 (Month/Day/Year)
-For Version: 1.2-9
+Last Update: 06/22/2013 (Month/Day/Year)
+For Version: 1.3-0
 
 PHP Linux Scanner Server is a PHP web application that allows you to share multiple scanners (supported by SANE) over a network.
 
@@ -197,9 +197,9 @@ Credit where credit is due:
 	ajaxload.info
 		Loading bar animation
 	odyniec (at) odyniec.net
-		imgAreaSelect 0.9.3
+		imgAreaSelect 0.9.10
 	Andy Prevost, Marcus Bointon, and Jim Jagielski
-		phpmailer 5.2.1 
+		phpmailer 5.2.6
 	openiconlibrary.sourceforge.net
 		Powered by Linux icon
 
@@ -216,6 +216,9 @@ Installation Notes:
 		sudo chown www-data /var/www/scans
 		sudo chown -R www-data /var/www/config
 	You may chmod them to 666 if you prefer
+	If you cloned the git repo you will need to create some folders, git does not allow empty folders
+		sudo mkdir /var/www/scans
+		sudo mkdir -p /var/www/config/parallel
 
 Apache Tricks:
 	Enabling .htaccess

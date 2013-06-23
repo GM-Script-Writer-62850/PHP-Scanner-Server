@@ -212,6 +212,7 @@ a:hover {
 
 .message h2 {
 	border: 1px solid #ff0000;
+	border-radius: 2px 2px 0 0;
 	text-indent: 0.5em;
 	font-size: 12px;
 	font-variant: small-caps;
@@ -449,7 +450,7 @@ select.title, select.title option{
 	position: relative;
 }
 
-img[src="inc/images/blank.png"]{
+img[src="inc/images/blank.gif"]{
 	background: url("images/preview.png") no-repeat scroll center center transparent;
 }
 
@@ -476,6 +477,11 @@ img[src="inc/images/blank.png"]{
 	margin: 0;
 	padding: 0;
 	width: 100%;
+}
+
+#scans .box h2[selected=true]{
+	background-color: #<?php echo $LK_COLOR; ?>;
+	border-color: #<?php echo $LK_COLOR; ?>;
 }
 
 #scans.enable{
@@ -527,6 +533,7 @@ img[src="inc/images/blank.png"]{
 
 .box h2 {
 	border: 1px solid #<?php echo $BG_COLOR; ?>;
+	border-radius: 2px 2px 0 0;
 	text-align: center;
 	font-size: 12px;
 	font-variant: small-caps;
@@ -684,20 +691,20 @@ code{
 	padding-bottom: 5px;
 }
 #popUpDiv #email .security ul{
-	margin-top:0;
+	margin-top: 0;
 	padding-right: 5px;
-	text-align:left;
+	text-align: left;
 }
 #popUpDiv #email form{
-	width:265px;
-	text-align:left;
-	float:left;
+	width: 265px;
+	text-align: left;
+	float: left;
 }
 #popUpDiv #email form .label{
-	width:95px;
+	width: 95px;
 }
-#popUpDiv #email .control input:not([type="checkbox"]){
-	width:150px;
+#popUpDiv #email .control input:not([type="checkbox"]), #popUpDiv #email .control select{
+	width: 150px;
 }
 #popUpDiv #email .help{
 	border: 1px solid #<?php echo $BG_COLOR; ?>;

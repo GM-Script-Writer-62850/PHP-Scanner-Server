@@ -1,12 +1,12 @@
 <div class="box">
-<h2><?php 
+<h2 ondblclick="toggleFile(this);" selected="false"><?php 
 $FILE=html($FILE);
 echo $FILE;
 ?></h2>
 <p>
 <a class="tool icon download" href="download.php?file=Scan_<?php echo html($FILE); ?>"><span class="tip">Download</span></a>
 <a class="tool icon zip" href="download.php?file=Scan_<?php echo html($FILE); ?>&compress"><span class="tip">Download Zip</span></a>
-<a class="tool icon pdf" href="#" onclick="PDF_popup('Scan_<?php echo html($FILE); ?>');"><span class="tip">Download PDF</span></a>
+<a class="tool icon pdf" href="#" onclick="return PDF_popup('Scan_<?php echo html($FILE); ?>');"><span class="tip">Download PDF</span></a>
 <a class="tool icon print" href="print.php?file=Scan_<?php echo html($FILE); ?>" target="_blank"><span class="tip">Print</span></a>
 <a class="tool icon del" href="index.php?page=Scans&delete=Remove&file=<?php echo html($FILE); ?>"><span class="tip">Delete</span></a>
 <a class="tool icon edit" href="index.php?page=Edit&file=<?php echo html($FILE); ?>"><span class="tip">Edit</span></a> 
