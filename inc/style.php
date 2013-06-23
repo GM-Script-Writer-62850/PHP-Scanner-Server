@@ -403,6 +403,10 @@ select.title, select.title option{
 	text-transform: capitalize;
 }
 
+select.upper, select.upper option{
+	text-transform: uppercase;
+}
+
 .side_box p {
 	margin: 0.5em;
 }

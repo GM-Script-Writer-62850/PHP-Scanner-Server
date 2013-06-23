@@ -258,17 +258,17 @@ function scannerChange(ele){
 	for(var i=0,max=dpi.length;i<max;i++)
 		html+='<option value="'+dpi[i]+'">'+dpi[i]+' '+(isNaN(dpi[i])?'':'dpi')+'</option>';
 	if(document.all){// http://support.microsoft.com/kb/276228
-		document.scanning.quality.parentNode.innerHTML='<select name="quality">'+html+'</select>';
+		document.scanning.quality.parentNode.innerHTML='<select name="quality" class="upper">'+html+'</select>';
 	}
 	else{
 		document.scanning.quality.innerHTML=html;
 	}
 	width=info['WIDTH'];
 	height=info['HEIGHT'];
-	html='<option value="full">Full Scan</option>';
+	html='<option value="full">Full Scan</option>';// string length (39) is used a few lines down
 	for(var i in paper){
 		if(width>=paper[i]['width']&&height>=paper[i]['height'])
-			html+='<option value="'+paper[i]['width']+'-'+paper[i]['height']+'">'+i+': '+roundNumber(paper[i]['width']/25.4,2)+'x'+roundNumber(paper[i]['height']/25.4,2)+'</option>';
+			html+='<option value="'+paper[i]['width']+'-'+paper[i]['height']+'" title="'+paper[i]['width']+' mm x '+paper[i]['height']+' mm">'+i+': '+roundNumber(paper[i]['width']/25.4,2)+'" x '+roundNumber(paper[i]['height']/25.4,2)+'"</option>';
 	}
 	html2='';
 	modes=info['MODE'].split('|');
@@ -289,12 +289,14 @@ function scannerChange(ele){
 		html3+='<option value="'+sources[i]+'">'+(sources[i]=='ADF'?'Automatic Document Feeder':sources[i])+'</option>';
 	}
 	if(document.all){// http://support.microsoft.com/kb/276228
-		document.scanning.size.parentNode.innerHTML='<select onchange="paperChange(this);" name="size">'+html+'</select>';
+		if(html.length>39)
+			document.scanning.size.parentNode.innerHTML='<select onchange="paperChange(this);" name="size">'+html+'</select>';
 		document.scanning.mode.parentNode.innerHTML='<select name="mode" class="title">'+html2+'</select>';
 		document.scanning.source.parentNode.innerHTML='<select name="source" class="title">'+html3+'</select>';
 	}
 	else{
-		document.scanning.size.innerHTML=html;
+		if(html.length>39)
+			document.scanning.size.innerHTML=html;
 		document.scanning.mode.innerHTML=html2;
 		document.scanning.source.innerHTML=html3;
 	}

@@ -36,7 +36,7 @@
 Quality:
 </div>
 <div class="control" title="Dots Per Inch">
-<div class="ie_276228"><select name="quality" class="title"><script type="text/JavaScript">
+<div class="ie_276228"><select name="quality" class="upper"><script type="text/JavaScript">
 var dpi='<?php echo $CANNERS[$SEL]->{"DPI"}; ?>'.split('|');
 for(var i=0,max=dpi.length;i<max;i++){
 	document.write('<option value="'+dpi[i]+'">'+dpi[i]+' '+(isNaN(dpi[i])?'':'dpi')+'</option>');
@@ -55,11 +55,11 @@ if(file_exists("config/paper.json")){
 	$paper=json_decode(file_get_contents("config/paper.json"));
 	foreach($paper as $key=>$val){
 		if($CANNERS[$SEL]->{"WIDTH"}>=$val->{"width"}&&$CANNERS[$SEL]->{"HEIGHT"}>=$val->{"height"})
-			echo '<option value="'.$val->{"width"}.'-'.$val->{"height"}.'">'.$key.': '.round($val->{"width"}/25.4,2).'x'.round($val->{"height"}/25.4,2).'</option>';
+			echo '<option value="'.$val->{"width"}.'-'.$val->{"height"}.'" title="'.$val->{"width"}.'mm x '.$val->{"height"}.' mm">'.$key.': '.round($val->{"width"}/25.4,2).'" x '.round($val->{"height"}/25.4,2).'"</option>';
 	}
 }
 else{
-	echo '<option value="101.6-152.4">Picture: 4x6</option><option value="215.9-279.4">Paper: 8.5x11</option>';
+	echo '<option value="101.6-152.4" title="101.6 mm x 152.4 mm">Picture: 4" x 6"</option><option value="215.9-279.4" title="215.9 mm x 279.4 mm">Paper: 8.5" x 11"</option>';
 }
 ?>
 </select></div>
