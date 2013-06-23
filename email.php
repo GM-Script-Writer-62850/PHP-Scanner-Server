@@ -8,7 +8,7 @@ if(isset($_POST['file'])){
 	$scan = $_POST['file'];
 	if(strrpos($scan, "/")>-1)
 		$scan =substr($scan,strrpos($scan,"/")+1);
-		
+
 	if(!file_exists("scans/$scan")){
 		echo '{"title":"404 Not Found","message":"That scan no longer exists"}';
 		die();
@@ -39,7 +39,7 @@ if(isset($_POST['file'])){
 		else
 			$list.=$to[$i].($i==$stp-2?', and ':', ');
 	}
-	
+
 	$mail->Subject = $_POST['title']; // set title
 	$mail->IsHTML(true);
 	if(substr($scan,-3)!='txt'){

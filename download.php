@@ -68,7 +68,7 @@ else if(isset($_GET['file'])){
 					$marginLeft=10;
 					$marginTop=20;
 					$width=215.9;
-					$height=279.4;				
+					$height=279.4;
 
 					require($Fpdf_loc);
 
@@ -100,7 +100,7 @@ else if(isset($_GET['file'])){
 					$marginLeft=0;
 					$marginTop=0;
 					$width=215.9;
-					$height=279.4;				
+					$height=279.4;
 
 					require($Fpdf_loc);
 
@@ -129,7 +129,6 @@ else if(isset($_GET['file'])){
 				header("Content-Disposition: attachment; filename=\"".$_GET['file']."\"");
 				echo file_get_contents("scans/".$_GET['file']);
 			}
-			
 		}
 	}
 	else{

@@ -6,7 +6,7 @@ $ExtraScanners=false;// Adds sample scanners from ./inc/scanhelp
 // Sorry for the lack of explanations in the code feel free to ask what something does
 
 $NAME="PHP Scanner Server";
-$VER="1.3-0";
+$VER="1.3-1";
 $SAE_VER="1.4"; // scanner access enabler version
 
 # ****************
@@ -207,7 +207,7 @@ if($PAGE==NULL)
 	$PAGE="Scan";
 
 # ****************
-# Recent Scans Page
+# All Scans Page
 # ****************
 if($PAGE=="Scans"){
 	InsertHeader("Scanned Images");
@@ -247,7 +247,7 @@ if($PAGE=="Scans"){
 			$IMAGE=$FILES[$i];
 			include "inc/scans.php";
 		}// Chrome's css columns fail (also disabled in css)
-		echo '</div><script type="text/javascript">if(document.body.style.WebkitColumnGap==""||document.body.style.MozColumnGap==""||document.body.style.columnGap=="")document.getElementById("scans").className="enable";</script>';
+		echo '</div><script type="text/javascript">if(document.body.style.WebkitColumnGap==""||document.body.style.MozColumnGap==""||document.body.style.columnGap=="")getID("scans").className="enable";</script>';
 	}
 	checkFreeSpace($FreeSpaceWarn);
 	Footer();
@@ -852,7 +852,7 @@ else{
 		}*/
 
 		$cmd="scanimage -d \"$DEVICE\" -l $X -t $Y -x $SIZE_X -y $SIZE_Y --resolution $QUALITY --source $SOURCE --mode $MODE $LAMP--format=ppm";
-		if($SOURCE=='ADF'||$SOURCE=='Automatic Document Feeder') # Multi-page scan 
+		if($SOURCE=='ADF'||$SOURCE=='Automatic Document Feeder') # Multi-page scan
 			exe("cd $CANDIR;$cmd --batch",true);// be careful with this, doing this without a ADF feeder will result in scanning the flatbed over and over, include --batch-count=3 for testing
 		else # Single page scan
 			exe("$cmd > \"$CANDIR/scan_file$SCANNER.ppm\"",false);

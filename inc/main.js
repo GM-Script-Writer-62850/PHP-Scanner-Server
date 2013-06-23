@@ -166,7 +166,7 @@ function lastScan(scan,preview,scanner,ele,imgur){
 		'<a class="tool icon zip" href="download.php?file='+scan+'&compress"><span class="tip">Download Zip</span></a> '+
 		'<a class="tool icon pdf" href="#" onclick="PDF_popup(\''+scan+'\');"><span class="tip">Download PDF</span></a> '+
 		'<a class="tool icon print" href="print.php?file='+scan+'" target="_blank"><span class="tip">Print</span></a> '+
-		'<a class="tool icon del" href="index.php?page=Scans&amp;delete=Remove&amp;file='+generic+'"><span class="tip">Delete</span></a> '+
+		'<a class="tool icon del" href="index.php?page=Scans&amp;delete=Remove&amp;file='+generic+'" onclick="return confirm(\'Delete this scan\')"><span class="tip">Delete</span></a> '+
 		'<a class="tool icon edit" href="index.php?page=Edit&amp;file='+generic+'"><span class="tip">Edit</span></a> '+
 		'<a class="tool icon view" href="index.php?page=View&amp;file='+scan+'"><span class="tip">View</span></a> '+
 		(imgur?'<a class="tool icon upload" href="#" onclick="return upload(\''+scan+'\')"><span class="tip">Upload to Imgur</span></a> ':'<span class="tool icon upload-off"><span class="tip">Upload to Imgur (Disabled)</span></span> ')+
@@ -369,7 +369,7 @@ function scanReset(){
 }
 /*function lastCordsChange(json,state){
 	// This is related to lines 52, 69-78,219,221, 223, and 225 of scan.php it is a attept to add a option is use the last scan's coordinates (incomplete and I changed my mind on making it)
-	// It will still need to disabled when/if hte scanner is changed and including the coords at page load is buged and attempting to scan results in a invalid input security error
+	// It will still need to disabled when/if the scanner is changed and including the coords at page load is buged and attempting to scan results in a invalid input security error
 	if(state){
 		json=parseJSON(json);
 		json["x2"]=0;//these 2 are only used in the UI and have no direct impact in the backend
@@ -718,7 +718,7 @@ function validateEmail(ele){
 	return false;
 }
 function configEmail(addr){
-	if(addr.indexOf('@')==-1)
+	if(addr.indexOf('@')==-1||typeof XMLHttpRequest!='function')
 		return;
 	else
 		addr=addr.substr(addr.indexOf('@')+1);
@@ -740,6 +740,9 @@ function configEmail(addr){
 	httpRequest.send(null);
 }
 function sendEmail(ele){
+	if(typeof XMLHttpRequest!='function'){
+		printMsg('Error','Your browser does not support <a href="http://www.w3schools.com/xml/xml_http.asp" target="_blank">XMLHttpRequest</a>, so you can not use this feature','center',0);
+	}
 	var now=new Date().getTime();
 	printMsg('Sending Email<span id="email-'+now+'"></span>','Please Wait...<br/>This could take a while depending on the file size of the scan and the upload speed at '+document.domain,'center',0);
 	var httpRequest = new XMLHttpRequest();
@@ -780,4 +783,32 @@ function deleteEmail(){
 	else{
 		printMsg('Error',"Your browser does not even support saveing email settings, much less deleting them.",'center',0);
 	}
+}
+function delScan(file){
+	if(!confirm("Are you sure you want to delete "+file))
+		return false;
+	if(typeof XMLHttpRequest!='function'){
+		return true;
+	}
+	var httpRequest = new XMLHttpRequest();
+	httpRequest.onreadystatechange = function(){
+		if(httpRequest.readyState==4){
+			if(httpRequest.status==200){
+				var data=parseJSON(httpRequest.responseText);
+				if(data['state']==0){
+					printMsg('File Deleted',"The file "+data['file']+" has been removed.",'center',0);
+					var del=getID(file);
+					del.parentNode.removeChild(del);
+				}
+				else
+					printMsg('Error 404',"Unable to find "+data['file']+" in the scans folder or permission is denied",'center',0);
+			}
+			else{
+				printMsg('Error '+httpRequest.status,'Got a '+httpRequest.status+' error<br/>If you don\'t know what that means and want to know click <a target="_blank" href="http://www.w3.org/Protocols/HTTP/HTRESP.html">here</a>.','center',0);
+			}
+		}
+	};
+	httpRequest.open('GET', 'cleaner.php?file='+file);
+	httpRequest.send(null);
+	return false;
 }

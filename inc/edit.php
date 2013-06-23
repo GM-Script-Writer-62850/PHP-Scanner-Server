@@ -136,7 +136,7 @@ Save Image
 </div>
 </form>
 <?php echo $FILETYPE=='txt'?'<script type="text/javascript">document.scanning.action.disabled=true;</script>':''; ?>
-</div>		
+</div>
 
 <!-- Preview Pane -->
 <div id="preview">
@@ -147,7 +147,7 @@ Save Image
 <a class="tool icon zip" href="download.php?file=Scan_<?php echo html($file); ?>&compress"><span class="tip">Download Zip</span></a>
 <a class="tool icon pdf" href="#" onclick="PDF_popup('Scan_<?php echo html($file); ?>');"><span class="tip">Download PDF</span></a>
 <a class="tool icon print" href="print.php?file=Scan_<?php echo html($file); ?>" target="_blank"><span class="tip">Print</span></a>
-<a class="tool icon del" href="index.php?page=Scans&delete=Remove&file=<?php echo html($file); ?>"><span class="tip">Delete</span></a>
+<a class="tool icon del" href="index.php?page=Scans&delete=Remove&file=<?php echo html($file); ?>" onclick="return confirm('Delete this scan, This is NOT a do not save button')"><span class="tip">Delete</span></a>
 <?php
 if(substr($file,-3)=='txt')
 	echo '<a class="tool icon edit" href="index.php?page=Edit&file='.html($file).'"><span class="tip">Edit</span></a> ';
@@ -160,7 +160,8 @@ if(file_exists('config/IMGUR_API_KEY.txt')&&substr($file,-3)!='txt')
 	echo '<a class="tool icon upload" href="#" onclick="return upload(\'Scan_'.html($file,5).'\')"><span class="tip">Upload to Imgur</span></a>';
 else
 	echo '<span class="tool icon upload-off"><span class="tip">Upload to Imgur (Disabled)</span></span>';
-?> 
+?>
+
 <a href="#" onclick="return emailManager('Scan_<?php echo html($file); ?>');" class="tool icon email"><span class="tip">Email</span></a>
 </p></div><!-- There are no line breaks on the next line to make the javascript ever so slightly faster -->
 <div id="preview_img"><p><img src="scans/Preview_<?php echo html(substr($file,0,strrpos($file,'.'))); ?>.jpg" title="Preview"/><img style="z-index:-1;" src="inc/images/blank.gif" title="Processing"/></p></div>

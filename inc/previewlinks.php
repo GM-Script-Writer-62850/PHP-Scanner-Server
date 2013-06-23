@@ -9,7 +9,7 @@ getID("preview_links").innerHTML="<h2>"+file+"</h2>\
 	<a href=\"download.php?file=Scan_"+file+"&compress\" class=\"tool icon zip\"><span class=\"tip\">Download Zip</span></a> \
 	<a href=\"#\" onclick=\"PDF_popup('Scan_"+file+"');\" class=\"tool icon pdf\"><span class=\"tip\">Download PDF</span></a> \
 	<a href=\"print.php?file=Scan_"+file+"\" target=\"_blank\" class=\"tool icon print\" target=\"_blank\"><span class=\"tip\">Print</span></a> \
-	<a href=\"index.php?page=Scans&delete=Remove&file="+file+"\" class=\"tool icon del\"><span class=\"tip\">Delete</span></a> \
+	<a href=\"index.php?page=Scans&delete=Remove&file="+file+"\" class=\"tool icon del\" onclick=\"return confirm('Delete this scan')\"><span class=\"tip\">Delete</span></a> \
 	<?php
 	if($_GET['page']=="Edit")
 		echo '<span class=\\"tool icon edit-off\\"><span class=\\"tip\\">Edit (Disabled)</span></span> \\';
@@ -21,7 +21,7 @@ getID("preview_links").innerHTML="<h2>"+file+"</h2>\
 	if(substr($file,-3)!='txt'&&file_exists('../config/IMGUR_API_KEY.txt'))
 		echo '<a href=\\"#\\" class=\\"tool icon upload\\" onclick=\\"return upload(\'Scan_"+file+"\')\\"><span class=\\"tip\\">Upload to Imgur</span></a>';
 	else
-		echo '<span class=\\"tool icon upload-off\\"><span class=\\"tip\\">Upload to Imgur (Disabled)</span></span>';	
+		echo '<span class=\\"tool icon upload-off\\"><span class=\\"tip\\">Upload to Imgur (Disabled)</span></span>';
 	?> \
 	<a href=\"#\" onclick=\"return emailManager('Scan_"+file+"');\" class=\"tool icon email\"><span class=\"tip\">Email</span></a> \
 </p>";

@@ -224,7 +224,7 @@ Select Region
 <p>
 <input type="hidden" name="loc_maxW"/><input type="hidden" name="loc_maxH"/>
 <small>Hint: +/- can increase/decrease numbers.</small>
-<div class="label">Width: </div> 
+<div class="label">Width: </div>
 	<div class="control"><input onkeypress="return false" type="text" readonly="readonly" name="loc_width" value="0<?php //echo (isset($M_WIDTH)?$M_WIDTH:0); ?>" size="3"/> pixle(s)</div>
 <div class="label">Height: </div>
 	<div class="control"><input onkeypress="return false" type="text" readonly="readonly" name="loc_height" value="0<?php //echo (isset($M_HEIGHT)?$M_HEIGHT:0); ?>" size="3"/> pixle(s)</div>
@@ -278,7 +278,7 @@ Scan Image
 </div>
 </form>
 
-</div>		
+</div>
 
 <!-- Preview Pane -->
 <div id="preview">
@@ -299,7 +299,7 @@ $ls='<span class="tool icon recent-off"><span class="tip">Last Scan (Disabled)</
 if(isset($_COOKIE["scan"])&&isset($_COOKIE["preview"])){
 	if(file_exists("scans/".$_COOKIE["scan"])&&file_exists("scans/".$_COOKIE["preview"]))
 		echo "<a class=\"tool icon recent\" onclick=\"lastScan('".html($_COOKIE["scan"])."','".html($_COOKIE["preview"])."','".html($_COOKIE["scanner"])."',this,".(file_exists('config/IMGUR_API_KEY.txt')?'true':'false').");\" href=\"javascript:void(null)\"><span class=\"tip\">Last Scan</span></a>";
-	else 
+	else
 		echo $ls;
 }
 else

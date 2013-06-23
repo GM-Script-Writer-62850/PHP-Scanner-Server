@@ -6,9 +6,9 @@
 <form name="scanner" action="index.php">
 <input type="hidden" name="page" value="Config">
 <p>
-If there are no avalible scanners, you can click the button below to search for scanners on the server. 
+If there are no avalible scanners, you can click the button below to search for scanners on the server.
 <br/>
-If none show up, your scanner may not be supported by Xsane. 
+If none show up, your scanner may not be supported by Xsane.
 <br/>
 Make sure all scanners are plugged in and turned on.
 <br/><input type="hidden" name="action" value="Search-For-Scanners">
@@ -22,7 +22,7 @@ Make sure all scanners are plugged in and turned on.
 <div class="box">
 <h2>Scanned Files on Server</h2>
 <p>
-<a href="index.php?page=Scans&delete=Remove">Remove All Scans</a>
+<a href="index.php?page=Scans&delete=Remove" onclick="return confirm('Delete all scanned files?')">Remove All Scans</a>
 </p>
 </div>
 
@@ -38,7 +38,7 @@ Make sure all scanners are plugged in and turned on.
 <div class="box">
 <h2>Server Scanner Settings</h2>
 <p>
-<a href="index.php?page=Config&action=Delete-Setting">Remove All Of These Settings</a></p><ul class="simplelist">
+<a href="index.php?page=Config&action=Delete-Setting" onclick="return confirm('Delete all settings?')">Remove All Of These Settings</a></p><ul class="simplelist">
 <?php
 	foreach($file as $id => $opt){
 		echo '<li class="boxlist"><a class="tool icon del" href="index.php?page=Config&action=Delete-Setting&value='.html($id).'"><span class="tip">Delete</span></a> <a target="_blank" href="index.php?page=Scan&action=restore&';
@@ -59,7 +59,7 @@ If you want to save a setting for your own use, right-click it and save it to yo
 <a href="index.php?page=Paper%20Manager">Paper size manager</a><br/>
 <?php
 if(file_exists("config/paper.json"))
-	echo '<a href="index.php?page=Config&action=Delete-Paper">Delete paper settings</a>';
+	echo '<a href="index.php?page=Config&action=Delete-Paper" onclick="return confirm(\'Delete all known paper sizes\')">Delete paper settings</a>';
 else
 	echo 'Paper sizes need to be detected.';
 ?></p>
