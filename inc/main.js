@@ -173,6 +173,17 @@ function lastScan(scan,preview,scanner,ele,imgur){
 		'<a href="#" onclick="return emailManager(\''+scan+'\');" class="tool icon email"><span class=\"tip\">Email</span></a> '+
 		'<span class="tool icon recent-off"><span class="tip">Last Scan (Disabled)</span></span></p>';
 }
+function encodeHTML(string){// http://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery#answer-12034334
+	var entityMap={
+		"&": "&amp;",
+		"<": "&lt;",
+		">": "&gt;",
+		'"': '&quot;',
+		"'": '&#39;',
+		"/": '&#x2F;'
+	};
+	return String(string).replace(/[&<>"'\/]/g,function(s){return entityMap[s];});
+}
 function checkScanners(){// Does not support IE8 and below
 	if(typeof XMLHttpRequest!='function'||typeof JSON=='undefined'){
 		printMsg('Sorry',"Your browser does not support the XMLHttpRequest function and the JSON object so this page can not check if the scanner is in-use or not in real time.<br/>You have 3 choices: Ignore This, update your browser, and switch browsers",'center',0);
@@ -198,7 +209,7 @@ function checkScanners(){// Does not support IE8 and below
 						delete(scan[i]["ID"]);
 						delete(scan[i]["DEVICE"]);
 						delete(scan[i]["NAME"]);
-						str+='<option'+(scan[i]["INUSE"]==1?' disabled="disabled"':'')+' class="'+$.text(JSON.stringify(scan[i]))+'" value="'+scan[i]["ID"]+'">'+scan[i]["NAME"]+' on '+loc+'</option>';
+						str+='<option'+(scan[i]["INUSE"]==1?' disabled="disabled"':'')+' class="'+encodeHTML(JSON.stringify(scan[i]))+'" value="'+scan[i]["ID"]+'">'+scan[i]["NAME"]+' on '+loc+'</option>';
 					}
 					scanners=scan;
 					loc=document.scanning.scanner.selectedIndex;

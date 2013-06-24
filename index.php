@@ -6,7 +6,7 @@ $ExtraScanners=false;// Adds sample scanners from ./inc/scanhelp
 // Sorry for the lack of explanations in the code feel free to ask what something does
 
 $NAME="PHP Scanner Server";
-$VER="1.3-1";
+$VER="1.3-2";
 $SAE_VER="1.4"; // scanner access enabler version
 
 # ****************
