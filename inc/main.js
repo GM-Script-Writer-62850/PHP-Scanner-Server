@@ -174,8 +174,8 @@ function lastScan(scan,preview,scanner,ele,imgur){
 		'<span class="tool icon recent-off"><span class="tip">Last Scan (Disabled)</span></span></p>';
 }
 function checkScanners(){// Does not support IE8 and below
-	if(typeof XMLHttpRequest!='function'){
-		printMsg('Sorry',"Your browser does not support the XMLHttpRequest function so this page can not check if the scanner is inuse or not in real time.<br/>You have 3 choices: Ignore This, update your browser, and switch browsers",'center',0);
+	if(typeof XMLHttpRequest!='function'||typeof JSON=='undefined'){
+		printMsg('Sorry',"Your browser does not support the XMLHttpRequest function and the JSON object so this page can not check if the scanner is in-use or not in real time.<br/>You have 3 choices: Ignore This, update your browser, and switch browsers",'center',0);
 		return;
 	}
 	var httpRequest = new XMLHttpRequest();
@@ -194,7 +194,11 @@ function checkScanners(){// Does not support IE8 and below
 						else{
 							loc=document.domain;
 						}
-						str+='<option'+(scan[i]["INUSE"]==1?' disabled="disabled"':'')+' class="{&quot;DPI&quot;:&quot;'+scan[i]["DPI"]+'&quot;,&quot;WIDTH&quot;:'+scan[i]["WIDTH"]+',&quot;HEIGHT&quot;:'+scan[i]["HEIGHT"]+'" value="'+scan[i]["ID"]+'">'+scan[i]["NAME"]+' on '+loc+'</option>';
+						delete(scan[i]["INUSE"]);
+						delete(scan[i]["ID"]);
+						delete(scan[i]["DEVICE"]);
+						delete(scan[i]["NAME"]);
+						str+='<option'+(scan[i]["INUSE"]==1?' disabled="disabled"':'')+' class="'+$.text(JSON.stringify(scan[i]))+'" value="'+scan[i]["ID"]+'">'+scan[i]["NAME"]+' on '+loc+'</option>';
 					}
 					scanners=scan;
 					loc=document.scanning.scanner.selectedIndex;
@@ -254,15 +258,7 @@ function parseJSON(jsonTXT){
 function scannerChange(ele){
 	var info,dpi,html,html2,html3,text,width,height;
 	info=parseJSON(ele.childNodes[ele.selectedIndex].className);
-	dpi=info['DPI'].split('|');
-	for(var i=0,max=dpi.length;i<max;i++)
-		html+='<option value="'+dpi[i]+'">'+dpi[i]+' '+(isNaN(dpi[i])?'':'dpi')+'</option>';
-	if(document.all){// http://support.microsoft.com/kb/276228
-		document.scanning.quality.parentNode.innerHTML='<select name="quality" class="upper">'+html+'</select>';
-	}
-	else{
-		document.scanning.quality.innerHTML=html;
-	}
+	sources=info['SOURCE'].split('|');
 	width=info['WIDTH'];
 	height=info['HEIGHT'];
 	html='<option value="full">Full Scan</option>';// string length (39) is used a few lines down
@@ -284,7 +280,6 @@ function scannerChange(ele){
 		html2+='<option value="'+modes[i]+'">'+text+'</option>';
 	}
 	html3='';
-	sources=info['SOURCE'].split('|');
 	for(i=0,s=sources.length;i<s;i++){
 		html3+='<option value="'+sources[i]+'">'+(sources[i]=='ADF'?'Automatic Document Feeder':sources[i])+'</option>';
 	}
@@ -300,7 +295,26 @@ function scannerChange(ele){
 		document.scanning.mode.innerHTML=html2;
 		document.scanning.source.innerHTML=html3;
 	}
+	if(document.scanning.source.value=='Inactive')
+		document.scanning.source.setAttribute('disabled','disabled');
+	else
+		document.scanning.source.removeAttribute('disabled');
+	sourceChange(document.scanning.source);
 	sendE(document.scanning.size,'change');
+}
+function sourceChange(ele){
+	var info=document.scanning.scanner;
+	info=parseJSON(info.childNodes[info.selectedIndex].className);
+	var html='';
+	var dpi=info['DPI-'+ele.value].split('|');
+	for(var i=0,max=dpi.length;i<max;i++)
+		html+='<option value="'+dpi[i]+'">'+dpi[i]+' '+(isNaN(dpi[i])?'':'dpi')+'</option>';
+	if(document.all){// http://support.microsoft.com/kb/276228
+		document.scanning.quality.parentNode.innerHTML='<select name="quality" class="upper">'+html+'</select>';
+	}
+	else{
+		document.scanning.quality.innerHTML=html;
+	}
 }
 function paperChange(ele){
 	if(ele.value=='full'){

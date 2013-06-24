@@ -2,7 +2,7 @@
 // Warning is displayed if there is less then the anmout specifyed
 $FreeSpaceWarn=2048;// In Megabytes
 $Fortune=true;// Enable/disable fortunes in the debug console
-$ExtraScanners=false;// Adds sample scanners from ./inc/scanhelp
+$ExtraScanners=true;// Adds sample scanners from ./inc/scanhelp
 // Sorry for the lack of explanations in the code feel free to ask what something does
 
 $NAME="PHP Scanner Server";
@@ -20,7 +20,7 @@ $BRIGHT=Get_Values('bright');
 $CONTRAST=Get_Values('contrast');
 $MODE=Get_Values('mode');
 $ORNT=Get_Values('ornt');
-$ORNT=(strlen($ORNT)==0?'vert':$ORNT); // IE apparently sends null when a field is disabled
+$ORNT=(strlen($ORNT)==0?'vert':$ORNT);
 $ROTATE=Get_Values('rotate');
 $FILETYPE=Get_Values('filetype');
 $LANG=Get_Values('lang');
@@ -36,6 +36,7 @@ $Y_1=Get_Values('loc_y1');
 #$X_2=Get_Values('loc_x2'); Un-used
 #$Y_2=Get_Values('loc_y2'); Un-used
 $SOURCE=Get_Values('source'); // scan.php main.js index.php
+$SOURCE=(strlen($SOURCE)==0?'Inactive':$SOURCE);
 
 $notes='Please read the <a href="index.php?page=About">release notes</a> for more information.';
 $user=posix_getpwuid(posix_geteuid());
@@ -167,6 +168,11 @@ function findLangs(){
 		$langs=array();
 	}
 	return $langs;
+}
+
+function quit(){
+	echo '<script type="text/javascript">Debug("'.rawurlencode(html($GLOBALS['debug'])).html($GLOBALS['here']."$ ").'",'.(isset($_COOKIE["debug"])?$_COOKIE["debug"]:'false').');</script>';
+	die('</body></html>');
 }
 
 # ****************
@@ -366,27 +372,47 @@ else if($PAGE=="Config"){
 				$help=exe("scanimage --help -d \"".addslashes($OP[$i]->{"DEVICE"})."\"",true);
 			else
 				$help=file_get_contents('inc/scanhelp/'.$OP[$i]->{"NAME"});
-			// get dpi
-			$res=substr($help,strpos($help,'--resolution ')+13);
-			$res=substr($res,0,strpos($res,'dpi'));
-			if(is_int(strpos($res,".."))){//range of sizes of not it is a list (i want list form)
-				$res=explode('..',$res);
-				$arr=Array();
-				array_push($arr,$res[0]);
-				for($x=intval(ceil(($res[0]+1)/100).'00');$x<=$res[1];$x+=100){
-					array_push($arr,$x);
+			// get Source
+			$sources=substr($help,strpos($help,'--source ')+9);
+			$defSource=substr($sources,strpos($sources,' [')+2);
+			$defSource=substr($defSource,0,strpos($defSource,']'));
+			$OP[$i]->{"SOURCE"}=strtolower($defSource)=='inactive'?'Inactive':substr($sources,0,strpos($sources,' ['));
+			$sources=explode('|',$OP[$i]->{"SOURCE"});
+
+			foreach($sources as $key => $val){
+				if($val=='Inactive'||$val==$defSource)
+					$help2=$help;
+				else{
+					if($i<$max-$FakeCt)
+						$help2==exe("scanimage --help -d \"".addslashes($OP[$i]->{"DEVICE"})."\" --source \"$val\"",true);
+					else{
+						$help2=file_get_contents('inc/scanhelp/'.$OP[$i]->{"NAME"});
+						exe("echo 'scanimage --help -d \"SIMULATED_$i-$key\" --source \"$val\"'",true);
+					}
 				}
-				$res=implode("|",$arr);
+				// get dpi
+				$res=substr($help2,strpos($help2,'--resolution ')+13);
+				$res=substr($res,0,strpos($res,'dpi'));
+				if(is_int(strpos($res,".."))){//range of sizes of not it is a list (i want list form)
+					$res=explode('..',$res);
+					$arr=Array();
+					array_push($arr,$res[0]);
+					for($x=intval(ceil(($res[0]+1)/100).'00');$x<=$res[1];$x+=100){
+						array_push($arr,$x);
+					}
+					$res=implode("|",$arr);
+				}
+				else if(is_int(strpos($res,"auto||"))){
+					$res='auto'.substr($res,5);
+				}
+				$OP[$i]->{"DPI-$val"}=$res;
+				if($val=='Inactive')
+					break;
 			}
-			else if(is_int(strpos($res,"auto||"))){
-				$res='auto'.substr($res,5);
-			}
-			$OP[$i]->{"DPI"}=$res;
+			
 			// get color modes
 			$modes=substr($help,strpos($help,'--mode ')+7);
 			$OP[$i]->{"MODE"}=substr($modes,0,strpos($modes,' ['));
-			// get color modes
-			$OP[$i]->{"DPI"}=$res;
 			// get bay width
 			$width=substr($help,strpos($help,' -x ')+4);
 			$width=substr($width,0,strpos($width,'mm'));
@@ -400,8 +426,6 @@ else if($PAGE=="Config"){
 			}
 			// lamp on/off
 			//$OP[$i]->{"LAMP"}=(!is_bool(strpos($help,'--lamp-switch[=(yes|no)]'))&&!is_bool(strpos($help,'--lamp-off-at-exit[=(yes|no)]')))?true:false;
-			$sources=substr($help,strpos($help,'--source ')+9);
-			$OP[$i]->{"SOURCE"}=substr($sources,0,strpos($sources,' ['));
 		}
 		$save=SaveFile("config/scanners.json",json_encode($OP));
 		$CANNERS='<table border="1" align="center"><tbody><tr><th>Name</th><th>Device</th></tr>';
@@ -519,11 +543,17 @@ else if($PAGE=="Device Notes"){
 			$DEVICE=html($CANNERS[$i]->{"DEVICE"});
 			$WIDTH=round($CANNERS[$i]->{"WIDTH"}/25.4,2);
 			$HEIGHT=round($CANNERS[$i]->{"HEIGHT"}/25.4,2);
-			$DPI=explode('|',$CANNERS[$i]->{"DPI"});
+			$res='';
+			$sources=explode('|',$CANNERS[$i]->{"SOURCE"});
+			for($x=0,$ct=count($sources);$x<$ct;$x++){
+				$val=$sources[$x];
+				$DPI=explode('|',$CANNERS[$i]->{"DPI-$val"});
+				$res.="<li>Scanner resolution is ".($DPI[0]=='auto'?$DPI[1]:$DPI[0])." DPI to ".number_format($DPI[count($DPI)-1])." DPI".($ct==1?'':" for $val")."</li>";
+			}
 			echo "<li>$name<ul><li><a onclick=\"printMsg('Loading','Please Wait...','center',0);\" href=\"index.php?page=Device%20Notes&action=$DEVICE\"><code>$DEVICE</code></a></li>".
 				"<li>Bay width is $WIDTH\"</li>".
 				"<li>Bay height is $HEIGHT\"</li>".
-				"<li>Scanner resolution is ".($DPI[0]=='auto'?$DPI[1]:$DPI[0])." dpi to ".number_format($DPI[count($DPI)-1])." dpi</li>".
+				$res.
 				(isset($CANNERS[$i]->{"SELECTED"})?'':"<li><a href=\"index.php?page=Device%20Notes&id=$i\">Set as default scanner</a></li>")."</ul></li>";
 		}
 		echo '</ul></div>';
@@ -574,9 +604,9 @@ else if($PAGE=="Edit"){
 					if(!validNum(Array($WIDTH,$HEIGHT,$X_1,$Y_1,$BRIGHT,$CONTRAST,$SCALE,$ROTATE))||
 					  ($FILETYPE!="txt"&&$FILETYPE!="png"&&$FILETYPE!="tiff"&&$FILETYPE!="jpg")||
 					  !in_array($LANG,$langs)){
-						echo "<h1>No, you can not do that</h1>Input data is invalid and most likely an attempt to run malicious code on the server <i>denied<i/>";
+						echo "<h1>No, you can not do that</h1>Input data is invalid and most likely an attempt to run malicious code on the server <i>denied</i>";
 						Footer();
-						die('</body></html>');
+						quit();
 					}
 					$tmpFile="/tmp/Scan_".addslashes($file);
 					$file='scans/Scan_'.addslashes($file);
@@ -690,10 +720,10 @@ else{
 	}
 	if(strlen($SAVEAS)>0||$ACTION=="Scan Image"){
 		$langs=findLangs();
-		if(!validNum(Array($SCANNER,$BRIGHT,$CONTRAST,$SCALE,$ROTATE))||!in_array($LANG,$langs)||!in_array($QUALITY,explode("|",$CANNERS[$SCANNER]->{"DPI"}))){//security check
-			echo "<h1>No, you can not do that</h1>Input data is invalid and most likely an attempt to run malicious code on the server <i>denied<i/>";
+		if(!validNum(Array($SCANNER,$BRIGHT,$CONTRAST,$SCALE,$ROTATE))||!in_array($LANG,$langs)||!in_array($QUALITY,explode("|",$CANNERS[$SCANNER]->{"DPI-$SOURCE"}))){//security check
+			echo "<h1>No, you can not do that</h1>Input data is invalid and most likely an attempt to run malicious code on the server <i>denied</i>";
 			Footer();
-			die('</body></html>');
+			quit();
 		}
 	}
 	if(strlen($SAVEAS)>0){ # Save settings to conf file
@@ -744,14 +774,29 @@ else{
 	}
 
 	if($ACTION=="Scan Image"){ # Scan Image!
-		if(file_exists("/tmp/scan_file$SCANNER.ppm")){ # Make sure we can save the scan
-			@unlink("/tmp/scan_file$SCANNER.ppm");
-			if(file_exists("/tmp/scan_file$SCANNER.ppm")){
-				Print_Message("Permission Error:","<code>$user</code> does not have permission to delete <code>/tmp/scan_file$SCANNER.ppm</code>.<br/>".
-					"This can be easly fixed by running the following command at the Scanner Server.<br/><code>rm /tmp/scan_file$SCANNER.ppm</code><br/>".
+		if(is_nan($SCANNER)){
+			Print_Message("Error:","<code>$SCANNER</code> is not a number, you must be trying to attack the server",'center');
+			quit();
+		}
+		$CANDIR="/tmp/scandir$SCANNER";
+
+		if(is_dir($CANDIR)){ # Make sure we can save the scan
+			$trash=scandir($CANDIR);
+			unset($trash[0]);unset($trash[1]);// Delete ./ and ../ from the list
+			foreach($trash as $key)
+				@unlink($key);
+			rmdir($CANDIR);
+			if(is_dir($CANDIR)){
+				Print_Message("Permission Error:","<code>$user</code> does not have permission to delete <code>$CANDIR</code>.<br/>".
+					"This can be easly fixed by running the following command at the Scanner Server.<br/><code>rm -r $CANDIR</code><br/>".
 					"Once you have done that you can press F5 (Refresh) to try again with your prevously entered settings.",'center');
-				die('</body></html>');
+				quit();
 			}
+		}
+		
+		if(!@mkdir("$CANDIR")){
+			Print_Message('Error',"Unable to create directory $CANDIR.<br>Why does <code>$user</code> not have permission?",'center');
+			quit();
 		}
 
 		$sizes=explode('-',$SIZE);
@@ -760,25 +805,19 @@ else{
 		   (!in_array($MODE,explode('|',$CANNERS[$SCANNER]->{"MODE"})))||
 		   (!in_array($SOURCE,explode('|',$CANNERS[$SCANNER]->{"SOURCE"})))||
 		   ($FILETYPE!="txt"&&$FILETYPE!="png"&&$FILETYPE!="tiff"&&$FILETYPE!="jpg")){
-			Print_Message("No, you can not do that","Input data is invalid and most likely an attempt to run malicious code on the server. <i>Denied<i/>",'center');
-			die('</body></html>');
+			Print_Message("No, you can not do that","Input data is invalid and most likely an attempt to run malicious code on the server. <i>Denied</i>",'center');
+			quit();
 		}
 		else if((!is_numeric($sizes[0])||!is_numeric($sizes[1]))&&$SIZE!='full'){
-			Print_Message("No, you can not do that","Input data is invalid and most likely an attempt to run malicious code on the server. <i>Denied<i/>",'center');
-			die('</body></html>');
-		}
-
-		$CANDIR="/tmp/scandir$SCANNER";
-		if(!@mkdir("$CANDIR")){
-			Print_Message('Error',"Unable to create directory $CANDIR.<br>Why does <code>$user</code> not have permission?",'center');
-			die('</body></html>');
+			Print_Message("No, you can not do that","Input data is invalid and most likely an attempt to run malicious code on the server. <i>Denied</i>",'center');
+			quit();
 		}
 
 		# Scanner in Use
 		$CANNERS[$SCANNER]->{"INUSE"}=1;
 		if(!SaveFile("config/scanners.json",json_encode($CANNERS))){
 			Print_Message("Permission Error:","<code>$user</code> does not have permission to write files to the <code>".getcwd()."/config</code> folder.<br/>$notes",'center');
-			die('</body></html>');
+			quit();
 		}
 		$X=0;
 		$Y=0;
@@ -851,7 +890,8 @@ else{
 			$LAMP='--lamp-switch=yes --lamp-off-at-exit=yes ';
 		}*/
 
-		$cmd="scanimage -d \"$DEVICE\" -l $X -t $Y -x $SIZE_X -y $SIZE_Y --resolution $QUALITY --source $SOURCE --mode $MODE $LAMP--format=ppm";
+		$SOURCE=($SOURCE=='Inactive')?'':"--source $SOURCE ";
+		$cmd="scanimage -d \"$DEVICE\" -l $X -t $Y -x $SIZE_X -y $SIZE_Y --resolution $QUALITY $SOURCE--mode $MODE $LAMP--format=ppm";
 		if($SOURCE=='ADF'||$SOURCE=='Automatic Document Feeder') # Multi-page scan
 			exe("cd $CANDIR;$cmd --batch",true);// be careful with this, doing this without a ADF feeder will result in scanning the flatbed over and over, include --batch-count=3 for testing
 		else # Single page scan

@@ -21,8 +21,14 @@
 		else{
 			//echo '<!-- '.$_SERVER['SERVER_NAME'].' -->';
 			$loc=$_SERVER['SERVER_NAME'];
-		}// ,&quot;ADF&quot;:'.($CANNERS[$i]->{"ADF"}?"true":"false").'
-		echo '<option class="{&quot;DPI&quot;:&quot;'.$CANNERS[$i]->{"DPI"}.'&quot;,&quot;WIDTH&quot;:'.$CANNERS[$i]->{"WIDTH"}.',&quot;HEIGHT&quot;:'.$CANNERS[$i]->{"HEIGHT"}.',&quot;MODE&quot;:&quot;'.$CANNERS[$i]->{"MODE"}.'&quot;,&quot;SOURCE&quot;:&quot;'.$CANNERS[$i]->{"SOURCE"}.'&quot;}"'.($CANNERS[$i]->{"INUSE"}==1?' disabled="disabled"':'').(isset($CANNERS[$i]->{"SELECTED"})&&$CANNERS[$i]->{"INUSE"}!=1?' selected="selected"':'').' value="'.$CANNERS[$i]->{"ID"}.'">'.$CANNERS[$i]->{"NAME"}.' on '.$loc.'</option>';
+		}
+		$CANNER=clone $CANNERS[$i];
+		unset($CANNER->{"INUSE"});
+		unset($CANNER->{"ID"});
+		unset($CANNER->{"DEVICE"});
+		unset($CANNER->{"NAME"});
+		echo '<option class="'.html(json_encode($CANNER)).'"'.($CANNERS[$i]->{"INUSE"}==1?' disabled="disabled"':'').(isset($CANNERS[$i]->{"SELECTED"})&&$CANNERS[$i]->{"INUSE"}!=1?' selected="selected"':'').' value="'.$CANNERS[$i]->{"ID"}.'">'.$CANNERS[$i]->{"NAME"}.' on '.$loc.'</option>';
+		//echo '<option class="{&quot;DPI&quot;:&quot;'.$CANNERS[$i]->{"DPI"}.'&quot;,&quot;WIDTH&quot;:'.$CANNERS[$i]->{"WIDTH"}.',&quot;HEIGHT&quot;:'.$CANNERS[$i]->{"HEIGHT"}.',&quot;MODE&quot;:&quot;'.$CANNERS[$i]->{"MODE"}.'&quot;,&quot;SOURCE&quot;:&quot;'.$CANNERS[$i]->{"SOURCE"}.'&quot;}"'.($CANNERS[$i]->{"INUSE"}==1?' disabled="disabled"':'').(isset($CANNERS[$i]->{"SELECTED"})&&$CANNERS[$i]->{"INUSE"}!=1?' selected="selected"':'').' value="'.$CANNERS[$i]->{"ID"}.'">'.$CANNERS[$i]->{"NAME"}.' on '.$loc.'</option>';
 	}
 ?></select></p></div><!-- AJAX in scanner data -->
 <script type="text/javascript">scanners=JSON.parse('<?php echo json_encode($CANNERS); ?>');setTimeout("checkScanners()",5000);</script>
@@ -37,7 +43,7 @@ Quality:
 </div>
 <div class="control" title="Dots Per Inch">
 <div class="ie_276228"><select name="quality" class="upper"><script type="text/JavaScript">
-var dpi='<?php echo $CANNERS[$SEL]->{"DPI"}; ?>'.split('|');
+var dpi='<?php echo $CANNERS[$SEL]->{"DPI-".explode('|',$CANNERS[$SEL]->{"SOURCE"})[0]}; ?>'.split('|');
 for(var i=0,max=dpi.length;i<max;i++){
 	document.write('<option value="'+dpi[i]+'">'+dpi[i]+' '+(isNaN(dpi[i])?'':'dpi')+'</option>');
 }
@@ -51,15 +57,13 @@ Size:
 <div class="control">
 <div class="ie_276228"><select <?php //echo ((($WIDTH=="0"||$WIDTH==NULL)&&($HEIGHT=="0"||$HEIGHT==NULL))===false?'disabled="disabled" ':''); ?>name="size" onchange="paperChange(this);">
 <option value="full">Full Scan</option><?php
-if(file_exists("config/paper.json")){
+if(file_exists("config/paper.json"))
 	$paper=json_decode(file_get_contents("config/paper.json"));
-	foreach($paper as $key=>$val){
-		if($CANNERS[$SEL]->{"WIDTH"}>=$val->{"width"}&&$CANNERS[$SEL]->{"HEIGHT"}>=$val->{"height"})
-			echo '<option value="'.$val->{"width"}.'-'.$val->{"height"}.'" title="'.$val->{"width"}.'mm x '.$val->{"height"}.' mm">'.$key.': '.round($val->{"width"}/25.4,2).'" x '.round($val->{"height"}/25.4,2).'"</option>';
-	}
-}
-else{
-	echo '<option value="101.6-152.4" title="101.6 mm x 152.4 mm">Picture: 4" x 6"</option><option value="215.9-279.4" title="215.9 mm x 279.4 mm">Paper: 8.5" x 11"</option>';
+else
+	$paper=json_decode('{"Picture":{"height":152.4,"width":101.6},"Paper":{"height":279.4,"width":215.9}}');
+foreach($paper as $key=>$val){
+	if($CANNERS[$SEL]->{"WIDTH"}>=$val->{"width"}&&$CANNERS[$SEL]->{"HEIGHT"}>=$val->{"height"})
+		echo '<option value="'.$val->{"width"}.'-'.$val->{"height"}.'" title="'.$val->{"width"}.'mm x '.$val->{"height"}.' mm">'.$key.': '.round($val->{"width"}/25.4,2).'" x '.round($val->{"height"}/25.4,2).'"</option>';
 }
 ?>
 </select></div>
@@ -115,7 +119,7 @@ for(var i=modes.length-1;i>-1;i--){
 Source:
 </div>
 <div class="control">
-<div class="ie_276228"><select name="source" class="title">
+<div class="ie_276228"><select name="source" class="title" onchange="sourceChange(this)">
 <script type="text/JavaScript">
 var sources='<?php echo $CANNERS[$SEL]->{"SOURCE"}; ?>'.split('|');
 for(var i=0,s=sources.length;i<s;i++){

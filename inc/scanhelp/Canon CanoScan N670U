@@ -1,0 +1,114 @@
+Usage: scanimage [OPTION]...
+
+Start image acquisition on a scanner device and write image data to
+standard output.
+
+Parameters are separated by a blank from single-character options (e.g.
+-d epson) and by a "=" from multi-character options (e.g. --device-name=epson).
+-d, --device-name=DEVICE   use a given scanner device (e.g. hp:/dev/scanner)
+    --format=pnm|tiff      file format of output file
+-i, --icc-profile=PROFILE  include this ICC profile into TIFF file
+-L, --list-devices         show available scanner devices
+-f, --formatted-device-list=FORMAT similar to -L, but the FORMAT of the output
+                           can be specified: %d (device name), %v (vendor),
+                           %m (model), %t (type), %i (index number), and
+                           %n (newline)
+-b, --batch[=FORMAT]       working in batch mode, FORMAT is `out%d.pnm' or
+                           `out%d.tif' by default depending on --format
+    --batch-start=#        page number to start naming files with
+    --batch-count=#        how many pages to scan in batch mode
+    --batch-increment=#    increase page number in filename by #
+    --batch-double         increment page number by two, same as
+                           --batch-increment=2
+    --batch-prompt         ask for pressing a key before scanning a page
+    --accept-md5-only      only accept authorization requests using md5
+-p, --progress             print progress messages
+-n, --dont-scan            only set options, don't actually scan
+-T, --test                 test backend thoroughly
+-A, --all-options          list all available backend options
+-h, --help                 display this help message and exit
+-v, --verbose              give even more status messages
+-B, --buffer-size=#        change input buffer size (in kB, default 32)
+-V, --version              print version information
+
+Options specific to device `plustek:libusb:001:005':
+  Scan Mode:
+    --mode Lineart|Gray|Color [Color]
+        Selects the scan mode (e.g., lineart, monochrome, or color).
+    --depth 8|16bit [8]
+        Number of bits per sample, typical values are 1 for "line-art" and 8
+        for multibit scans.
+    --source Normal|Transparency|Negative [inactive]
+        Selects the scan source (such as a document-feeder).
+    --resolution 50..1200dpi [50]
+        Sets the resolution of the scanned image.
+    --preview[=(yes|no)] [no]
+        Request a preview-quality scan.
+  Geometry:
+    -l 0..215mm [0]
+        Top-left x position of scan area.
+    -t 0..297mm [0]
+        Top-left y position of scan area.
+    -x 0..215mm [103]
+        Width of scan-area.
+    -y 0..297mm [76.21]
+        Height of scan-area.
+  Enhancement:
+    --brightness -100..100% (in steps of 1) [0]
+        Controls the brightness of the acquired image.
+    --contrast -100..100% (in steps of 1) [0]
+        Controls the contrast of the acquired image.
+    --custom-gamma[=(yes|no)] [no]
+        Determines whether a builtin or a custom gamma-table should be used.
+    --gamma-table 0..255,... [inactive]
+        Gamma-correction table.  In color mode this option equally affects the
+        red, green, and blue channels simultaneously (i.e., it is an intensity
+        gamma table).
+    --red-gamma-table 0..255,... [inactive]
+        Gamma-correction table for the red band.
+    --green-gamma-table 0..255,... [inactive]
+        Gamma-correction table for the green band.
+    --blue-gamma-table 0..255,... [inactive]
+        Gamma-correction table for the blue band.
+  Device-Settings:
+    --lamp-switch[=(yes|no)] [no]
+        Manually switching the lamp(s).
+    --lampoff-time 0..999 (in steps of 1) [300]
+        Lampoff-time in seconds.
+    --lamp-off-at-exit[=(yes|no)] [yes]
+        Turn off lamp when program exits
+    --warmup-time -1..999 (in steps of 1) [inactive]
+        Warmup-time in seconds.
+    --lamp-off-during-dcal[=(yes|no)] [inactive]
+        Always switches lamp off when doing dark calibration.
+    --calibration-cache[=(yes|no)] [no]
+        Enables or disables calibration data cache.
+    --speedup-switch[=(yes|no)] [inactive]
+        Enables or disables speeding up sensor movement.
+    --calibrate [inactive]
+        Performs calibration
+  Analog frontend:
+    --red-gain -1..63 (in steps of 1) [-1]
+        Red gain value of the AFE
+    --green-gain -1..63 (in steps of 1) [-1]
+        Green gain value of the AFE
+    --blue-gain -1..63 (in steps of 1) [-1]
+        Blue gain value of the AFE
+    --red-offset -1..63 (in steps of 1) [-1]
+        Red offset value of the AFE
+    --green-offset -1..63 (in steps of 1) [-1]
+        Green offset value of the AFE
+    --blue-offset -1..63 (in steps of 1) [-1]
+        Blue offset value of the AFE
+    --redlamp-off -1..16363 (in steps of 1) [-1]
+        Defines red lamp off parameter
+    --greenlamp-off -1..16363 (in steps of 1) [-1]
+        Defines green lamp off parameter
+    --bluelamp-off -1..16363 (in steps of 1) [-1]
+        Defines blue lamp off parameter
+  Buttons:
+
+Type ``scanimage --help -d DEVICE'' to get list of all options for DEVICE.
+
+List of available devices:
+    plustek:libusb:001:005
