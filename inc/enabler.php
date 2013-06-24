@@ -1,3 +1,14 @@
+<div class="box box-full"><h2>USB udev Rule Maker (Recommended for USB Scanners)</h2>
+<p>
+The <a href="scanner-udev-rule-maker.tar.bz2">Scanner udev Rule Maker</a> is used to grant access to USB scanners that use libusb. It is a script that checks for libusb scanners and changes the permission on it so all users can access it and creates a configuration file so change will be persistent<br>
+The file it creates is <i>/etc/udev/rules.d/40-scanner.rules</i>, if you already have this file it will give you a comparison of the rule(s) and let you do what you feel you need to (nothing, merge, append, etc.). Most likely it will create the file, if you run it twice it will tell you the file is up to date.<br>
+To use it simply extract the file and run the script as root in a terminal, you can safely delete the script after using it.<br>
+<pre>
+sudo bash /path/to/scanner-udev-rule-maker
+</pre>
+</p>
+</div>
+
 <div class="box box-full"><h2>Scanner Access Enabler (Quick Start)</h2>
 <p>
 If a scanner shows with <code>scanimage -L</code> and is not detected by the server scanner the problem is permission.<br/>

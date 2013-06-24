@@ -16,7 +16,7 @@ if(isset($_GET['downloadServer'])){
 	header("Pragma: public");
 	header("Content-type: application/x-bzip");
 	$t=time();
-	header("Content-Disposition: attachment; filename=\"PHP-Server-Scanner-".addslashes($_GET['ver']).".tar.bz2\"");
+	header("Content-Disposition: attachment; filename=\"PHP-Scanner-Server".addslashes($_GET['ver']).".tar.bz2\"");
 	shell_exec("tar cjf /tmp/scanner-$t.tar.bz2 --exclude=\"scans/*\" --exclude=\"config/*.json\" --exclude=\"IMGUR_API_KEY.txt\" --exclude=\"password.md5\" ./");
 	$file=file_get_contents("/tmp/scanner-$t.tar.bz2");
 	header('Content-Length: '.strlen($file));

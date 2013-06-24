@@ -409,7 +409,7 @@ else if($PAGE=="Config"){
 				if($val=='Inactive')
 					break;
 			}
-			
+
 			// get color modes
 			$modes=substr($help,strpos($help,'--mode ')+7);
 			$OP[$i]->{"MODE"}=substr($modes,0,strpos($modes,' ['));
@@ -793,7 +793,7 @@ else{
 				quit();
 			}
 		}
-		
+
 		if(!@mkdir("$CANDIR")){
 			Print_Message('Error',"Unable to create directory $CANDIR.<br>Why does <code>$user</code> not have permission?",'center');
 			quit();
