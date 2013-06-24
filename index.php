@@ -2,7 +2,7 @@
 // Warning is displayed if there is less then the anmout specifyed
 $FreeSpaceWarn=2048;// In Megabytes
 $Fortune=true;// Enable/disable fortunes in the debug console
-$ExtraScanners=true;// Adds sample scanners from ./inc/scanhelp
+$ExtraScanners=false;// Adds sample scanners from ./inc/scanhelp
 // Sorry for the lack of explanations in the code feel free to ask what something does
 
 $NAME="PHP Scanner Server";
