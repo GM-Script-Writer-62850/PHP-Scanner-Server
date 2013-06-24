@@ -6,7 +6,7 @@ $ExtraScanners=false;// Adds sample scanners from ./inc/scanhelp
 // Sorry for the lack of explanations in the code feel free to ask what something does
 
 $NAME="PHP Scanner Server";
-$VER="1.3-2";
+$VER="1.3-3_dev";
 $SAE_VER="1.4"; // scanner access enabler version
 
 # ****************
@@ -211,6 +211,25 @@ $ACTION=Get_Values('action');
 
 if($PAGE==NULL)
 	$PAGE="Scan";
+
+# ****************
+# Verify Install (For anyone who installs from git and does not read the notes written in several places)
+# ****************
+
+$dirs=Array('scans','config','config/parallel');
+foreach($dirs as $val){
+	if(!is_dir($val)){
+		@mkdir($val);
+		if(is_dir($val))
+			continue;
+		$here=getcwd();
+		$PAGE="Incomplete Installation";
+		InsertHeader($PAGE);
+		Print_Message("Missing Directory","<i>$here/$val</i> does not exist!<br/><code>$user</code> also needs to have write access to it<br>To fix run this in a terminal as root<br><code>mkdir $here/$val && chown $user $here/$val</code>","center");
+		Footer();
+		quit();
+	}
+}
 
 # ****************
 # All Scans Page
