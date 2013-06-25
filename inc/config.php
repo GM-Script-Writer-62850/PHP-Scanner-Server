@@ -65,6 +65,13 @@ else
 ?></p>
 </div>
 
+<div class="box">
+<h2>Update Checker</h2>
+<p style="text-align:center;">
+<input type="button" onclick="updateCheck('<?php echo $VER; ?>',this)" value="Check for Updates"/>
+</p>
+</div>
+
 </div>
 <div class="column">
 <div class="box">

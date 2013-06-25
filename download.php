@@ -136,4 +136,15 @@ else if(isset($_GET['file'])){
 		echo "<html><head><title>404 Not Found</title></head><body><h1>404 Not Found</h1>The file ".htmlspecialchars($_GET['file'])." was not found in the scans folder.</body></html>";
 	}
 }
+else if(isset($_GET['update'])){
+	$file=@file_get_contents("https://raw.github.com/GM-Script-Writer-62850/PHP-Scanner-Server/master/README");
+	if($file){
+		$file=substr($file,strpos($file,'For Version: ')+13);
+		$file=substr($file,0,strpos($file,PHP_EOL));
+		$vs=version_compare($file,$_GET['update']);// -1 = older, 0 = same, 1 = newer
+		echo "{\"state\":\"$vs\",\"version\":\"$file\"}";
+	}
+	else
+		echo '{"state":-2,"vs":null}';
+}
 ?>

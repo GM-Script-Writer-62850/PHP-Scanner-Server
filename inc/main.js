@@ -839,3 +839,29 @@ function delScan(file){
 	httpRequest.send(null);
 	return false;
 }
+function updateCheck(vs,e){
+	e.setAttribute('disabled','disabled');
+	var httpRequest = new XMLHttpRequest();
+	httpRequest.onreadystatechange = function(){
+		if(httpRequest.readyState==4){
+			if(httpRequest.status==200){
+				e.removeAttribute('disabled');
+				var data=parseJSON(httpRequest.responseText);
+				if(data["state"]==1)
+					printMsg('Update Available','Version '+data["version"]+' is available for <a target="_blank" href="https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server/wiki/Change-Log">download</a>','center',-1);
+				else if(data["state"]==0)
+					printMsg('Up to Date','Your current version of '+data["version"]+' is the latest available','center',-1);
+				else if(data["state"]==-1)
+					printMsg('Custom Copy','Your current version is newer than the latest version','center',-1);
+				else
+					printMsg('Error','There was a error connecting to <a href="http://github.com">github.com</a>','center',-1);
+			}
+			else{
+				printMsg('Error '+httpRequest.status,'Failed to connect to '+document.domain,'center',-1);
+				e.removeAttribute('disabled');
+			}
+		}
+	};
+	httpRequest.open('GET', 'download.php?update='+encodeURIComponent(vs)+'&'+new Date().getTime());
+	httpRequest.send(null);
+}
