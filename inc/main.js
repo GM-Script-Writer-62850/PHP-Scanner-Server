@@ -47,8 +47,8 @@ function sendE(ele,e){
 }
 function config(json){
 	for(var i in json){
-		eval("document.scanning."+i+".value='"+json[i]+"'");
-		eval("sendE(document.scanning."+i+",'change')");
+		document.scanning[i].value=json[i];
+		sendE(document.scanning[i],'change');
 	}
 }
 function stripSelect(){

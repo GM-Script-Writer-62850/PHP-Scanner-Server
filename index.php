@@ -62,9 +62,9 @@ function html($X){
 function Put_Values() { # Update values back to form (There is no redo for croping)
 	echo '<script type="text/javascript">'.
 	"config({'scanner':".addslashes($GLOBALS['SCANNER']).
+		",'source':'".addslashes($GLOBALS['SOURCE'])."'".
 		",'quality':".addslashes($GLOBALS['QUALITY']).
 		",'size':'".addslashes($GLOBALS['SIZE'])."'".
-		",'source':'".addslashes($GLOBALS['SOURCE'])."'".
 		",'ornt':'".addslashes($GLOBALS['ORNT'])."'".
 		",'mode':'".addslashes($GLOBALS['MODE'])."'".
 		",'bright':".addslashes($GLOBALS['BRIGHT']).
@@ -217,15 +217,15 @@ if($PAGE==NULL)
 # ****************
 
 $dirs=Array('scans','config','config/parallel');
-foreach($dirs as $val){
-	if(!is_dir($val)){
-		@mkdir($val);
-		if(is_dir($val))
+foreach($dirs as $dir){
+	if(!is_dir($dir)){
+		@mkdir($dir);
+		if(is_dir($dir))
 			continue;
 		$here=getcwd();
 		$PAGE="Incomplete Installation";
 		InsertHeader($PAGE);
-		Print_Message("Missing Directory","<i>$here/$val</i> does not exist!<br/><code>$user</code> also needs to have write access to it<br>To fix run this in a terminal as root<br><code>mkdir $here/$val && chown $user $here/$val</code>","center");
+		Print_Message("Missing Directory","<i>$here/$dir</i> does not exist!<br/><code>$user</code> also needs to have write access to it<br>To fix run this in a terminal as root<br><code>mkdir $here/$dir && chown $user $here/$dir</code>","center");
 		Footer();
 		quit();
 	}
@@ -756,7 +756,7 @@ else{
 			$FILETYPE=addslashes($FILETYPE);
 			if(file_exists("config/settings.json")){
 				$file=json_decode(file_get_contents("config/settings.json"));
-				$file->{$SET_SAVE}=json_decode("{\"scanner\":$SCANNER,\"quality\":$QUALITY,\"size\":\"$SIZE\",\"ornt\":\"$ORNT\",\"mode\":\"$MODE\",\"bright\":$BRIGHT,\"contrast\":$CONTRAST,\"rotate\":$ROTATE,\"scale\":$SCALE,\"filetype\":\"$FILETYPE\",\"lang\":\"$LANG\"}");
+				$file->{$SET_SAVE}=json_decode("{\"scanner\":$SCANNER,\"source\":\"$SOURCE\",\"quality\":$QUALITY,\"size\":\"$SIZE\",\"ornt\":\"$ORNT\",\"mode\":\"$MODE\",\"bright\":$BRIGHT,\"contrast\":$CONTRAST,\"rotate\":$ROTATE,\"scale\":$SCALE,\"filetype\":\"$FILETYPE\",\"lang\":\"$LANG\"}");
 				SaveFile("config/settings.json",json_encode($file));
 			}
 			else{
