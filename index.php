@@ -562,7 +562,6 @@ else if($PAGE=="Device Notes"){
 	if(isset($ACTION)){
 		InsertHeader("Device Info");
 		// bug #13 START
-		debugMsg("'$ACTION'");
 		$CANNERS=json_decode(file_get_contents('config/scanners.json'));
 		foreach($CANNERS as $key){
 			if($key->{"DEVICE"}==$ACTION){
@@ -572,7 +571,6 @@ else if($PAGE=="Device Notes"){
 				break;
 			}
 		}
-		debugMsg("'$ACTION'");
 		// bug #13 END
 		$help=exe("scanimage --help -d \"".addslashes($ACTION)."\"",true);
 		echo "<div class=\"box box-full\"><h2>$ACTION</h2><pre>".$help."</pre></div>";
