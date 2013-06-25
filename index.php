@@ -413,7 +413,7 @@ else if($PAGE=="Config"){
 					$help2=$help;
 				else{
 					if($i<$max-$FakeCt)
-						$help2==exe("scanimage --help -d \"".addslashes($OP[$i]->{"DEVICE"})."\" --source \"$val\"",true);
+						$help2=exe("scanimage --help -d \"".addslashes($OP[$i]->{"DEVICE"})."\" --source \"$val\"",true);
 					else{
 						$help2=file_get_contents('inc/scanhelp/'.$OP[$i]->{"NAME"});
 						exe("echo 'scanimage --help -d \"SIMULATED_$i-$key\" --source \"$val\"'",true);
