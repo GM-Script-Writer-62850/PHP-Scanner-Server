@@ -170,6 +170,16 @@ function findLangs(){
 	return $langs;
 }
 
+function uuid2bus($d){// bug #13
+	$id=$d->{"UUID"};
+	$d=$d->{"DEVICE"};
+	$data=exe("lsusb -d $id # See Bug #13",true);
+	$bus=substr($data,strpos($data,"Bus ")+4,3);
+	$dev=substr($data,strpos($data,"Device ")+7,3);
+	$pos=strpos($d,"libusb:")+7;
+	return substr($d,0,$pos)."$bus:$dev".substr($d,$pos+9);
+}
+
 function quit(){
 	echo '<script type="text/javascript">Debug("'.rawurlencode(html($GLOBALS['debug'])).html($GLOBALS['here']."$ ").'",'.(isset($_COOKIE["debug"])?$_COOKIE["debug"]:'false').');</script>';
 	die('</body></html>');
@@ -443,6 +453,15 @@ else if($PAGE=="Config"){
 			if(!is_bool(strpos($OP[$i]->{"DEVICE"},"Deskjet_2050_J510_series"))){// Dirty hack to make scanner work on this model (sane bug?)
 				$OP[$i]->{"HEIGHT"}=297.01068878173;# that is as close as php will go without rounding true size is 297.01068878173825282^9
 			}
+			// Get device vendor ID and product ID (Bug #13)
+			$dev=strpos($OP[$i]->{"DEVICE"},"libusb:");
+			if(is_bool($dev))
+				$OP[$i]->{"UUID"}=NULL;
+			else{
+				$dev=substr($OP[$i]->{"DEVICE"},$dev+7,7);
+				$dev=exe("lsusb -s '$dev'",true);
+				$OP[$i]->{"UUID"}=substr($dev,strpos($dev,"ID ")+3,9);
+			}
 			// lamp on/off
 			//$OP[$i]->{"LAMP"}=(!is_bool(strpos($help,'--lamp-switch[=(yes|no)]'))&&!is_bool(strpos($help,'--lamp-off-at-exit[=(yes|no)]')))?true:false;
 		}
@@ -542,6 +561,19 @@ else if($PAGE=="Device Notes"){
 	}
 	if(isset($ACTION)){
 		InsertHeader("Device Info");
+		// bug #13 START
+		debugMsg("'$ACTION'");
+		$CANNERS=json_decode(file_get_contents('config/scanners.json'));
+		foreach($CANNERS as $key){
+			if($key->{"DEVICE"}==$ACTION){
+				if(!is_null($key->{"UUID"})){
+					$ACTION=uuid2bus($key);
+				}
+				break;
+			}
+		}
+		debugMsg("'$ACTION'");
+		// bug #13 END
 		$help=exe("scanimage --help -d \"".addslashes($ACTION)."\"",true);
 		echo "<div class=\"box box-full\"><h2>$ACTION</h2><pre>".$help."</pre></div>";
 	}
@@ -910,6 +942,10 @@ else{
 		}*/
 
 		$SOURCE=($SOURCE=='Inactive')?'':"--source $SOURCE ";
+		if(!is_null($CANNERS[$SCANNER]->{"UUID"})){// bug #13
+			$DEVICE=uuid2bus($CANNERS[$SCANNER]);
+			$CANNERS[$SCANNER]->{"DEVICE"}=$DEVICE;
+		}
 		$cmd="scanimage -d \"$DEVICE\" -l $X -t $Y -x $SIZE_X -y $SIZE_Y --resolution $QUALITY $SOURCE--mode $MODE $LAMP--format=ppm";
 		if($SOURCE=='ADF'||$SOURCE=='Automatic Document Feeder') # Multi-page scan
 			exe("cd $CANDIR;$cmd --batch",true);// be careful with this, doing this without a ADF feeder will result in scanning the flatbed over and over, include --batch-count=3 for testing

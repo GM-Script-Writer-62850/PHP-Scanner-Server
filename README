@@ -1,4 +1,4 @@
-PHP Linux Scanner Server
+PHP Scanner Server
 	by pqwoerituytrueiwoq (at) ubuntuforums.org
 Based on Linux Scanner Server 1.2 Beta
 	by PHiLLIP KLiEWER (http://scannerserver.online02.com)
@@ -214,7 +214,7 @@ Installation Notes:
 		sudo adduser www-data lp
 	Restart service to apply the above command
 		sudo service apache2 restart
-	Be sure to update imagemagick on Lucid Lynx
+	Be sure to update imagemagick on Lucid Lynx (Ubuntu 10.04) and CentOS 
 	Make sure www-data can write files to the scans, config, and parallel folders
 		sudo chown www-data /var/www/scans
 		sudo chown -R www-data /var/www/config
@@ -222,6 +222,11 @@ Installation Notes:
 	If you cloned the git repo you will need to create some folders, git does not allow empty folders
 		sudo mkdir /var/www/scans
 		sudo mkdir -p /var/www/config/parallel
+	This command will give you your scanner's URL as a IP address (127.0.0.1 only works on the current system)
+		ifconfig | sed -n 's/.*inet addr:\([0-9.]\+\)\s.*/http\:\/\/\1/p'
+	This command will give you a easy to remember URL for the scanner (I remember this not working on Windows XP clients)
+		echo http://$(uname -n).local/
+	Be sure to check http://www.canyouseeme.org/ so you know if people can use your scanner on the Internet, I suggest using a firewall to prevent this, or putting a password on it.
 
 Apache Tricks:
 	Enabling .htaccess
