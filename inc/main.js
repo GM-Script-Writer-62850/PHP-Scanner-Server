@@ -326,6 +326,10 @@ function sourceChange(ele){
 	else{
 		document.scanning.quality.innerHTML=html;
 	}
+	if(info['DUPLEX-'+ele.value])
+		getID('duplex').removeAttribute('style');
+	else
+		getID('duplex').style.display='none';
 }
 function paperChange(ele){
 	if(ele.value=='full'){

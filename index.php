@@ -6,7 +6,7 @@ $ExtraScanners=false;// Adds sample scanners from ./inc/scanhelp
 // Sorry for the lack of explanations in the code feel free to ask what something does
 
 $NAME="PHP Scanner Server";
-$VER="1.3-3_dev";
+$VER="1.3-3";
 $SAE_VER="1.4"; // scanner access enabler version
 
 # ****************
@@ -20,6 +20,7 @@ $BRIGHT=Get_Values('bright');
 $CONTRAST=Get_Values('contrast');
 $MODE=Get_Values('mode');
 $ORNT=Get_Values('ornt');
+$DUPLEX=Get_Values('duplex');
 $ORNT=(strlen($ORNT)==0?'vert':$ORNT);
 $ROTATE=Get_Values('rotate');
 $FILETYPE=Get_Values('filetype');
@@ -37,6 +38,7 @@ $Y_1=Get_Values('loc_y1');
 #$Y_2=Get_Values('loc_y2'); Un-used
 $SOURCE=Get_Values('source'); // scan.php main.js index.php
 $SOURCE=(strlen($SOURCE)==0?'Inactive':$SOURCE);
+
 
 $notes='Please read the <a href="index.php?page=About">release notes</a> for more information.';
 $user=posix_getpwuid(posix_geteuid());
@@ -64,6 +66,7 @@ function Put_Values() { # Update values back to form (There is no redo for cropi
 	"config({'scanner':".addslashes($GLOBALS['SCANNER']).
 		",'source':'".addslashes($GLOBALS['SOURCE'])."'".
 		",'quality':".addslashes($GLOBALS['QUALITY']).
+		",'duplex':".addslashes($GLOBALS['DUPLEX']).
 		",'size':'".addslashes($GLOBALS['SIZE'])."'".
 		",'ornt':'".addslashes($GLOBALS['ORNT'])."'".
 		",'mode':'".addslashes($GLOBALS['MODE'])."'".
@@ -435,6 +438,14 @@ else if($PAGE=="Config"){
 					$res='auto'.substr($res,5);
 				}
 				$OP[$i]->{"DPI-$val"}=$res;
+				//--duplex[=(yes|no)] [inactive]
+				$duplex=strpos($help2,'--duplex[=(yes|no)]  [');
+				if(!is_bool($duplex)){
+					$duplex=substr($help2,$duplex+22);
+					$duplex=substr($resduplex,0,strpos($duplex,']'));
+					$duplex=strtolower($duplex)=='inactive';
+				}
+				$OP[$i]->{"DUPLEX-$val"}=$duplex;
 				if($val=='Inactive')
 					break;
 			}
@@ -544,7 +555,7 @@ else if($PAGE=="Access Enabler"){
 # ****************
 else if($PAGE=="Device Notes"){
 	$id=Get_Values('id');
-	if($id!=null){
+	if($id!=null){// set default scanner
 		$id=intval($id);
 		if(is_int($id)&&file_exists("config/scanners.json")){
 			$CANNERS=json_decode(file_get_contents('config/scanners.json'));
@@ -559,7 +570,7 @@ else if($PAGE=="Device Notes"){
 			}
 		}
 	}
-	if(isset($ACTION)){
+	if(isset($ACTION)){// scanner help
 		InsertHeader("Device Info");
 		// bug #13 START
 		$CANNERS=json_decode(file_get_contents('config/scanners.json'));
@@ -572,10 +583,15 @@ else if($PAGE=="Device Notes"){
 			}
 		}
 		// bug #13 END
-		$help=exe("scanimage --help -d \"".addslashes($ACTION)."\"",true);
+		$SOURCE=Get_Values('source');
+		if(is_null($SOURCE))
+			$SOURCE='';
+		else
+			$SOURCE=' --source "'.addslashes($SOURCE).'"';
+		$help=exe("scanimage --help -d \"".addslashes($ACTION)."\"$SOURCE",true);
 		echo "<div class=\"box box-full\"><h2>$ACTION</h2><pre>".$help."</pre></div>";
 	}
-	else{
+	else{// list scanners
 		InsertHeader("Device List");
 		if(!isset($CANNERS)){
 			if(file_exists("config/scanners.json"))
@@ -595,9 +611,12 @@ else if($PAGE=="Device Notes"){
 			$res='';
 			$sources=explode('|',$CANNERS[$i]->{"SOURCE"});
 			for($x=0,$ct=count($sources);$x<$ct;$x++){
-				$val=$sources[$x];
+				$val=html($sources[$x]);
 				$DPI=explode('|',$CANNERS[$i]->{"DPI-$val"});
-				$res.="<li>Scanner resolution is ".($DPI[0]=='auto'?$DPI[1]:$DPI[0])." DPI to ".number_format($DPI[count($DPI)-1])." DPI".($ct==1?'':" for $val")."</li>";
+				$res.="<li>The <a href=\"index.php?page=Device%20Notes&action=$DEVICE&source=$val\">$val</a> supports<ul>";
+				$res.='<li>A scanner resolution of '.($DPI[0]=='auto'?$DPI[1]:$DPI[0]).' DPI to '.number_format($DPI[count($DPI)-1]).' DPI</li>';
+				$res.='<li>'.($CANNERS[$i]->{"DUPLEX-$val"}?'Yes':'No').', duplex scanning is supported</li>';
+				$res.='</ul></li>';
 			}
 			echo "<li>$name<ul><li><a onclick=\"printMsg('Loading','Please Wait...','center',0);\" href=\"index.php?page=Device%20Notes&action=$DEVICE\"><code>$DEVICE</code></a></li>".
 				"<li>Bay width is $WIDTH\"</li>".
@@ -786,7 +805,7 @@ else{
 			$FILETYPE=addslashes($FILETYPE);
 			if(file_exists("config/settings.json")){
 				$file=json_decode(file_get_contents("config/settings.json"));
-				$file->{$SET_SAVE}=json_decode("{\"scanner\":$SCANNER,\"source\":\"$SOURCE\",\"quality\":$QUALITY,\"size\":\"$SIZE\",\"ornt\":\"$ORNT\",\"mode\":\"$MODE\",\"bright\":$BRIGHT,\"contrast\":$CONTRAST,\"rotate\":$ROTATE,\"scale\":$SCALE,\"filetype\":\"$FILETYPE\",\"lang\":\"$LANG\"}");
+				$file->{$SET_SAVE}=json_decode("{\"scanner\":$SCANNER,\"source\":\"$SOURCE\",\"duplex\":\"$DUPLEX\",\"quality\":$QUALITY,\"size\":\"$SIZE\",\"ornt\":\"$ORNT\",\"mode\":\"$MODE\",\"bright\":$BRIGHT,\"contrast\":$CONTRAST,\"rotate\":$ROTATE,\"scale\":$SCALE,\"filetype\":\"$FILETYPE\",\"lang\":\"$LANG\"}");
 				SaveFile("config/settings.json",json_encode($file));
 			}
 			else{
@@ -944,7 +963,15 @@ else{
 			$DEVICE=uuid2bus($CANNERS[$SCANNER]);
 			$CANNERS[$SCANNER]->{"DEVICE"}=$DEVICE;
 		}
-		$cmd="scanimage -d \"$DEVICE\" -l $X -t $Y -x $SIZE_X -y $SIZE_Y --resolution $QUALITY $SOURCE--mode $MODE $LAMP--format=ppm";
+		if($CANNERS[$SCANNER]->{"DUPLEX-$SOURCE"}===true){
+			if($DUPLEX=='true')
+				$DUPLEX='--duplex=yes ';
+			else
+				$DUPLEX='--duplex=no ';
+		}
+		else
+			$DUPLEX='';
+		$cmd="scanimage -d \"$DEVICE\" -l $X -t $Y -x $SIZE_X -y $SIZE_Y $DUPLEX--resolution $QUALITY $SOURCE--mode $MODE $LAMP--format=ppm";
 		if($SOURCE=='ADF'||$SOURCE=='Automatic Document Feeder') # Multi-page scan
 			exe("cd $CANDIR;$cmd --batch",true);// be careful with this, doing this without a ADF feeder will result in scanning the flatbed over and over, include --batch-count=3 for testing
 		else # Single page scan

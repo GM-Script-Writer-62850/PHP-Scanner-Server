@@ -28,8 +28,8 @@
 		unset($CANNER->{"DEVICE"});
 		unset($CANNER->{"NAME"});
 		echo '<option class="'.html(json_encode($CANNER)).'"'.($CANNERS[$i]->{"INUSE"}==1?' disabled="disabled"':'').(isset($CANNERS[$i]->{"SELECTED"})&&$CANNERS[$i]->{"INUSE"}!=1?' selected="selected"':'').' value="'.$CANNERS[$i]->{"ID"}.'">'.$CANNERS[$i]->{"NAME"}.' on '.$loc.'</option>';
-		//echo '<option class="{&quot;DPI&quot;:&quot;'.$CANNERS[$i]->{"DPI"}.'&quot;,&quot;WIDTH&quot;:'.$CANNERS[$i]->{"WIDTH"}.',&quot;HEIGHT&quot;:'.$CANNERS[$i]->{"HEIGHT"}.',&quot;MODE&quot;:&quot;'.$CANNERS[$i]->{"MODE"}.'&quot;,&quot;SOURCE&quot;:&quot;'.$CANNERS[$i]->{"SOURCE"}.'&quot;}"'.($CANNERS[$i]->{"INUSE"}==1?' disabled="disabled"':'').(isset($CANNERS[$i]->{"SELECTED"})&&$CANNERS[$i]->{"INUSE"}!=1?' selected="selected"':'').' value="'.$CANNERS[$i]->{"ID"}.'">'.$CANNERS[$i]->{"NAME"}.' on '.$loc.'</option>';
 	}
+	$defSource=explode('|',$CANNERS[$SEL]->{"SOURCE"})[0];
 ?></select></p></div><!-- AJAX in scanner data -->
 <script type="text/javascript">scanners=JSON.parse('<?php echo json_encode($CANNERS); ?>');setTimeout("checkScanners()",5000);</script>
 
@@ -43,7 +43,7 @@ Quality:
 </div>
 <div class="control" title="Dots Per Inch">
 <div class="ie_276228"><select name="quality" class="upper"><script type="text/JavaScript">
-var dpi='<?php echo $CANNERS[$SEL]->{"DPI-".explode('|',$CANNERS[$SEL]->{"SOURCE"})[0]}; ?>'.split('|');
+var dpi='<?php echo $CANNERS[$SEL]->{"DPI-$defSource"}; ?>'.split('|');
 for(var i=0,max=dpi.length;i<max;i++){
 	document.write('<option value="'+dpi[i]+'">'+dpi[i]+' '+(isNaN(dpi[i])?'':'dpi')+'</option>');
 }
@@ -126,7 +126,18 @@ for(var i=0,s=sources.length;i<s;i++){
 	document.write('<option value="'+sources[i]+'">'+(sources[i]=='ADF'?'Automatic Document Feeder':sources[i])+'</option>');
 }
 </script>
-</script>
+</select></div>
+</div>
+</div>
+
+<div id="duplex"<?php echo $CANNERS[$SEL]->{"DUPLEX-$defSource"}?' style="display:none;"':'' ?>>
+<div class="label">
+Duplex:
+</div>
+<div class="control">
+<div class="ie_276228"><select name="duplex" class="title">
+<option value="false">No</option>
+<option value="true">yes</option>
 </select></div>
 </div>
 </div>
