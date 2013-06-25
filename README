@@ -16,6 +16,7 @@ PHP Linux Scanner Server is a PHP web application that allows you to share multi
 The following packages need to be installed:
 * imagemagick (6.5.9+)   - For image conversion
 * sane-utils             - For accessing scanners
+* usbutils               - For updating the device path for scanners using libusb
 * tesseract-ocr          - For image to text conversion
 * apache2                - a web server
 * php5                   - For running php
@@ -104,7 +105,7 @@ _ cowsay                 - For wrapping fortunes in ASCII art
 
 	Some of these will likely already be installed
 
-	sudo apt-get install imagemagick sane-utils apache2 php5 php5-curl tesseract-ocr tar zip php-fpdf libpaper-utils grep sed coreutils
+	sudo apt-get install imagemagick sane-utils usbutils apache2 php5 php5-curl tesseract-ocr tar zip php-fpdf libpaper-utils grep sed coreutils
 
 Permissions:
 	The user www-data needs write permissions to the following folders
