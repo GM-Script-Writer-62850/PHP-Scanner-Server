@@ -27,6 +27,7 @@
 		unset($CANNER->{"ID"});
 		unset($CANNER->{"DEVICE"});
 		unset($CANNER->{"NAME"});
+		unset($CANNER->{"UUID"});
 		echo '<option class="'.html(json_encode($CANNER)).'"'.($CANNERS[$i]->{"INUSE"}==1?' disabled="disabled"':'').(isset($CANNERS[$i]->{"SELECTED"})&&$CANNERS[$i]->{"INUSE"}!=1?' selected="selected"':'').' value="'.$CANNERS[$i]->{"ID"}.'">'.$CANNERS[$i]->{"NAME"}.' on '.$loc.'</option>';
 	}
 	$defSource=explode('|',$CANNERS[$SEL]->{"SOURCE"})[0];
@@ -38,32 +39,48 @@
 <div class="side_box" id="opt">
 <h2>Scanning Options</h2>
 
+<div id="source">
 <div class="label">
-Quality:
+<span class="tool">Source<span class="tip">Scan source (such as a document-feeder)</span></span>:
 </div>
-<div class="control" title="Dots Per Inch">
+<div class="control">
+<div class="ie_276228"><select name="source" class="title" onchange="sourceChange(this)">
+<script type="text/JavaScript">
+var sources='<?php echo $CANNERS[$SEL]->{"SOURCE"}; ?>'.split('|');
+for(var i=0,s=sources.length;i<s;i++){
+	document.write('<option value="'+sources[i]+'">'+(sources[i]=='ADF'?'Automatic Document Feeder':sources[i])+'</option>');
+}
+</script>
+</select></div>
+</div>
+</div>
+
+<div class="label">
+<span class="tool">Quality<span class="tip">Resolution</span></span>:
+</div>
+<div class="control tool">
 <div class="ie_276228"><select name="quality" class="upper"><script type="text/JavaScript">
 var dpi='<?php echo $CANNERS[$SEL]->{"DPI-$defSource"}; ?>'.split('|');
 for(var i=0,max=dpi.length;i<max;i++){
 	document.write('<option value="'+dpi[i]+'">'+dpi[i]+' '+(isNaN(dpi[i])?'':'dpi')+'</option>');
 }
 </script>
-</select></div>
+</select></div><span class="tip">Dots Per Inch</span>
 </div>
 
 <div class="label">
-Size:
+<span class="tool">Size<span class="tip">How big the paper is</span></span>:
 </div>
 <div class="control">
 <div class="ie_276228"><select <?php //echo ((($WIDTH=="0"||$WIDTH==NULL)&&($HEIGHT=="0"||$HEIGHT==NULL))===false?'disabled="disabled" ':''); ?>name="size" onchange="paperChange(this);">
-<option value="full">Full Scan</option><?php
+<option value="full" title="<?php echo $CANNERS[$SEL]->{"WIDTH-$defSource"}.' mm x '.$CANNERS[$SEL]->{"HEIGHT-$defSource"}.'t mm'; ?>">Full Scan: <?php echo round($CANNERS[$SEL]->{"WIDTH-$defSource"}/25.4,2).'" x '.round($CANNERS[$SEL]->{"HEIGHT-$defSource"}/25.4,2); ?>'"</option><?php
 if(file_exists("config/paper.json"))
 	$paper=json_decode(file_get_contents("config/paper.json"));
 else
 	$paper=json_decode('{"Picture":{"height":152.4,"width":101.6},"Paper":{"height":279.4,"width":215.9}}');
 foreach($paper as $key=>$val){
-	if($CANNERS[$SEL]->{"WIDTH"}>=$val->{"width"}&&$CANNERS[$SEL]->{"HEIGHT"}>=$val->{"height"})
-		echo '<option value="'.$val->{"width"}.'-'.$val->{"height"}.'" title="'.$val->{"width"}.'mm x '.$val->{"height"}.' mm">'.$key.': '.round($val->{"width"}/25.4,2).'" x '.round($val->{"height"}/25.4,2).'"</option>';
+	if($CANNERS[$SEL]->{"WIDTH-$defSource"}>=$val->{"width"}&&$CANNERS[$SEL]->{"HEIGHT-$defSource"}>=$val->{"height"})
+		echo '<option value="'.$val->{"width"}.'-'.$val->{"height"}.'" title="'.$val->{"width"}.' mm x '.$val->{"height"}.' mm">'.$key.': '.round($val->{"width"}/25.4,2).'" x '.round($val->{"height"}/25.4,2).'"</option>';
 }
 ?>
 </select></div>
@@ -82,22 +99,22 @@ foreach($paper as $key=>$val){
 ?>
 
 <div class="label">
-Orentation:
+<span class="tool">Orientation<span class="tip">Layout</span></span>:
 </div>
 <div class="control">
 <select name="ornt" disabled="disabled">
-<option value="vert">Vertical</option>
-<option value="horz">Horizontal</option>
+<option value="vert">Portrait</option>
+<option value="horz">Landscape</option>
 </select>
 </div>
 
 <div class="label">
-Mode:
+<span class="tool">Mode<span class="tip">Color Type</span></span>:
 </div>
 <div class="control">
 <div class="ie_276228"><select name="mode" class="title">
 <script type="text/JavaScript">
-var modes='<?php echo $CANNERS[$SEL]->{"MODE"}; ?>'.split('|');
+var modes='<?php echo $CANNERS[$SEL]->{"MODE-$defSource"}; ?>'.split('|');
 for(var i=modes.length-1;i>-1;i--){
 	var text;
 	switch(modes[i]){
@@ -114,25 +131,9 @@ for(var i=modes.length-1;i>-1;i--){
 </select></div>
 </div>
 
-<div id="source">
-<div class="label">
-Source:
-</div>
-<div class="control">
-<div class="ie_276228"><select name="source" class="title" onchange="sourceChange(this)">
-<script type="text/JavaScript">
-var sources='<?php echo $CANNERS[$SEL]->{"SOURCE"}; ?>'.split('|');
-for(var i=0,s=sources.length;i<s;i++){
-	document.write('<option value="'+sources[i]+'">'+(sources[i]=='ADF'?'Automatic Document Feeder':sources[i])+'</option>');
-}
-</script>
-</select></div>
-</div>
-</div>
-
 <div id="duplex"<?php echo $CANNERS[$SEL]->{"DUPLEX-$defSource"}?' style="display:none;"':'' ?>>
-<div class="label">
-Duplex:
+<div class="label tool">
+<span>Duplex<span class="tip">Double Sided Scan</span></span>:
 </div>
 <div class="control">
 <div class="ie_276228"><select name="duplex" class="title">
@@ -148,7 +149,7 @@ Duplex:
 <h2>Output Options</h2>
 
 <div class="label">
-Brightness:
+<span class="tool">Brightness<span class="tip">Lighting</span></span>:
 </div>
 <div class="control">
 <select name="bright">
@@ -161,7 +162,7 @@ for(var i=-100;i<=100;i+=10){
 </div>
 
 <div class="label">
-Contrast:
+<span class="tool">Contrast<span class="tip">Vividness</span></span>:
 </div>
 <div class="control">
 <select name="contrast">
@@ -174,27 +175,35 @@ for(var i=-100;i<=100;i+=10){
 </div>
 
 <div class="label">
-Rotate:
+<span class="tool">Rotate<span class="tip">Turn</span></span>:
 </div>
-<div class="control">
-<select name="rotate">
+<div class="control tool">
+<select name="rotate" onchange="rotateChange(this)">
 <option value="0">0&deg;</option>
-<option value="90">90&deg;</option>
+<option value="90">90&deg; Clockwise</option>
+<option value="-90">90&deg; Counterclockwise</option>
 <option value="180">180&deg;</option>
-<option value="270">270&deg;</option>
-<optgroup label="Non-Square">
+<optgroup label="Clockwise">
 <script type="text/JavaScript">
-for(var i=5;i<360;i+=5){
-	if(i!=90&&i!=180&&i!=270)
+for(var i=1;i<180;i++){
+	if(i!=90)
 		document.write('<option value="'+i+'">'+i+'&deg;</option>');
 }
 </script>
 </optgroup>
-</select>
+<optgroup label="Counterclockwise">
+<script type="text/JavaScript">
+for(var i=-1;i>-180;i--){
+	if(i!=-90)
+		document.write('<option value="'+i+'">'+Math.abs(i)+'&deg;</option>');
+}
+</script>
+</optgroup>
+</select><span class="tip">Clockwise</span>
 </div>
 
 <div class="label">
-Scale:
+<span class="tool">Scale<span class="tip">Size/Dimensions</span></span>:
 </div>
 <div class="control">
 <select name="scale">
@@ -207,7 +216,7 @@ for(var i=0;i<=200;i+=10){
 </div>
 
 <div class="label">
-File Type:
+<span class="tool">File Type<span class="tip">Format</span></span>:
 </div>
 <div class="control">
 <select name="filetype" onchange="fileChange(this.value)">
@@ -220,7 +229,7 @@ File Type:
 
 <div style="display:none" id="lang">
 <div class="label">
-Language:
+<span class="tool">Language<span class="tip">Relating to the document</span></span>:
 </div>
 <div class="control">
 <select name="lang">

@@ -1,5 +1,5 @@
 <?php
-$maxAge=3600;// max age in seconds, scans older that this will be deleted
+$maxAge=3600*24;// max age in seconds, scans older that this will be deleted
 if(isset($_GET['file'])){
 	if(strrpos($_GET['file'], "/")>-1)
 		$_GET['file']=substr($_GET['file'],strrpos($_GET['file'],"/")+1);
@@ -13,12 +13,17 @@ else{
 	$lst=scandir($loc);
 	for($i=2,$max=count($lst);$i<$max;$i++){
 		if($lst[$i]!='.'&&$lst[$i]!='..'){
-			if(time()-filemtime($loc.'/'.$lst[$i])>$maxAge){
-				unlink($loc.'/'.$lst[$i]);
-				echo "Removed: ".$loc.'/'.$lst[$i]."\n";
+			if(substr($lst[$i],0,8)=="Preview_")
+				continue;
+			if(time()-filemtime("$loc/".$lst[$i])>$maxAge){
+				if(@unlink("$loc/".$lst[$i]))
+					echo "Removed: $loc/".$lst[$i]."\n";
+				$lst[$i]='Preview_'.substr($lst[$i],5,strrpos($lst[$i],'.')-5).'.jpg';
+				if(@unlink("$loc/".$lst[$i]))
+					echo "Removed: $loc/".$lst[$i]."\n";
 			}
 		}
 	}
-	echo "</pre>\n";
+	echo "</pre>";
 }
 ?>

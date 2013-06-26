@@ -209,6 +209,7 @@ function checkScanners(){// Does not support IE8 and below
 						delete(scan[i]["ID"]);
 						delete(scan[i]["DEVICE"]);
 						delete(scan[i]["NAME"]);
+						delete(scan[i]["UUID"]);
 						str+='<option'+(scan[i]["INUSE"]==1?' disabled="disabled"':'')+' class="'+encodeHTML(JSON.stringify(scan[i]))+'" value="'+scan[i]["ID"]+'">'+scan[i]["NAME"]+' on '+loc+'</option>';
 					}
 					scanners=scan;
@@ -267,18 +268,29 @@ function parseJSON(jsonTXT){
 	}
 }
 function scannerChange(ele){
-	var info,dpi,html,html2,html3,text,width,height;
-	info=parseJSON(ele.childNodes[ele.selectedIndex].className);
+	var info=parseJSON(ele.childNodes[ele.selectedIndex].className);
+	var html='';
 	sources=info['SOURCE'].split('|');
-	width=info['WIDTH'];
-	height=info['HEIGHT'];
-	html='<option value="full">Full Scan</option>';// string length (39) is used a few lines down
-	for(var i in paper){
-		if(width>=paper[i]['width']&&height>=paper[i]['height'])
-			html+='<option value="'+paper[i]['width']+'-'+paper[i]['height']+'" title="'+paper[i]['width']+' mm x '+paper[i]['height']+' mm">'+i+': '+roundNumber(paper[i]['width']/25.4,2)+'" x '+roundNumber(paper[i]['height']/25.4,2)+'"</option>';
+	for(i=0,s=sources.length;i<s;i++){
+		html+='<option value="'+sources[i]+'">'+(sources[i]=='ADF'?'Automatic Document Feeder':sources[i])+'</option>';
 	}
-	html2='';
-	modes=info['MODE'].split('|');
+	if(document.all)// http://support.microsoft.com/kb/276228	
+		document.scanning.source.parentNode.innerHTML='<select name="source" class="title">'+html+'</select>';
+	else
+		document.scanning.source.innerHTML=html;
+	if(document.scanning.source.value=='Inactive')
+		document.scanning.source.setAttribute('disabled','disabled');
+	else
+		document.scanning.source.removeAttribute('disabled');
+	sourceChange(document.scanning.source);
+}
+function sourceChange(ele){
+	var info,text,html,html2,html3,dpi;
+	info=document.scanning.scanner;
+	info=parseJSON(info.childNodes[info.selectedIndex].className);
+	// Change Mode
+	html='';
+	modes=info['MODE-'+ele.value].split('|');
 	for(i=modes.length-1;i>-1;i--){
 		switch(modes[i]){
 			case 'Gray':
@@ -288,48 +300,37 @@ function scannerChange(ele){
 			default:
 				text=modes[i];
 		}
-		html2+='<option value="'+modes[i]+'">'+text+'</option>';
+		html+='<option value="'+modes[i]+'">'+text+'</option>';
 	}
+	// Change Paper Size
+	width=info['WIDTH-'+ele.value];
+	height=info['HEIGHT-'+ele.value];
+	html2='<option value="full" title="'+width+' mm x '+height+' mm">Full Scan: '+roundNumber(width/25.4,2)+'" x '+roundNumber(height/25.4,2)+'"</option>';
+	for(var i in paper){
+		if(width>=paper[i]['width']&&height>=paper[i]['height'])
+			html2+='<option value="'+paper[i]['width']+'-'+paper[i]['height']+'" title="'+paper[i]['width']+' mm x '+paper[i]['height']+' mm">'+i+': '+roundNumber(paper[i]['width']/25.4,2)+'" x '+roundNumber(paper[i]['height']/25.4,2)+'"</option>';
+	}
+	// Change Quality
 	html3='';
-	for(i=0,s=sources.length;i<s;i++){
-		html3+='<option value="'+sources[i]+'">'+(sources[i]=='ADF'?'Automatic Document Feeder':sources[i])+'</option>';
-	}
-	if(document.all){// http://support.microsoft.com/kb/276228
-		if(html.length>39)
-			document.scanning.size.parentNode.innerHTML='<select onchange="paperChange(this);" name="size">'+html+'</select>';
-		document.scanning.mode.parentNode.innerHTML='<select name="mode" class="title">'+html2+'</select>';
-		document.scanning.source.parentNode.innerHTML='<select name="source" class="title">'+html3+'</select>';
-	}
-	else{
-		if(html.length>39)
-			document.scanning.size.innerHTML=html;
-		document.scanning.mode.innerHTML=html2;
-		document.scanning.source.innerHTML=html3;
-	}
-	if(document.scanning.source.value=='Inactive')
-		document.scanning.source.setAttribute('disabled','disabled');
-	else
-		document.scanning.source.removeAttribute('disabled');
-	sourceChange(document.scanning.source);
-	sendE(document.scanning.size,'change');
-}
-function sourceChange(ele){
-	var info=document.scanning.scanner;
-	info=parseJSON(info.childNodes[info.selectedIndex].className);
-	var html='';
-	var dpi=info['DPI-'+ele.value].split('|');
+	dpi=info['DPI-'+ele.value].split('|');
 	for(var i=0,max=dpi.length;i<max;i++)
-		html+='<option value="'+dpi[i]+'">'+dpi[i]+' '+(isNaN(dpi[i])?'':'dpi')+'</option>';
+		html3+='<option value="'+dpi[i]+'">'+dpi[i]+' '+(isNaN(dpi[i])?'':'dpi')+'</option>';
+	// Apply Changes
 	if(document.all){// http://support.microsoft.com/kb/276228
-		document.scanning.quality.parentNode.innerHTML='<select name="quality" class="upper">'+html+'</select>';
+		document.scanning.size.parentNode.innerHTML='<select onchange="paperChange(this);" name="size">'+html2+'</select>';
+		document.scanning.mode.parentNode.innerHTML='<select name="mode" class="title">'+html+'</select>';
+		document.scanning.quality.parentNode.innerHTML='<select name="quality" class="upper">'+html3+'</select>';
 	}
 	else{
-		document.scanning.quality.innerHTML=html;
+		document.scanning.size.innerHTML=html2;
+		document.scanning.mode.innerHTML=html;
+		document.scanning.quality.innerHTML=html3;
 	}
 	if(info['DUPLEX-'+ele.value])
 		getID('duplex').removeAttribute('style');
 	else
 		getID('duplex').style.display='none';
+	sendE(document.scanning.size,'change');
 }
 function paperChange(ele){
 	if(ele.value=='full'){
@@ -339,16 +340,19 @@ function paperChange(ele){
 	}
 	var json=document.scanning.scanner.childNodes[document.scanning.scanner.selectedIndex].className;
 	json=parseJSON(json);
-	var width=json['WIDTH'];
-	var height=json['HEIGHT'];
+	var width=json['WIDTH-'+document.scanning.source.value];
+	var height=json['HEIGHT-'+document.scanning.source.value];
 	var paper=ele.value.split('-');
 	if(Number(paper[0])>height||Number(paper[1])>width){
 		document.scanning.ornt.selectedIndex=0;
 		document.scanning.ornt.disabled='disabled';
 	}
-	else{
+	else
 		document.scanning.ornt.removeAttribute('disabled');
-	}
+}
+function rotateChange(ele){
+	var val=ele.value;
+	ele.nextSibling.textContent=(val==180?'Upside-down':(val<0?'Counterclockwise':'Clockwise'));
 }
 function fileChange(type){
 	if(type=='txt')
@@ -359,9 +363,8 @@ function fileChange(type){
 function Debug(html,show){
 	var div=document.createElement('div');
 	div.id="debug";
-	if(show){
+	if(show)
 		div.style.display='inline';
-	}
 	div.className="box box-full";
 	div.innerHTML='<h2>Debug Console</h2><pre>'+decodeURIComponent(html)+'</pre>';
 	var nojs=getID('nojs');
@@ -414,7 +417,7 @@ function scanReset(){
 	}
 }*/
 function disableIcons(){// Converts disabled icons to act like disabled icons
-	// not all browsers support efficient code
+	// not all browsers support efficient code, I am looking at you IE <.<
 	try{// most efficient
 		var icons=document.evaluate("//a[contains(@class,'tool icon')][contains(@class,'-off')]",document,null,6,null);
 		for(var i=0;i<icons.snapshotLength;i++){
@@ -558,9 +561,19 @@ function makePDF(link){
 	}
 }
 function selectScans(b){
-	var scans=document.evaluate("//div[@id='scans']/div/h2[@selected='"+b+"']",document,null,6,null);
-	for(var i=0;i<scans.snapshotLength;i++)
-		toggleFile(scans.snapshotItem(i));
+	try{
+		var scans=document.evaluate("//div[@id='scans']/div/h2[@selected='"+b+"']",document,null,6,null);
+		for(var i=0;i<scans.snapshotLength;i++)
+			toggleFile(scans.snapshotItem(i));
+	}
+	catch(e){// Screw you IE, screw you
+		var list=getID('scans').getElementsByTagName('h2'),stat;
+		for(var i=0,ct=list.length;i<ct;i++){
+			stat=list[i].getAttribute('selected');
+			if(stat==b.toString())
+				toggleFile(list[i]);
+		}
+	}
 	return false;
 }
 function upload(file){
@@ -771,9 +784,8 @@ function configEmail(addr){
 	httpRequest.send(null);
 }
 function sendEmail(ele){
-	if(typeof XMLHttpRequest!='function'){
+	if(typeof XMLHttpRequest!='function')
 		printMsg('Error','Your browser does not support <a href="http://www.w3schools.com/xml/xml_http.asp" target="_blank">XMLHttpRequest</a>, so you can not use this feature','center',0);
-	}
 	var now=new Date().getTime();
 	printMsg('Sending Email<span id="email-'+now+'"></span>','Please Wait...<br/>This could take a while depending on the file size of the scan and the upload speed at '+document.domain,'center',0);
 	var httpRequest = new XMLHttpRequest();
@@ -811,9 +823,8 @@ function deleteEmail(){
 			printMsg('Success',"Your Email login data has been delted!",'center',0);
 		}
 	}
-	else{
+	else
 		printMsg('Error',"Your browser does not even support saveing email settings, much less deleting them.",'center',0);
-	}
 }
 function delScan(file){
 	if(!confirm("Are you sure you want to delete "+file))
@@ -844,6 +855,8 @@ function delScan(file){
 	return false;
 }
 function updateCheck(vs,e){
+	if(typeof XMLHttpRequest!='function')
+		printMsg('Error','Your browser does not support <a href="http://www.w3schools.com/xml/xml_http.asp" target="_blank">XMLHttpRequest</a>, so you can not use this feature','center',0);
 	e.setAttribute('disabled','disabled');
 	var httpRequest = new XMLHttpRequest();
 	httpRequest.onreadystatechange = function(){

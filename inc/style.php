@@ -392,7 +392,7 @@ div.ie_276228{/* http://support.microsoft.com/kb/276228 */
 
 .side_box select {
 	font-size: 12px;
-	width: 155px;
+	width: 157px;
 }
 
 .side_box select[name="scanner"] option[disabled="disabled"]{

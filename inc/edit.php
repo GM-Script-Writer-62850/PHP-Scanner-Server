@@ -10,7 +10,7 @@
 <h2>Output Options</h2>
 
 <div class="label">
-File Type:
+<span class="tool">File Type<span class="tip">Format</span></span>:
 </div>
 <div class="control">
 <select name="filetype" onchange="fileChange(this.value)">
@@ -24,7 +24,7 @@ File Type:
 
 <div style="display:none" id="lang">
 <div class="label">
-Language:
+<span class="tool">Language<span class="tip">Relating to the document</span></span>:
 </div>
 <div class="control">
 <select name="lang">
@@ -34,7 +34,7 @@ Language:
 </div>
 
 <div class="label">
-Brightness:
+<span class="tool">Brightness<span class="tip">Lighting</span></span>:
 </div>
 <div class="control">
 <select name="bright">
@@ -47,7 +47,7 @@ for(var i=-100;i<=100;i+=10){
 </div>
 
 <div class="label">
-Contrast:
+<span class="tool">Contrast<span class="tip">Vividness</span></span>:
 </div>
 <div class="control">
 <select name="contrast">
@@ -60,7 +60,7 @@ for(var i=-100;i<=100;i+=10){
 </div>
 
 <div class="label">
-Mode:
+<span class="tool">Mode<span class="tip">Color Type</span></span>:
 </div>
 <div class="control">
 <select name="mode" class="title">
@@ -71,27 +71,35 @@ Mode:
 </div>
 
 <div class="label">
-Rotate:
+<span class="tool">Rotate<span class="tip">Turn</span></span>:
 </div>
-<div class="control">
-<select name="rotate">
+<div class="control tool">
+<select name="rotate" onchange="rotateChange(this)">
 <option value="0">0&deg;</option>
-<option value="90">90&deg;</option>
+<option value="90">90&deg; Clockwise</option>
+<option value="-90">90&deg; Counterclockwise</option>
 <option value="180">180&deg;</option>
-<option value="270">270&deg;</option>
-<optgroup label="Non-Square">
+<optgroup label="Clockwise">
 <script type="text/JavaScript">
-for(var i=5;i<360;i+=5){
-	if(i!=90&&i!=180&&i!=270)
+for(var i=1;i<180;i++){
+	if(i!=90)
 		document.write('<option value="'+i+'">'+i+'&deg;</option>');
 }
 </script>
 </optgroup>
-</select>
+<optgroup label="Counterclockwise">
+<script type="text/JavaScript">
+for(var i=-1;i>-180;i--){
+	if(i!=-90)
+		document.write('<option value="'+i+'">'+Math.abs(i)+'&deg;</option>');
+}
+</script>
+</optgroup>
+</select><span class="tip">Clockwise</span>
 </div>
 
 <div class="label">
-Scale:
+<span class="tool">Scale<span class="tip">Size/Dimensions</span></span>:
 </div>
 <div class="control">
 <select name="scale">

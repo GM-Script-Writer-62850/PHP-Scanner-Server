@@ -1,13 +1,13 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"><html><?php
-// Warning is displayed if there is less then the anmout specifyed
+// Warning is displayed if there is less then the amount specified
 $FreeSpaceWarn=2048;// In Megabytes
 $Fortune=true;// Enable/disable fortunes in the debug console
-$ExtraScanners=false;// Adds sample scanners from ./inc/scanhelp
+$ExtraScanners=false;// Adds sample scanners from ./inc/scanhelp/
 // Sorry for the lack of explanations in the code feel free to ask what something does
 
 $NAME="PHP Scanner Server";
-$VER="1.3-3";
-$SAE_VER="1.4"; // scanner access enabler version
+$VER="1.3-4";
+$SAE_VER="1.4"; // Scanner access enabler version
 
 # ****************
 # Varables
@@ -36,7 +36,7 @@ $X_1=Get_Values('loc_x1');
 $Y_1=Get_Values('loc_y1');
 #$X_2=Get_Values('loc_x2'); Un-used
 #$Y_2=Get_Values('loc_y2'); Un-used
-$SOURCE=Get_Values('source'); // scan.php main.js index.php
+$SOURCE=Get_Values('source');
 $SOURCE=(strlen($SOURCE)==0?'Inactive':$SOURCE);
 
 
@@ -52,13 +52,13 @@ $debug='';
 
 function Get_Values($name){
 	if(isset($_REQUEST[$name]))
-		return str_replace("`","'",$_REQUEST[$name]);// backticks (`) are striped to prevent the use of malicious code
+		return str_replace("`","'",$_REQUEST[$name]);// Backticks (`) are striped to prevent the use of malicious code
 	else
 		return null;
 }
 
 function html($X){
-	return htmlspecialchars($X);// name is too long and subject to frequent typos
+	return htmlspecialchars($X);// Name is too long and subject to frequent typos
 }
 
 function Put_Values() { # Update values back to form (There is no redo for croping)
@@ -104,7 +104,7 @@ function Footer() { # Spit out HTML footer
 	include "inc/footer.php";
 }
 
-function SaveFile($file,$content){// @ supresses any warnings
+function SaveFile($file,$content){// @ Suppresses any warnings
 	$file=@fopen($file,'w+');
 	@fwrite($file,$content);
 	@fclose($file);
@@ -116,16 +116,15 @@ function SaveFile($file,$content){// @ supresses any warnings
 
 function checkFreeSpace($X){
 	$pace=disk_free_space('scans')/1024/1024;
-	if($pace<$X){//there is less than X MB of free space
+	if($pace<$X){// There is less than X MB of free space
 		Print_Message("Warning: Low Disk Space","There is only ".number_format($pace)." MB of free space, please delete some scans.<br/>Low disk space can cause really bad problems.",'center');
 	}
 	return $pace;
 }
 
 function fileSafe($l){
-	if(strpos($l,"/")>-1){
+	if(strpos($l,"/")>-1)
 		$l=substr($l,strrpos($l,"/")+1);
-	}
 	return $l;
 }
 
@@ -143,7 +142,7 @@ function exe($shell,$force){
 	return $output;
 }
 
-function debugMsg($msg){/* good for printing a quick message during testing */
+function debugMsg($msg){// Good for printing a quick message during testing
 	Print_Message("Debug Message",$msg,'center');
 }
 
@@ -173,7 +172,7 @@ function findLangs(){
 	return $langs;
 }
 
-function uuid2bus($d){// bug #13
+function uuid2bus($d){// Bug #13
 	$id=$d->{"UUID"};
 	$d=$d->{"DEVICE"};
 	$data=exe("lsusb -d $id # See Bug #13",true);
@@ -256,7 +255,12 @@ if($PAGE=="Scans"){
 	if($DELETE=="Remove"){
 		$FILE=fileSafe(Get_Values('file'));
 		if($FILE==null){
-			exe("rm scans/*",true);
+			$files=scandir('scans');
+			foreach($files as $file){
+				if($file=='.'||$file=='..')
+					continue;
+				unlink("scans/$file");
+			}
 		}
 		else{
 			$FILE2=addslashes(substr($FILE,0,strrpos($FILE,".")+1));
@@ -315,8 +319,8 @@ else if($PAGE=="Config"){
 	}
 	else if($ACTION=="Detect-Paper"){
 		$paper=explode("\n",exe("paperconf -a -N -h -w -m",true));
-		unset($paper[count($paper)-1]);//delete empty value
-		sort($paper);//lets sort this while we have the chance
+		unset($paper[count($paper)-1]);// Delete empty value
+		sort($paper);// Lets sort this while we have the chance
 		$PAPER=json_decode('{}');
 		for($i=0,$s=count($paper);$i<$s;$i++){
 			$sheet=explode(" ",$paper[$i]);
@@ -399,12 +403,12 @@ else if($PAGE=="Config"){
 				$FakeCt++;
 			}
 		}
-		for($i=0,$max=count($OP);$i<$max;$i++){//get scanner specific data
+		for($i=0,$max=count($OP);$i<$max;$i++){// Get scanner specific data
 			if($i<$max-$FakeCt)
 				$help=exe("scanimage --help -d \"".addslashes($OP[$i]->{"DEVICE"})."\"",true);
 			else
 				$help=file_get_contents('inc/scanhelp/'.$OP[$i]->{"NAME"});
-			// get Source
+			// Get Source
 			$sources=substr($help,strpos($help,'--source ')+9);
 			$defSource=substr($sources,strpos($sources,' [')+2);
 			$defSource=substr($defSource,0,strpos($defSource,']'));
@@ -422,10 +426,10 @@ else if($PAGE=="Config"){
 						exe("echo 'scanimage --help -d \"SIMULATED_$i-$key\" --source \"$val\"'",true);
 					}
 				}
-				// get dpi
+				// Get DPI
 				$res=substr($help2,strpos($help2,'--resolution ')+13);
 				$res=substr($res,0,strpos($res,'dpi'));
-				if(is_int(strpos($res,".."))){//range of sizes of not it is a list (i want list form)
+				if(is_int(strpos($res,".."))){// Range of sizes of not it is a list (I want list form)
 					$res=explode('..',$res);
 					$arr=Array();
 					array_push($arr,$res[0]);
@@ -438,32 +442,32 @@ else if($PAGE=="Config"){
 					$res='auto'.substr($res,5);
 				}
 				$OP[$i]->{"DPI-$val"}=$res;
-				//--duplex[=(yes|no)] [inactive]
-				$duplex=strpos($help2,'--duplex[=(yes|no)]  [');
+				// Get duplex availability
+				$duplex=strpos($help2,'--duplex[=(yes|no)] [');// Looking for this: --duplex[=(yes|no)] [inactive]
 				if(!is_bool($duplex)){
-					$duplex=substr($help2,$duplex+22);
-					$duplex=substr($resduplex,0,strpos($duplex,']'));
-					$duplex=strtolower($duplex)=='inactive';
+					$duplex=substr($help2,$duplex+21);
+					$duplex=substr($duplex,0,strpos($duplex,']'));
+					$duplex=strtolower($duplex)!='inactive';
 				}
 				$OP[$i]->{"DUPLEX-$val"}=$duplex;
+				// Get color modes
+				$modes=substr($help2,strpos($help2,'--mode ')+7);
+				$OP[$i]->{"MODE-$val"}=substr($modes,0,strpos($modes,' ['));
+				// Get bay width
+				$width=substr($help2,strpos($help2,' -x ')+4);
+				$width=substr($width,0,strpos($width,'mm'));
+				$OP[$i]->{"WIDTH-$val"}=floatval(substr($width,strpos($width,'..')+2));
+				// Get bay height
+				$height=substr($help2,strpos($help2,' -y ')+4);
+				$height=substr($height,0,strpos($height,'mm'));
+				$OP[$i]->{"HEIGHT-$val"}=floatval(substr($height,strpos($height,'..')+2));
+				/*if(!is_bool(strpos($OP[$i]->{"DEVICE"},"Deskjet_2050_J510_series"))){// Dirty hack to make scanner work on this model (sane bug?)
+					$OP[$i]->{"HEIGHT-$val"}=297.01068878173;# that is as close as php will go without rounding true size is 297.01068878173825282^9
+				}*/
 				if($val=='Inactive')
 					break;
 			}
 
-			// get color modes
-			$modes=substr($help,strpos($help,'--mode ')+7);
-			$OP[$i]->{"MODE"}=substr($modes,0,strpos($modes,' ['));
-			// get bay width
-			$width=substr($help,strpos($help,' -x ')+4);
-			$width=substr($width,0,strpos($width,'mm'));
-			$OP[$i]->{"WIDTH"}=floatval(substr($width,strpos($width,'..')+2));
-			// get bay height
-			$height=substr($help,strpos($help,' -y ')+4);
-			$height=substr($height,0,strpos($height,'mm'));
-			$OP[$i]->{"HEIGHT"}=floatval(substr($height,strpos($height,'..')+2));
-			if(!is_bool(strpos($OP[$i]->{"DEVICE"},"Deskjet_2050_J510_series"))){// Dirty hack to make scanner work on this model (sane bug?)
-				$OP[$i]->{"HEIGHT"}=297.01068878173;# that is as close as php will go without rounding true size is 297.01068878173825282^9
-			}
 			// Get device vendor ID and product ID (Bug #13)
 			$dev=strpos($OP[$i]->{"DEVICE"},"libusb:");
 			if(is_bool($dev))
@@ -473,7 +477,7 @@ else if($PAGE=="Config"){
 				$dev=exe("lsusb -s '$dev'",true);
 				$OP[$i]->{"UUID"}=substr($dev,strpos($dev,"ID ")+3,9);
 			}
-			// lamp on/off
+			// Lamp on/off
 			//$OP[$i]->{"LAMP"}=(!is_bool(strpos($help,'--lamp-switch[=(yes|no)]'))&&!is_bool(strpos($help,'--lamp-off-at-exit[=(yes|no)]')))?true:false;
 		}
 		$save=SaveFile("config/scanners.json",json_encode($OP));
@@ -555,7 +559,7 @@ else if($PAGE=="Access Enabler"){
 # ****************
 else if($PAGE=="Device Notes"){
 	$id=Get_Values('id');
-	if($id!=null){// set default scanner
+	if($id!=null){// Set default scanner
 		$id=intval($id);
 		if(is_int($id)&&file_exists("config/scanners.json")){
 			$CANNERS=json_decode(file_get_contents('config/scanners.json'));
@@ -570,9 +574,9 @@ else if($PAGE=="Device Notes"){
 			}
 		}
 	}
-	if(isset($ACTION)){// scanner help
+	if(isset($ACTION)){// Scanner Help
 		InsertHeader("Device Info");
-		// bug #13 START
+		// Bug #13 START
 		$CANNERS=json_decode(file_get_contents('config/scanners.json'));
 		foreach($CANNERS as $key){
 			if($key->{"DEVICE"}==$ACTION){
@@ -582,7 +586,7 @@ else if($PAGE=="Device Notes"){
 				break;
 			}
 		}
-		// bug #13 END
+		// Bug #13 END
 		$SOURCE=Get_Values('source');
 		if(is_null($SOURCE))
 			$SOURCE='';
@@ -591,7 +595,7 @@ else if($PAGE=="Device Notes"){
 		$help=exe("scanimage --help -d \"".addslashes($ACTION)."\"$SOURCE",true);
 		echo "<div class=\"box box-full\"><h2>$ACTION</h2><pre>".$help."</pre></div>";
 	}
-	else{// list scanners
+	else{// List Scanners
 		InsertHeader("Device List");
 		if(!isset($CANNERS)){
 			if(file_exists("config/scanners.json"))
@@ -606,23 +610,24 @@ else if($PAGE=="Device Notes"){
 		for($i=0,$max=count($CANNERS);$i<$max;$i++){
 			$name=html($CANNERS[$i]->{"NAME"});
 			$DEVICE=html($CANNERS[$i]->{"DEVICE"});
-			$WIDTH=round($CANNERS[$i]->{"WIDTH"}/25.4,2);
-			$HEIGHT=round($CANNERS[$i]->{"HEIGHT"}/25.4,2);
 			$res='';
 			$sources=explode('|',$CANNERS[$i]->{"SOURCE"});
 			for($x=0,$ct=count($sources);$x<$ct;$x++){
 				$val=html($sources[$x]);
+				$WIDTH=round($CANNERS[$i]->{"WIDTH-$val"}/25.4,2);
+				$HEIGHT=round($CANNERS[$i]->{"HEIGHT-$val"}/25.4,2);
+				$MODES=count(explode('|',$CANNERS[$i]->{"MODE-$val"}));
 				$DPI=explode('|',$CANNERS[$i]->{"DPI-$val"});
-				$res.="<li>The <a href=\"index.php?page=Device%20Notes&action=$DEVICE&source=$val\">$val</a> supports<ul>";
-				$res.='<li>A scanner resolution of '.($DPI[0]=='auto'?$DPI[1]:$DPI[0]).' DPI to '.number_format($DPI[count($DPI)-1]).' DPI</li>';
-				$res.='<li>'.($CANNERS[$i]->{"DUPLEX-$val"}?'Yes':'No').', duplex scanning is supported</li>';
-				$res.='</ul></li>';
+				$res.=($val=='Inactive'?'<li>This scanner supports<ul>':"<li>The '<a onclick=\"printMsg('Loading','Please Wait...','center',0);\" href=\"index.php?page=Device%20Notes&action=$DEVICE&source=$val\">$val</a>' source supports<ul>").
+					"<li>A bay width of <span class=\"tool\">$WIDTH\"<span class=\"tip\">".$CANNERS[$i]->{"WIDTH-$val"}." mm</span><span></li>".
+					"<li>A bay height of <span class=\"tool\">$HEIGHT\"<span class=\"tip\">".$CANNERS[$i]->{"HEIGHT-$val"}." mm</span></span></li>".
+					'<li>A scanner resolution of '.$DPI[$DPI[0]=='auto'?1:0].' DPI to '.number_format($DPI[count($DPI)-1]).' DPI</li>'.
+					'<li>'.($CANNERS[$i]->{"DUPLEX-$val"}?'D':'No d').'uplex (double sided) scanning</li>'.
+					"<li>$MODES color mode".($MODES==1?'':'s')."</li>".
+					'</ul></li>';
 			}
-			echo "<li>$name<ul><li><a onclick=\"printMsg('Loading','Please Wait...','center',0);\" href=\"index.php?page=Device%20Notes&action=$DEVICE\"><code>$DEVICE</code></a></li>".
-				"<li>Bay width is $WIDTH\"</li>".
-				"<li>Bay height is $HEIGHT\"</li>".
-				$res.
-				(isset($CANNERS[$i]->{"SELECTED"})?'':"<li><a href=\"index.php?page=Device%20Notes&id=$i\">Set as default scanner</a></li>")."</ul></li>";
+			echo "<li>$name ".(isset($CANNERS[$i]->{"SELECTED"})?'':"[<a href=\"index.php?page=Device%20Notes&id=$i\">Set as default scanner</a>]").
+				"<ul><li><a onclick=\"printMsg('Loading','Please Wait...','center',0);\" href=\"index.php?page=Device%20Notes&action=$DEVICE\"><code>$DEVICE</code></a></li>$res</ul></li>";
 		}
 		echo '</ul></div>';
 	}
@@ -660,9 +665,9 @@ else if($PAGE=="Edit"){
 				}
 			}
 			echo "<div class=\"box box-full\" id=\"text-editor\"><div id=\"preview_links\"></div>".
-			"<img src=\"scans/$preview\"><br/>".
-			'<form action="index.php?page=Edit&file='.$file.'" method="POST"><textarea name="file-text">'.html(file_get_contents("scans/Scan_$file"))."</textarea><br/>".
-			'<input value="Save" type="submit"/><input type="button" value="Cancel" onclick="history.go(-1);"/></forum></div>';
+				"<img src=\"scans/$preview\"><br/>".
+				'<form action="index.php?page=Edit&file='.$file.'" method="POST"><textarea name="file-text">'.html(file_get_contents("scans/Scan_$file"))."</textarea><br/>".
+				'<input value="Save" type="submit"/><input type="button" value="Cancel" onclick="history.go(-1);"/></forum></div>';
 			Update_Links("Scan_$file",$PAGE);
 		}
 		else{
@@ -678,7 +683,10 @@ else if($PAGE=="Edit"){
 					}
 					$tmpFile="/tmp/Scan_".addslashes($file);
 					$file='scans/Scan_'.addslashes($file);
-					copy($file,$tmpFile);
+					if(!@copy($file,$tmpFile)){
+						Print_Message("Permission Error","Unable to create <code>$tmpFile</code>",'center');
+						quit();
+					}
 					if($MODE!='color'&&$MODE!=null){
 						if($MODE=='gray')
 							exe("convert \"$tmpFile\" -colorspace Gray \"$tmpFile\"",true);
@@ -696,7 +704,7 @@ else if($PAGE=="Edit"){
 						$HEIGHT=round($HEIGHT/$M_HEIGHT*$TRUE_H);
 						$X_1=round($X_1/$M_WIDTH*$TRUE_W);
 						$Y_1=round($Y_1/$M_HEIGHT*$TRUE_H);
-						exe("convert \"$tmpFile\" -crop \"$WIDTH x $HEIGHT + $X_1 + $Y_1\" +repage \"$tmpFile\"",true);
+						exe("convert \"$tmpFile\" +repage -crop \"$WIDTH x $HEIGHT + $X_1 + $Y_1\" \"$tmpFile\"",true);
 					}
 
 					if($SCALE!="100"){
@@ -718,9 +726,8 @@ else if($PAGE=="Edit"){
 					$file="scans/Scan_$name-edit-$int.$ext";//scan
 					$name=str_replace("scans/Scan_","scans/Preview_",$file);//preview
 					if($FILETYPE==substr($file,strrpos($file,'.')+1)){
-						@rename($tmpFile,$file);//incorrct access denied message is generated
-						if(file_exists($tmpFile)&&!file_exists($file)){//just incase it becomes accurate
-							#exe("mv \"$tmpFile\" \"$file\"",true);
+						@rename($tmpFile,$file);// Incorrect access denied message is generated
+						if(file_exists($tmpFile)&&!file_exists($file)){// Just in-case it becomes accurate
 							copy($tmpFile,$file);
 							unlink($tmpFile);
 						}
@@ -735,10 +742,10 @@ else if($PAGE=="Edit"){
 						exe("convert \"$tmpFile\" -fx '(r+g+b)/3' \"/tmp/edit_scan_file$t.tif\"",true);
 						exe("tesseract \"/tmp/edit_scan_file$t.tif\" \"$S_FILENAMET\" -l \"$LANG\"",true);
 						unlink("/tmp/edit_scan_file$t.tif");
-						if(!file_exists("$S_FILENAMET.txt"))//in case tesseract fails
+						if(!file_exists("$S_FILENAMET.txt"))//In case tesseract fails
 							SaveFile("$S_FILENAMET.txt","");
 					}
-					$FILE=substr($name,0,strrpos($name,'.')+1).'jpg';//preview
+					$FILE=substr($name,0,strrpos($name,'.')+1).'jpg';//Preview
 					if($FILETYPE!='txt'){
 						exe("convert \"$file\" -scale 450x471 \"$FILE\"",true);
 						$file=substr($file,11);
@@ -870,7 +877,7 @@ else{
 		$sizes=explode('-',$SIZE);
 		if((!validNum(Array($SCANNER,$WIDTH,$HEIGHT,$X_1,$Y_1,$BRIGHT,$CONTRAST,$SCALE,$ROTATE)))||
 		   (count($sizes)!=2&&$SIZE!='full')||
-		   (!in_array($MODE,explode('|',$CANNERS[$SCANNER]->{"MODE"})))||
+		   (!in_array($MODE,explode('|',$CANNERS[$SCANNER]->{"MODE-$SOURCE"})))||
 		   (!in_array($SOURCE,explode('|',$CANNERS[$SCANNER]->{"SOURCE"})))||
 		   ($FILETYPE!="txt"&&$FILETYPE!="png"&&$FILETYPE!="tiff"&&$FILETYPE!="jpg")){
 			Print_Message("No, you can not do that","Input data is invalid and most likely an attempt to run malicious code on the server. <i>Denied</i>",'center');
@@ -892,8 +899,8 @@ else{
 		# Get Device
 		$DEVICE=addslashes($CANNERS[$SCANNER]->{"DEVICE"});
 
-		$scanner_w=$CANNERS[$SCANNER]->{"WIDTH"};
-		$scanner_h=$CANNERS[$SCANNER]->{"HEIGHT"};
+		$scanner_w=$CANNERS[$SCANNER]->{"WIDTH-$SOURCE"};
+		$scanner_h=$CANNERS[$SCANNER]->{"HEIGHT-$SOURCE"};
 
 		$lastORNT=Get_Values('ornt0');
 		if($lastORNT!=$ORNT&&$lastORNT!=null&&$SIZE!="full"){
@@ -958,8 +965,8 @@ else{
 			$LAMP='--lamp-switch=yes --lamp-off-at-exit=yes ';
 		}*/
 
-		$SOURCE=($SOURCE=='Inactive')?'':"--source $SOURCE ";
-		if(!is_null($CANNERS[$SCANNER]->{"UUID"})){// bug #13
+		$SOURCE=($SOURCE=='Inactive')?'':"--source \"$SOURCE\" ";
+		if(!is_null($CANNERS[$SCANNER]->{"UUID"})){// Bug #13
 			$DEVICE=uuid2bus($CANNERS[$SCANNER]);
 			$CANNERS[$SCANNER]->{"DEVICE"}=$DEVICE;
 		}
@@ -971,20 +978,20 @@ else{
 		}
 		else
 			$DUPLEX='';
-		$cmd="scanimage -d \"$DEVICE\" -l $X -t $Y -x $SIZE_X -y $SIZE_Y $DUPLEX--resolution $QUALITY $SOURCE--mode $MODE $LAMP--format=ppm";
+		$cmd="scanimage -d \"$DEVICE\" -l $X -t $Y -x $SIZE_X -y $SIZE_Y $DUPLEX--resolution $QUALITY $SOURCE--mode \"$MODE\" $LAMP--format=pnm";
 		if($SOURCE=='ADF'||$SOURCE=='Automatic Document Feeder') # Multi-page scan
-			exe("cd $CANDIR;$cmd --batch",true);// be careful with this, doing this without a ADF feeder will result in scanning the flatbed over and over, include --batch-count=3 for testing
+			exe("cd $CANDIR;$cmd --batch",true);// Be careful with this, doing this without a ADF feeder will result in scanning the flatbed over and over, include --batch-count=3 for testing
 		else # Single page scan
-			exe("$cmd > \"$CANDIR/scan_file$SCANNER.ppm\"",false);
+			exe("$cmd > \"$CANDIR/scan_file$SCANNER.pnm\"",false);
 
-		if(file_exists("$CANDIR/scan_file$SCANNER.ppm")){
-			if(Get_Values('size')=='full'&&filesize("$CANDIR/scan_file$SCANNER.ppm")==0){
+		if(file_exists("$CANDIR/scan_file$SCANNER.pnm")){
+			if(Get_Values('size')=='full'&&filesize("$CANDIR/scan_file$SCANNER.pnm")==0){
 				exe("echo \"Scan Failed...\"",true);
 				exe("echo \"Maybe this scanner does not report it size correctly, maybe the default scan size will work it may or may not be a full scan.\"",true);
 				exe("echo \"If it is not a full scan you are welcome to manually edit your $here/config/scanners.json file with the correct size.\"",true);
-				@unlink("$CANDIR/scan_file$SCANNER.ppm");
+				@unlink("$CANDIR/scan_file$SCANNER.pnm");
 				exe("echo \"Attempting to scan without forcing full scan\"");
-				exe("scanimage -d \"$DEVICE\" --resolution $QUALITY --mode $MODE $LAMP--format=ppm > \"$CANDIR/scan_file$SCANNER.ppm\"",false);
+				exe("scanimage -d \"$DEVICE\" --resolution $QUALITY --mode $MODE $LAMP--format=ppm > \"$CANDIR/scan_file$SCANNER.pnm\"",false);
 			}
 		}
 		$files=scandir($CANDIR);
@@ -1049,7 +1056,7 @@ else{
 			Print_Message("Could not scan",'<p style="text-align:left;margin:0;">This is can be cauesed by one or more of the following:</p>'.
 				'<ul><li>The scanner is not on.</li><li>The scanner is not connected to the computer.</li>'.
 				'<li>You need to run the <a href="index.php?page=Access%20Enabler">Access Enabler</a>.</li>'.
-				(file_exists("/tmp/scan_file$SCANNER.ppm")?"<li>Removeing <code>/tmp/scan_file$SCANNER.ppm</code> may help.</li>":'').
+				(file_exists("/tmp/scan_file$SCANNER.pnm")?"<li>Removing <code>/tmp/scan_file$SCANNER.pnm</code> may help.</li>":'').
 				'<li><code>'.$user.'</code> does not have permission to write files to the <code>'.getcwd().'/scans</code> folder.</li>'.
 				'<li>You may have to <a href="index.php?page=Config">re-configure</a> the scanner.</li></ul>'.$notes,'left');
 		}
