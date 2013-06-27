@@ -37,7 +37,7 @@
 <span class="tool">Brightness<span class="tip">Lighting</span></span>:
 </div>
 <div class="control">
-<select name="bright">
+<select name="bright" onchange="changeBrightContrast()">
 <script type="text/JavaScript">
 for(var i=-100;i<=100;i+=10){
 	document.write('<option '+(i==0?'selected="selected" ':'')+'value="'+i+'">'+i+' %</option>');
@@ -50,7 +50,7 @@ for(var i=-100;i<=100;i+=10){
 <span class="tool">Contrast<span class="tip">Vividness</span></span>:
 </div>
 <div class="control">
-<select name="contrast">
+<select name="contrast" onchange="changeBrightContrast()">
 <script type="text/JavaScript">
 for(var i=-100;i<=100;i+=10){
 	document.write('<option '+(i==0?'selected="selected" ':'')+'value="'+i+'">'+i+' %</option>');
@@ -124,13 +124,13 @@ Crop Image
 	<div class="control"><input onkeypress="return false" type="text" readonly="readonly" name="loc_width" value="0" size="3"/> pixle(s)</div>
 <div class="label">Height: </div>
 	<div class="control"><input onkeypress="return false" type="text" readonly="readonly" name="loc_height" value="0" size="3"/> pixle(s)</div>
-<div class="label">x1 (Left): </div>
+<div class="label">X<sub>1</sub> (Left): </div>
 	<div class="control"><input onkeypress="return validateKey(this,event,ias);" type="text" name="loc_x1" value="0" size="3"/> pixle(s)</div>
-<div class="label">y1 (Top): </div>
+<div class="label">Y<sub>1</sub> (Top): </div>
 	<div class="control"><input onkeypress="return validateKey(this,event,ias);" type="text" name="loc_y1" value="0" size="3"/> pixle(s)</div>
-<div class="label">x2 (Right): </div>
+<div class="label">X<sub>2</sub> (Right): </div>
 	<div class="control"><input onkeypress="return validateKey(this,event,ias);" type="text" name="loc_x2" value="0" size="3"/> pixle(s)</div>
-<div class="label">y2 (Bottom): </div>
+<div class="label">Y<sub>2</sub> (Bottom): </div>
 	<div class="control"><input onkeypress="return validateKey(this,event,ias);" type="text" name="loc_y2" value="0" size="3"/> pixle(s)</div>
 <div align="center"><input type="button" value="Update" onclick="setRegion(ias);"/><input type="button" onclick="clearRegion(ias,true)" value="Clear"/></div>
 </p>

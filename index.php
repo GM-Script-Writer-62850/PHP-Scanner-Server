@@ -6,7 +6,7 @@ $ExtraScanners=false;// Adds sample scanners from ./inc/scanhelp/
 // Sorry for the lack of explanations in the code feel free to ask what something does
 
 $NAME="PHP Scanner Server";
-$VER="1.3-4";
+$VER="1.3-5";
 $SAE_VER="1.4"; // Scanner access enabler version
 
 # ****************
@@ -288,8 +288,8 @@ if($PAGE=="Scans"){
 			$FILE=substr(exe('cd "scans"; ls "Scan'.$FILE.'"*',true),5,-1);//Should only have one file listed
 			$IMAGE=$FILES[$i];
 			include "inc/scans.php";
-		}// Chrome's css columns fail (also disabled in css)
-		echo '</div><script type="text/javascript">if(document.body.style.WebkitColumnGap==""||document.body.style.MozColumnGap==""||document.body.style.columnGap=="")getID("scans").className="enable";</script>';
+		}
+		echo '</div><script type="text/javascript">if(document.body.style.WebkitColumnGap==""||document.body.style.MozColumnGap==""||document.body.style.columnGap=="")getID("scans").className="enable"+(document.body.style.WebkitColumnGap==""?" webkit":"");</script>';
 	}
 	checkFreeSpace($FreeSpaceWarn);
 	Footer();
@@ -965,11 +965,6 @@ else{
 			$LAMP='--lamp-switch=yes --lamp-off-at-exit=yes ';
 		}*/
 
-		$SOURCE=($SOURCE=='Inactive')?'':"--source \"$SOURCE\" ";
-		if(!is_null($CANNERS[$SCANNER]->{"UUID"})){// Bug #13
-			$DEVICE=uuid2bus($CANNERS[$SCANNER]);
-			$CANNERS[$SCANNER]->{"DEVICE"}=$DEVICE;
-		}
 		if($CANNERS[$SCANNER]->{"DUPLEX-$SOURCE"}===true){
 			if($DUPLEX=='true')
 				$DUPLEX='--duplex=yes ';
@@ -978,7 +973,12 @@ else{
 		}
 		else
 			$DUPLEX='';
-		$cmd="scanimage -d \"$DEVICE\" -l $X -t $Y -x $SIZE_X -y $SIZE_Y $DUPLEX--resolution $QUALITY $SOURCE--mode \"$MODE\" $LAMP--format=pnm";
+		$OURCE=($SOURCE=='Inactive')?'':"--source \"$SOURCE\" ";
+		if(!is_null($CANNERS[$SCANNER]->{"UUID"})){// Bug #13
+			$DEVICE=uuid2bus($CANNERS[$SCANNER]);
+			$CANNERS[$SCANNER]->{"DEVICE"}=$DEVICE;
+		}
+		$cmd="scanimage -d \"$DEVICE\" -l $X -t $Y -x $SIZE_X -y $SIZE_Y $DUPLEX--resolution $QUALITY $OURCE--mode \"$MODE\" $LAMP--format=pnm";
 		if($SOURCE=='ADF'||$SOURCE=='Automatic Document Feeder') # Multi-page scan
 			exe("cd $CANDIR;$cmd --batch",true);// Be careful with this, doing this without a ADF feeder will result in scanning the flatbed over and over, include --batch-count=3 for testing
 		else # Single page scan
@@ -1049,7 +1049,7 @@ else{
 		}
 		$ORNT=($ORNT==''?'vert':$ORNT);
 		echo "var ornt=document.createElement('input');ornt.name='ornt0';ornt.value='$ORNT';ornt.type='hidden';document.scanning.appendChild(ornt);".
-			"var p=document.createElement('p');p.innerHTML='<small>Changing orientation will void select region.</small>';document.getElementById('opt').appendChild(p);</script>";
+			"var p=document.createElement('p');p.innerHTML='<small>Changing orientation will void select region.</small>';document.getElementById('opt').appendChild(p);document.scanning.scanner.disabled='disabled'</script>";
 
 		# Check if image is empty and post error, otherwise post image to page
 		if(!file_exists("scans/$P_FILENAME")){

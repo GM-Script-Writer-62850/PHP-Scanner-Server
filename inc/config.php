@@ -41,9 +41,9 @@ Make sure all scanners are plugged in and turned on.
 <a href="index.php?page=Config&action=Delete-Setting" onclick="return confirm('Delete all settings?')">Remove All Of These Settings</a></p><ul class="simplelist">
 <?php
 	foreach($file as $id => $opt){
-		echo '<li class="boxlist"><a class="tool icon del" href="index.php?page=Config&action=Delete-Setting&value='.urlencode($id).'" onclick="return confirm(\'Delete this setting: &#92;n'.html($id).'\')"><span class="tip">Delete</span></a> <a target="_blank" href="index.php?page=Scan&action=restore&';
+		echo '<li class="boxlist"><a class="tool icon del" href="index.php?page=Config&action=Delete-Setting&value='.urlencode($id).'" onclick="return confirm(\'Delete this setting: &#92;n'.html($id).'\')"><span class="tip">Delete</span></a> <a target="_blank" href="index.php?page=Scan&action=restore';
 		foreach($opt as $key => $val){
-			echo html($key).'='.html($val).'&';
+			echo '&'.html($key).'='.html($val);
 		}
 		echo '">'.html($id).'</a></li>';
 	}

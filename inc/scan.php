@@ -62,7 +62,7 @@ for(var i=0,s=sources.length;i<s;i++){
 <div class="ie_276228"><select name="quality" class="upper"><script type="text/JavaScript">
 var dpi='<?php echo $CANNERS[$SEL]->{"DPI-$defSource"}; ?>'.split('|');
 for(var i=0,max=dpi.length;i<max;i++){
-	document.write('<option value="'+dpi[i]+'">'+dpi[i]+' '+(isNaN(dpi[i])?'':'dpi')+'</option>');
+	document.write('<option value="'+dpi[i]+'">'+dpi[i]+' '+(isNaN(dpi[i])?'':'DPI')+'</option>');
 }
 </script>
 </select></div><span class="tip">Dots Per Inch</span>
@@ -71,7 +71,7 @@ for(var i=0,max=dpi.length;i<max;i++){
 <div class="label">
 <span class="tool">Size<span class="tip">How big the paper is</span></span>:
 </div>
-<div class="control">
+<div class="control tool">
 <div class="ie_276228"><select <?php //echo ((($WIDTH=="0"||$WIDTH==NULL)&&($HEIGHT=="0"||$HEIGHT==NULL))===false?'disabled="disabled" ':''); ?>name="size" onchange="paperChange(this);">
 <option value="full" title="<?php echo $CANNERS[$SEL]->{"WIDTH-$defSource"}.' mm x '.$CANNERS[$SEL]->{"HEIGHT-$defSource"}.'t mm'; ?>">Full Scan: <?php echo round($CANNERS[$SEL]->{"WIDTH-$defSource"}/25.4,2).'" x '.round($CANNERS[$SEL]->{"HEIGHT-$defSource"}/25.4,2); ?>'"</option><?php
 if(file_exists("config/paper.json"))
@@ -83,7 +83,7 @@ foreach($paper as $key=>$val){
 		echo '<option value="'.$val->{"width"}.'-'.$val->{"height"}.'" title="'.$val->{"width"}.' mm x '.$val->{"height"}.' mm">'.$key.': '.round($val->{"width"}/25.4,2).'" x '.round($val->{"height"}/25.4,2).'"</option>';
 }
 ?>
-</select></div>
+</select></div><span class="tip"><?php echo $CANNERS[$SEL]->{"WIDTH-$defSource"}.' mm x '.$CANNERS[$SEL]->{"HEIGHT-$defSource"}.' mm'; ?></span>
 <script type="text/javascript">paper=<?php echo json_encode($paper);?></script>
 </div>
 
@@ -152,7 +152,7 @@ for(var i=modes.length-1;i>-1;i--){
 <span class="tool">Brightness<span class="tip">Lighting</span></span>:
 </div>
 <div class="control">
-<select name="bright">
+<select name="bright" onchange="changeBrightContrast()">
 <script type="text/JavaScript">
 for(var i=-100;i<=100;i+=10){
 	document.write('<option '+(i==0?'selected="selected" ':'')+'value="'+i+'">'+i+' %</option>');
@@ -165,7 +165,7 @@ for(var i=-100;i<=100;i+=10){
 <span class="tool">Contrast<span class="tip">Vividness</span></span>:
 </div>
 <div class="control">
-<select name="contrast">
+<select name="contrast" onchange="changeBrightContrast()">
 <script type="text/JavaScript">
 for(var i=-100;i<=100;i+=10){
 	document.write('<option '+(i==0?'selected="selected" ':'')+'value="'+i+'">'+i+' %</option>');
@@ -252,13 +252,13 @@ Select Region
 	<div class="control"><input onkeypress="return false" type="text" readonly="readonly" name="loc_width" value="0<?php //echo (isset($M_WIDTH)?$M_WIDTH:0); ?>" size="3"/> pixle(s)</div>
 <div class="label">Height: </div>
 	<div class="control"><input onkeypress="return false" type="text" readonly="readonly" name="loc_height" value="0<?php //echo (isset($M_HEIGHT)?$M_HEIGHT:0); ?>" size="3"/> pixle(s)</div>
-<div class="label">x1 (Left): </div>
+<div class="label">X<sub>1</sub> (Left): </div>
 	<div class="control"><input onkeypress="return validateKey(this,event,ias);" type="text" name="loc_x1" value="0<?php //echo (isset($X_1)?$X_1:0); ?>" size="3"/> pixle(s)</div>
-<div class="label">y1 (Top): </div>
+<div class="label">Y<sub>1</sub> (Top): </div>
 	<div class="control"><input onkeypress="return validateKey(this,event,ias);" type="text" name="loc_y1" value="0<?php //echo (isset($Y_1)?$Y_1:0); ?>" size="3"/> pixle(s)</div>
-<div class="label">x2 (Right): </div>
+<div class="label">X<sub>2</sub> (Right): </div>
 	<div class="control"><input onkeypress="return validateKey(this,event,ias);" type="text" name="loc_x2" value="0" size="3"/> pixle(s)</div>
-<div class="label">y2 (Bottom): </div>
+<div class="label">Y<sub>2</sub> (Bottom): </div>
 	<div class="control"><input onkeypress="return validateKey(this,event,ias);" type="text" name="loc_y2" value="0" size="3"/> pixle(s)</div>
 <div align="center"><input type="button" value="Update" onclick="setRegion(ias);"/><input type="button" onclick="clearRegion(ias,true)" value="Clear"/></div>
 </p>

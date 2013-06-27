@@ -1,5 +1,5 @@
 <head>
-<meta http-equiv="Content-type" content="text/html; charset=ISO-8859-1"/>
+<meta http-equiv="Content-type" content="text/html; charset=UTF-8"/>
 <!--[if lt IE 9]><meta http-equiv="X-UA-Compatible" content="chrome=1"><![endif]-->
 <title><?php echo $GLOBALS['NAME']; ?> ~ <?php echo $GLOBALS['PAGE']; ?></title>
 <link id="style" rel="stylesheet" href="inc/style.php<?php

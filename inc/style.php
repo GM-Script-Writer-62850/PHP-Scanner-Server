@@ -180,7 +180,7 @@ a:hover {
 	float: left;
 	width: 235px;
 	margin: 0 8px 0 0;
-	paddin: 0;
+	padding: 0;
 }
 
 #nojs{
@@ -448,10 +448,24 @@ select.upper, select.upper option{
 	height: 471px;
 	width: 450px;
 	position: relative;
+	-moz-transition-property: transform, -moz-transform;
+	-moz-transition-duration: 0.8s;
+	-o-transition-property: -o-transform, transform;
+	-o-transition-duration: 0.8s;
+	-webkit-transition-property: -webkit-transform, -webkit-filter, transform;
+	-webkit-transition-duration: 0.8s;
+	transition-property: transform, -webkit-transform, -o-transform, -moz-transform, -webkit-filter;
+	transition-duration: 0.8s;
+	transform: rotate(0);
+	-moz-transform: rotate(0);
+	-o-transform: rotate(0);
+	-webkit-transform: rotate(0);
+	-webkit-filter:brightness(0%) contrast(100%);
 }
 
 #preview_img p{
 	position: relative;
+	overflow: hidden;
 }
 
 img[src="inc/images/blank.gif"]{
@@ -491,6 +505,7 @@ img[src="inc/images/blank.gif"]{
 #scans.enable{
 	-moz-column-count: 3;
 	-moz-column-gap: 0;
+	/* broken tool-tips in opera, chrome, and safari */
 	-webkit-column-count: 3; 
 	-webkit-column-gap: 0;
 	column-count: 3;
@@ -498,6 +513,10 @@ img[src="inc/images/blank.gif"]{
 	padding-right: 6px;
 }
 
+#scans.enable.webkit a.tool[style] .tip{ /* workaround for shitty column implementation*/
+	bottom: 101%;
+	left: 30%;
+}
 #scans.enable .box{
 	display: inline-block;
 	float: none;
@@ -568,7 +587,7 @@ code{
 #paper-list ul{
 	-moz-column-count: 3;
 	-moz-column-gap: 50px;
-	/* broken tooltips in opera, messed up borders and broken tooltips in chrome and safari
+	/* broken tool-tips in opera, messed up borders and broken tool-tips in chrome and safari
 	-webkit-column-count: 3;
 	-webkit-column-gap: 50px;
 	column-count: 3;

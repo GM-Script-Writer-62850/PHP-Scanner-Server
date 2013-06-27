@@ -12,7 +12,8 @@ $(document).ready(function () {
 		disable: ((previewIMG.src.indexOf('inc/images/blank.gif')>-1)?true:false),
 		fadeSpeed: 850,
 		parent: 'div#select',
-		zIndex: 1
+		zIndex: 1,
+		rotating: false
 	});
 	if(previewIMG){
 		if(previewIMG.src.indexOf('inc/images/blank.gif')>-1){
@@ -24,7 +25,7 @@ $(document).ready(function () {
 function getID(id){
 	return document.getElementById(id);
 }
-function pre_scan(form,ias,t){
+function pre_scan(form,ias){
 	previewIMG.style.zIndex=-1;
 	previewIMG.nextSibling.removeAttribute('style');
 	previewIMG.parentNode.style.height=previewIMG.offsetHeight+3+'px';
@@ -33,6 +34,12 @@ function pre_scan(form,ias,t){
 	ele=getID('select');
 	if(ele)
 		ele.style.display='none';
+	if(!document.scanning.scanner)
+		return;
+	if(document.scanning.scanner.disabled){
+		document.scanning.scanner.removeAttribute('disabled');
+		setTimout(function(){document.scanning.scanner.setAttribute('disabled','disabled');},250);
+	}
 	return true;
 }
 function sendE(ele,e){
@@ -46,6 +53,14 @@ function sendE(ele,e){
 	}
 }
 function config(json){
+	if(document.scanning.scanner.value!=json['scanner']&&document.scanning.scanner.disabled){
+		var str='';
+		for(var i in json){
+			str+="&"+i+'='+encodeURIComponent(json[i]);
+		}
+		document.location.href='index.php?page=Scan&action=restore'+str;
+		return;
+	}
 	for(var i in json){
 		document.scanning[i].value=json[i];
 		sendE(document.scanning[i],'change');
@@ -80,6 +95,8 @@ function storeRegion(img, sel){
 }
 function setRegion(ias){
 	//Code to counter user stupidty and innocent mistakes
+	if(ias.getOptions()["rotating"])
+		return false;
 	var ele=previewIMG;
 	var img_W=ele.offsetWidth;
 	var img_H=ele.offsetHeight;
@@ -161,6 +178,7 @@ function lastScan(scan,preview,scanner,ele,imgur){
 	getID('sel').removeAttribute('style');
 	document.scanning.scanner.value=scanner;
 	sendE(document.scanning.scanner,'change');
+	document.scanning.scanner.disabled='disabled';
 	sendE(document.scanning.size,'change');
 	ele.parentNode.parentNode.innerHTML='<h2>'+generic+'</h2><p><a class="tool icon download" href="download.php?file='+scan+'"><span class="tip">Download</span></a> '+
 		'<a class="tool icon zip" href="download.php?file='+scan+'&compress"><span class="tip">Download Zip</span></a> '+
@@ -283,6 +301,7 @@ function scannerChange(ele){
 	else
 		document.scanning.source.removeAttribute('disabled');
 	sourceChange(document.scanning.source);
+	
 }
 function sourceChange(ele){
 	var info,text,html,html2,html3,dpi;
@@ -314,7 +333,7 @@ function sourceChange(ele){
 	html3='';
 	dpi=info['DPI-'+ele.value].split('|');
 	for(var i=0,max=dpi.length;i<max;i++)
-		html3+='<option value="'+dpi[i]+'">'+dpi[i]+' '+(isNaN(dpi[i])?'':'dpi')+'</option>';
+		html3+='<option value="'+dpi[i]+'">'+dpi[i]+' '+(isNaN(dpi[i])?'':'DPI')+'</option>';
 	// Apply Changes
 	if(document.all){// http://support.microsoft.com/kb/276228
 		document.scanning.size.parentNode.innerHTML='<select onchange="paperChange(this);" name="size">'+html2+'</select>';
@@ -333,6 +352,7 @@ function sourceChange(ele){
 	sendE(document.scanning.size,'change');
 }
 function paperChange(ele){
+	ele.parentNode.nextSibling.textContent=ele.childNodes[ele.selectedIndex].title;
 	if(ele.value=='full'){
 		document.scanning.ornt.selectedIndex=0;
 		document.scanning.ornt.disabled='disabled';
@@ -342,8 +362,9 @@ function paperChange(ele){
 	json=parseJSON(json);
 	var width=json['WIDTH-'+document.scanning.source.value];
 	var height=json['HEIGHT-'+document.scanning.source.value];
+	// Set Orientation
 	var paper=ele.value.split('-');
-	if(Number(paper[0])>height||Number(paper[1])>width){
+	if(Number(paper[0])>height||Number(paper[1])>width||ele.value=='full'){
 		document.scanning.ornt.selectedIndex=0;
 		document.scanning.ornt.disabled='disabled';
 	}
@@ -353,6 +374,36 @@ function paperChange(ele){
 function rotateChange(ele){
 	var val=ele.value;
 	ele.nextSibling.textContent=(val==180?'Upside-down':(val<0?'Counterclockwise':'Clockwise'));
+	var prefixes = 't WebkitT MozT OT msT'.split(' ');
+	for(var prefix in prefixes){
+		if(typeof document.body.style[prefixes[prefix]+'ransform']!="undefined"){
+			prefix=prefixes[prefix]+'ransform';
+			break;
+		}
+	}
+	if(typeof prefix=="number"|| typeof document.evaluate=="undefined"||val==0)
+		return;
+	ele=document.evaluate("//div[@id='preview_img']/p/img[@title='Preview']",document,null,9,null).singleNodeValue;// Who wants to bet it takes MS till 2010 to support this
+	if(ele.src.indexOf('inc/images/blank.gif')>-1)
+		return;
+	ias.setOptions({ "hide": true, "disable": true, "fadeSpeed": false, "rotating": true });
+	ele.style[prefix]='rotate('+val+'deg)';// To DO add scale(X%)
+	setTimeout(function(){// We can not leave it rotated, it brutally screws up cropping
+		ele.style[prefix]=null;
+		setTimeout(function(){
+			ias.setOptions({ "hide": false, "disable": false, "fadeSpeed": 850, "rotating": false });
+			if(document.scanning.loc_width.value>0&&document.scanning.loc_height.value>0)
+				setRegion(ias);
+		},800);// 800ms is the animation duration in the css
+	},2000);// should be long enough to see how it looks, given there is a 800ms animation
+}
+function changeBrightContrast(){// Webkit based only :(
+	if(typeof document.body.style.webkitFilter!='string')
+		return;
+	ele=document.evaluate("//div[@id='preview_img']/p/img[@title='Preview']",document,null,9,null).singleNodeValue;
+	if(ele.src.indexOf('inc/images/blank.gif')>-1)
+		return;
+	ele.style.webkitFilter='brightness('+document.scanning.bright.value+'%) contrast('+(Number(document.scanning.contrast.value)+100)+'%)';
 }
 function fileChange(type){
 	if(type=='txt')
