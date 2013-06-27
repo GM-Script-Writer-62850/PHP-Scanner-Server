@@ -1,25 +1,36 @@
 <?php
-if(isset($_POST['file'])){
+if(isset($_POST['file'])||isset($_POST['json'])){
 	/*
 	foreach($_POST as $key => $value){// This if for debuging
 		echo "$key = $value\n";
 	}*/
 
-	$scan = $_POST['file'];
-	if(strrpos($scan, "/")>-1)
-		$scan =substr($scan,strrpos($scan,"/")+1);
-
-	if(!file_exists("scans/$scan")){
-		echo '{"title":"404 Not Found","message":"That scan no longer exists"}';
-		die();
+	if(isset($_POST['file'])){
+		$scans='{"'.addslashes($_POST['file']).'":1}';
+		$prefix='';
 	}
+	else{
+		$scans=$_POST['json'];
+		$prefix='Scan_';
+	}
+	$scans=json_decode($scans);
+
+	foreach($scans as $scan => $val){
+		if(strrpos($scan, "/")>-1)
+			$scan=substr($scan,strrpos($scan,"/")+1);
+		if(!file_exists("scans/$prefix$scan"))
+			die('{"title":"404 Not Found","message":"That scan ('.htmlspecialchars($scan).') no longer exists"}');
+	}
+
 	require_once("phpmailer/class.phpmailer.php");
 
 	$mail = new PHPMailer();
 	$mail->IsSMTP(); // telling the class to use SMTP
 	$mail->SMTPDebug = 0; // enables SMTP debug information (for testing) // 0 = no errors or messages // 1 = errors and messages // 2 = messages only
-	$mail->SMTPAuth = true; // enable SMTP authentication
-	$mail->SMTPSecure = $_POST['prefix']; // sets the prefix to the server
+	if($_POST['prefix']!='plain'){// If this returns false, you need a new email service
+		$mail->SMTPAuth = true; // enable SMTP authentication
+		$mail->SMTPSecure = $_POST['prefix']; // sets the prefix to the server
+	}
 	$mail->Host = $_POST['host']; // sets the host of the SMTP server
 	$mail->Port = $_POST['port']; // set the SMTP port for the email server
 	$mail->Username = $_POST['from']; // username
@@ -42,16 +53,28 @@ if(isset($_POST['file'])){
 
 	$mail->Subject = $_POST['title']; // set title
 	$mail->IsHTML(true);
-	if(substr($scan,-3)!='txt'){
-		$mail->AddEmbeddedImage("scans/".$scan, $scan);
-		$mail->Body = "<h1>Scanned with PHP Scanner Server</h1><img src=\"cid:".htmlspecialchars($scan)."\"/>";
-		$mail->AltBody="Please view this in html instead of plain text.";
+
+	$message="<h1>Scanned with PHP Scanner Server</h1>";
+	$altMsg="Scanned with PHP Scanner Server";
+	$image=false;
+	foreach($scans as $scan => $val){
+		$message.="<p><h3>$scan<h3/>";
+		if(substr($scan,-3)!='txt'){
+			$mail->AddEmbeddedImage("scans/$prefix".$scan, $scan);
+			$message.="<img src=\"cid:".htmlspecialchars($scan)."\"/>";
+			$image=true;
+		}
+		else{
+			$filedata=file_get_contents("scans/$prefix$scan");
+			$message.=htmlspecialchars($filedata);
+			if(!$image)
+				$altMsg.="$filedata\n----------------------\n";
+		}
+		$message.="</p>";
 	}
-	else{
-		$filedata=file_get_contents("scans/$scan");
-		$mail->Body = "<h1>Scanned with PHP Scanner Server</h1>".htmlspecialchars($filedata);
-		$mail->AltBody="Scanned with PHP Scanner Server\n$filedata";
-	}
+
+	$mail->Body=$message;
+	$mail->AltBody=($image?"Please view this in HTML instead of plain text.":$altMsg);
 
 	if(!$mail->Send()){
 		$json=json_decode('{"title":"Email NOT sent!"}');
@@ -72,7 +95,7 @@ else if(isset($_GET['domain'])){
 		$data=$data->{"emailProvider"}->{"outgoingServer"};
 		$JSON->{"port"}=(int)$data->{"port"};
 		$JSON->{"host"}=(string)$data->{"hostname"};
-		//$JSON->{"prefix"}=(string)$data->{"prefixType"}; # No idea what this is good for @.@
+		$JSON->{"prefix"}=(string)$data->{"socketType"}; # No idea what this is good for @.@
 		$JSON->{"type"}=(string)$data->attributes()->{"type"};
 		echo json_encode($JSON);
 	}

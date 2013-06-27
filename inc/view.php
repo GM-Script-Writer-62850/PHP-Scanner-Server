@@ -30,4 +30,4 @@ else{
 	echo "<p>".str_replace('" href', '-off" href', $icons)."</p>";
 	echo "<pre class=\"border\">".html($file)." was not found, it was probally deleted</pre></div>";
 }
-?><script type="text/javascript">disableIcons();</script>
+?>

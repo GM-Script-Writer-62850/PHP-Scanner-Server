@@ -25,20 +25,35 @@ if(isset($_GET['downloadServer'])){
 }
 else if(isset($_GET['json'])){
 	$files=json_decode($_GET['json']);
-	$cmd="convert ";
+	$FILES='';
+	$type=isset($_GET['type'])?$_GET['type']:false;
 	header("Pragma: public");
 	foreach($files as $key => $val){
 		$file="Scan_$key";
-		if(strrpos($file, "/")>-1)
+		if(is_numeric(strpos($file, "/")))
 			$file=substr($file,strrpos($file,"/")+1);
 		if(is_file("scans/$file"))
-			$cmd.="scans/$file ";
+			$FILES.='scans/"'.addslashes($file).'" ';
 	}
-	if(strlen($cmd)>8){
-		$file=md5(time().rand()).'.pdf';
-		shell_exec($cmd."/tmp/$file");// -page Letter -gravity center
-		header("Content-type: application/pdf");
-		header("Content-Disposition: attachment; filename=\"Compilation.pdf\"");
+	if(strlen($FILES)>0 && is_string($type)){
+		$type=$_GET['type'];
+		if($type=='pdf'){
+			$file=md5(time().rand()).'.pdf';
+			shell_exec("convert $FILES+repage /tmp/$file");// -page Letter -gravity center
+			header("Content-type: application/pdf");
+			header("Content-Disposition: attachment; filename=\"Compilation.pdf\"");
+		}
+		else if($type=='zip'){
+			$file=md5(time().rand()).'.zip';
+			header("Content-Disposition: attachment; filename=\"Compilation.zip\"");
+			shell_exec("zip \"/tmp/$file\" $FILES");
+			echo file_get_contents("/tmp/$download.zip");
+		}
+		else{
+			header("Content-type: plain/txt");
+			header("Content-Disposition: attachment; filename=\"Error.txt\"");
+			die("Does not support '$type' files");
+		}
 		echo file_get_contents("/tmp/$file");
 		@unlink("/tmp/$file");
 	}
@@ -54,8 +69,9 @@ else if(isset($_GET['file'])){
 		if(isset($_GET['compress'])){
 			$download=substr($_GET['file'],0,strrpos($_GET['file'],"."));
 			header("Content-Disposition: attachment; filename=\"$download.zip\"");
+			$download=md5(time().rand());
 			shell_exec("cd \"scans\" && zip -r \"/tmp/$download.zip\" \"".$_GET['file']."\"");
-		        echo file_get_contents("/tmp/$download.zip");
+			echo file_get_contents("/tmp/$download.zip");
 			unlink("/tmp/$download.zip");
 		}
 		else{
@@ -143,6 +159,9 @@ else if(isset($_GET['update'])){
 		$file=substr($file,0,strpos($file,PHP_EOL));
 		$vs=version_compare($file,$_GET['update']);// -1 = older, 0 = same, 1 = newer
 		echo "{\"state\":\"$vs\",\"version\":\"$file\"}";
+		$f=@fopen("config/gitVersion.txt",'w+');
+		@fwrite($f,$file);
+		@fclose($f);
 	}
 	else
 		echo '{"state":-2,"vs":null}';

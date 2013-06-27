@@ -3,10 +3,11 @@
 $FreeSpaceWarn=2048;// In Megabytes
 $Fortune=true;// Enable/disable fortunes in the debug console
 $ExtraScanners=false;// Adds sample scanners from ./inc/scanhelp/
+$CheckForUpdates=false;// Enables auto update checking
 // Sorry for the lack of explanations in the code feel free to ask what something does
 
 $NAME="PHP Scanner Server";
-$VER="1.3-5";
+$VER="1.3-6_dev";
 $SAE_VER="1.4"; // Scanner access enabler version
 
 # ****************
@@ -176,6 +177,8 @@ function uuid2bus($d){// Bug #13
 	$id=$d->{"UUID"};
 	$d=$d->{"DEVICE"};
 	$data=exe("lsusb -d $id # See Bug #13",true);
+	if(strlen($data)==0)
+		return $d;// Scanner must not be connected
 	$bus=substr($data,strpos($data,"Bus ")+4,3);
 	$dev=substr($data,strpos($data,"Device ")+7,3);
 	$pos=strpos($d,"libusb:")+7;
@@ -275,10 +278,19 @@ if($PAGE=="Scans"){
 		Print_Message("No Images","All files have been removed. There are no scanned images to display.",'center');
 	}
 	else{
-		echo '<div class="box box-full"><h2>PDF Downloader</h2><p style="text-align:center;">Double Click a file name to select/deselect it for download<br/>'.
+		echo '<div class="box box-full"><h2>Bulk Operations</h2><p style="text-align:center;">'.
+			'<a onclick="return false" class="tool icon download-off" href="#"><span class="tip">Download (Disabled)</span></a> '.
+			'<a onclick="return bulkDownload(this,\'zip\')" class="tool icon zip" href="#"><span class="tip">Download Zip</span></a> '.
+			'<a onclick="return bulkDownload(this,\'pdf\');" class="tool icon pdf" href="#"><span class="tip">Download PDF</span></a> '.
+			'<a onclick="return bulkPrint(this)" class="tool icon print" href="#"><span class="tip">Print</span></a> '.
+			'<a onclick="return bulkDel()" class="tool icon del" href="#"><span class="tip">Delete</span></a> '.
+			'<a onclick="return false" class="tool icon edit-off" href="#"><span class="tip">Edit (Disabled)</span></a> '.
+			'<a onclick="return bulkView(this)" class="tool icon view" href="#"><span class="tip">View</span></a> '.
+			'<a onclick="return false" class="tool icon upload-off" href="#"><span class="tip">Upload to Imgur (Not Yet Implemented)</span></a> '.
+			'<a onclick="return emailManager(\'Scan_Compilation\')" class="tool icon email" href="#"><span class="tip">Email</span></a>'.
+			'<br/>Double Click a file name to select/deselect it<br/>'.
 			'The order they are selected determines the page order<br/>'.
 			'<a href="#" onclick="return selectScans(false);"><button>Select All</button></a> '.
-			'<a href="#" onclick="return makePDF(this);"><button>Download</button></a> '.
 			'<a href="#" onclick="return selectScans(true);"><button>Select None</button></a>'.
 			'</p></div>';
 		$FILES=explode("\n",substr(exe('cd "scans"; ls "Preview"*',true),0,-1));
@@ -612,13 +624,15 @@ else if($PAGE=="Device Notes"){
 			$DEVICE=html($CANNERS[$i]->{"DEVICE"});
 			$res='';
 			$sources=explode('|',$CANNERS[$i]->{"SOURCE"});
+			echo "<li>$name ".(isset($CANNERS[$i]->{"SELECTED"})?'':"[<a href=\"index.php?page=Device%20Notes&id=$i\">Set as default scanner</a>]").
+				"<ul><li><a onclick=\"printMsg('Loading','Please Wait...','center',0);\" href=\"index.php?page=Device%20Notes&action=$DEVICE\"><code>$DEVICE</code></a></li>";
 			for($x=0,$ct=count($sources);$x<$ct;$x++){
 				$val=html($sources[$x]);
 				$WIDTH=round($CANNERS[$i]->{"WIDTH-$val"}/25.4,2);
 				$HEIGHT=round($CANNERS[$i]->{"HEIGHT-$val"}/25.4,2);
 				$MODES=count(explode('|',$CANNERS[$i]->{"MODE-$val"}));
 				$DPI=explode('|',$CANNERS[$i]->{"DPI-$val"});
-				$res.=($val=='Inactive'?'<li>This scanner supports<ul>':"<li>The '<a onclick=\"printMsg('Loading','Please Wait...','center',0);\" href=\"index.php?page=Device%20Notes&action=$DEVICE&source=$val\">$val</a>' source supports<ul>").
+				echo ($val=='Inactive'?'<li>This scanner supports<ul>':"<li>The '<a onclick=\"printMsg('Loading','Please Wait...','center',0);\" href=\"index.php?page=Device%20Notes&action=$DEVICE&source=$val\">$val</a>' source supports<ul>").
 					"<li>A bay width of <span class=\"tool\">$WIDTH\"<span class=\"tip\">".$CANNERS[$i]->{"WIDTH-$val"}." mm</span><span></li>".
 					"<li>A bay height of <span class=\"tool\">$HEIGHT\"<span class=\"tip\">".$CANNERS[$i]->{"HEIGHT-$val"}." mm</span></span></li>".
 					'<li>A scanner resolution of '.$DPI[$DPI[0]=='auto'?1:0].' DPI to '.number_format($DPI[count($DPI)-1]).' DPI</li>'.
@@ -626,8 +640,7 @@ else if($PAGE=="Device Notes"){
 					"<li>$MODES color mode".($MODES==1?'':'s')."</li>".
 					'</ul></li>';
 			}
-			echo "<li>$name ".(isset($CANNERS[$i]->{"SELECTED"})?'':"[<a href=\"index.php?page=Device%20Notes&id=$i\">Set as default scanner</a>]").
-				"<ul><li><a onclick=\"printMsg('Loading','Please Wait...','center',0);\" href=\"index.php?page=Device%20Notes&action=$DEVICE\"><code>$DEVICE</code></a></li>$res</ul></li>";
+			echo '</ul></li>';
 		}
 		echo '</ul></div>';
 	}
@@ -638,8 +651,20 @@ else if($PAGE=="Device Notes"){
 # ****************
 else if($PAGE=="View"){
 	InsertHeader("View File");
-	$file=fileSafe(Get_Values('file'));
-	include "inc/view.php";
+	$file=Get_Values('file');
+	if(is_string($file)){
+		$files=json_decode("{\"$file\":1}");
+		$prefix='';
+	}
+	else{
+		$files=json_decode(Get_Values('json'));
+		$prefix='Scan_';
+	}
+	foreach($files as $file => $val){
+		$file=fileSafe($prefix.$file);
+		include "inc/view.php";
+	}
+	echo '<script type="text/javascript">disableIcons();</script>';
 	Footer();
 }
 # ***************
@@ -908,7 +933,7 @@ else{
 			$HEIGHT="0";
 		}
 		# Set size & orientation of scan
-		if($WIDTH!="0"&&$HEIGHT!="0"){// selected scan
+		if($WIDTH!="0"&&$HEIGHT!="0"){// Selected scan
 			if($SIZE=="full"){
 				$TRUE_W=$scanner_w;
 				$TRUE_H=$scanner_h;
@@ -994,6 +1019,14 @@ else{
 				exe("scanimage -d \"$DEVICE\" --resolution $QUALITY --mode $MODE $LAMP--format=ppm > \"$CANDIR/scan_file$SCANNER.pnm\"",false);
 			}
 		}
+
+		if(count($CANNERS)>1){
+			$CANNERS=json_decode(file_get_contents("config/scanners.json"));
+			$CANNERS[$SCANNER]->{"DEVICE"}=$DEVICE;// See bug 13
+		}
+		$CANNERS[$SCANNER]->{"INUSE"}=0;
+		SaveFile("config/scanners.json",json_encode($CANNERS));
+
 		$files=scandir($CANDIR);
 		for($i=2,$ct=count($files);$i<$ct;$i++){
 			$SCAN="$CANDIR/".$files[$i];
@@ -1064,15 +1097,18 @@ else{
 			Update_Links($S_FILENAME,$PAGE);
 			Update_Preview("scans/$P_FILENAME");
 		}
-		if(count($CANNERS)>1)
-			$CANNERS=json_decode(file_get_contents("config/scanners.json"));
-		$CANNERS[$SCANNER]->{"INUSE"}=0;
-		SaveFile("config/scanners.json",json_encode($CANNERS));
 		if($ct>3)
 			Print_Message("Info",'Multiple scans made, only displaying last one, go to <a href="index.php?page=Scans">Scanned Files</a> for the rest','center');
 	}
 	echo '<script type="text/javascript">if(document.scanning)document.scanning.action.disabled=false;</script>';
 	checkFreeSpace($FreeSpaceWarn);
 }
-echo '<script type="text/javascript">Debug("'.rawurlencode(html($debug)).html($here."$ ").'",'.(isset($_COOKIE["debug"])?$_COOKIE["debug"]:'false').');</script>';
+echo '<script type="text/javascript">Debug("'.rawurlencode(html($debug)).html($here."$ ").'",'.(isset($_COOKIE["debug"])?$_COOKIE["debug"]:'false').');';
+if($CheckForUpdates){
+	$time="config/gitVersion.txt";
+	$time=is_file($time)?filemtime($time):time()/2;
+	if($time+3600*24<time())
+		echo "updateCheck('$VER',null);";
+}
+echo '</script>';
 ?></body></html>

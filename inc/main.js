@@ -269,6 +269,7 @@ function printMsg(t,m,a,r){
 	else
 		ele.appendChild(div);
 	div.style.height='auto';
+	return false;
 }
 function roundNumber(num,dec){// http://forums.devarticles.com/javascript-development-22/javascript-to-round-to-2-decimal-places-36190.html#post71368
 	var result = Math.round(num*Math.pow(10,dec))/Math.pow(10,dec);
@@ -597,18 +598,60 @@ function toggleFile(file){
 		file.setAttribute('selected',false);
 	}
 }
-function makePDF(link){
+function bulkDownload(link,type){
 	var ct=0;
-	for(var i in files)
+	for(var i in files){
 		ct++;
+		break;
+	}
 	if(ct>0){
-		link.href="download.php?json="+encodeURIComponent(JSON.stringify(files));
+		link.href="download.php?type="+encodeURIComponent(type)+"&json="+encodeURIComponent(JSON.stringify(files));
 		return true;
 	}
-	else{
-		printMsg('Error','No files selected','center',-1);
-		return false;
+	else
+		return printMsg('Error','No files selected','center',-1);
+}
+function bulkPrint(link){
+	var ct=0;
+	for(var i in files){
+		ct++;
+		break;
 	}
+	if(ct>0){
+		window.open("print.php?json="+encodeURIComponent(JSON.stringify(files)));
+		return true;
+	}
+	else
+		return printMsg('Error','No files selected','center',-1);
+}
+function bulkDel(){
+	var p='Delete all of these';
+	for(var i in files)
+		p+="\n"+i;
+	if(p.length==19)
+		return printMsg('Error','No files selected','center',-1);
+	if(!confirm(p))
+		return false;
+	var files2=files;
+	for(var i in files2){
+		if(delScan(i,false))
+			return printMsg('Error','Unsupported Browser','center',-1);
+		delete(files[i]);
+	}
+	return false;
+}
+function bulkView(link){
+	var ct=0;
+	for(var i in files){
+		ct++;
+		break;
+	}
+	if(ct>0){
+		window.open("index.php?page=View&json="+encodeURIComponent(JSON.stringify(files)));
+		return true;
+	}
+	else
+		return printMsg('Error','No files selected','center',-1);
 }
 function selectScans(b){
 	try{
@@ -735,6 +778,13 @@ function emailManager(file){
 		printMsg('Sorry',"Your browser does not support the XMLHttpRequest function so you can not email scans with that button.<br/>You have 3 choices: ignore, update your browser, and switch browsers",'center',0);
 		return false;
 	}
+	if(file=='Scan_Compilation'){
+		var files_ct=0;
+		for(var i in files)
+			files_ct++;
+		if(files_ct==0)
+			return printMsg('Error','No files selected','center',-1);
+	}
 	var html='<div id="email"><h2>'+(file?'Email: '+file.substr(5):'Configure Email')+'</h2>'+
 	'<div class="security"><h2>Security Notice</h2><ul>';
 	if(storeSupport){
@@ -747,13 +797,13 @@ function emailManager(file){
 	html+='<li>You can double click the password blank to see the password.</li>'+
 	(document.location.protocol=='http:'?'<li>This does not use a secure connection to get your login from your browser to the server.</li>':'')+'</ul></div>'+
 	'<form name="email" target="_blank" action="email.php" onsubmit="return validateEmail(this);">'+
-	'<input type="hidden" name="file" value="'+file+'"/>'+
+	'<input type="hidden" name="'+(file=='Scan_Compilation'?'json':'file')+'" value="'+(file=='Scan_Compilation'?encodeHTML(JSON.stringify(files)):file)+'"/>'+
 	'<div class="label">'+(file?'From':'Email')+':</div><div class="control"><input type="text" onchange="configEmail(this.value)" name="from" value="johndoe@gmail.com"/></div>'+
-	(file?'<div class="label">Subject:</div><div class="control"><input type="text" name="title" value="[Scanned '+(file.substr(-3)!='txt'?'Image':'Text')+'] '+file.substr(5)+'"/></div>':'')+
+	(file?'<div class="label">Subject:</div><div class="control"><input type="text" name="title" value="[Scanned '+(file=='Scan_Compilation'?'Compilation':(file.substr(-3)!='txt'?'Image':'Text'))+'] '+(file=='Scan_Compilation'?files_ct+' Scans':file.substr(5))+'"/></div>':'')+
 	(file?'<div class="label">To:</div><div class="control"><input type="text" name="to" value=""/></div>':'')+
 	'<div class="label">Password:</div><div class="control"><input type="password" name="pass" ondblclick="this.type=(this.type==\'text\'?\'password\':\'text\')" autocomplete="off"/></div>'+
 	'<div class="label">Host:</div><div class="control"><input type="text" name="host" value="smtp.gmail.com"/></div>'+
-	'<div class="label">Prefix:</div><div class="control"><select name="prefix"><option value="tls">TLS</option><option value="ssl">SSL</option></select></div>'+
+	'<div class="label">Prefix:</div><div class="control tool"><select name="prefix"><option value="ssl">SSL</option><option value="tls">TLS</option><option value="plain">None</option></select><span class="tip" style="z-index:-1">Placeholder</span></div>'+
 	'<div class="label">Port:</div><div class="control"><input type="text" name="port" value="587"/></div>';
 	if(storeSupport){
 		html+='<div class="label">Remember Me:</div><div class="control"><input '+(file?'':'checked="checked" ')+'id="email-nopass" onchange="if(this.checked){getID(\'email-pass\').checked=false}'+(file?'':'else if(getID(\'email-nopass\').checked){getID(\'email-pass\').checked=true}')+'" type="checkbox" name="store"/> <small>(Exclude Password)</small></div>'+
@@ -779,12 +829,13 @@ function emailManager(file){
 	return false;
 }
 function validateEmail(ele){
-	var data={};
+	var data={},val;
 	if(ele.from.value.indexOf('@')==-1){
 		alert('Invalid From Email Address');
 		return false;
 	}
-	if(ele.file.value!='null'){
+	val=(ele.json?ele.json.value:ele.file.value);
+	if(val!='null'){
 		var recipients=ele.to.value.replace(/ /g,"").split(',');
 		for(var i=0,stp=recipients.length;i<stp;i++){
 			if(recipients[i].indexOf('@')==-1){
@@ -806,7 +857,7 @@ function validateEmail(ele){
 		data["storepass"]=ele.storepass.checked;
 		localStorage.setItem("email",JSON.stringify(data));
 	}
-	if(ele.file.value!='null')
+	if(val!='null')
 		sendEmail(ele);
 	toggle('blanket');
 	return false;
@@ -824,6 +875,23 @@ function configEmail(addr){
 				if(!data["error"]){
 					document.email.port.value=data["port"];
 					document.email.host.value=data["host"];
+					var t=document.email.prefix.nextSibling;
+					if(data["host"]=="SSL"||data["host"]=="STARTTLS"){
+						document.email.prefix.selectedIndex=0;
+						t.setAttribute('style','z-index:-1');
+					}
+					else if(data["host"]=="TLS"){
+						document.email.prefix.selectedIndex=1;
+						t.setAttribute('style','z-index:-1');
+					}
+					else if(data["host"]=="plain"){
+						document.email.prefix.selectedIndex=2;
+						t.setAttribute('style','z-index:-1');
+					}
+					else{
+						t.innerHTML='The autoconfigure<br/>database said<br>something about<br/>"'+data["prefix"]+'"';
+						t.removeAttribute('style');
+					}
 					if(data['type']!='smtp')
 						printMsg('Please File a bug report','Your email provider is not supported, if you do support can be added for it','center',-1);
 				}
@@ -852,7 +920,7 @@ function sendEmail(ele){
 		}
 	};
 	httpRequest.open('POST', 'email.php');
-	var params = "file="+encodeURIComponent(ele.file.value)+
+	var params = (ele.file?"file="+encodeURIComponent(ele.file.value):"json="+encodeURIComponent(ele.json.value))+
 		"&from="+encodeURIComponent(ele.from.value)+
 		"&to="+encodeURIComponent(ele.to.value)+
 		"&title="+encodeURIComponent(ele.title.value)+
@@ -876,9 +944,11 @@ function deleteEmail(){
 	else
 		printMsg('Error',"Your browser does not even support saveing email settings, much less deleting them.",'center',0);
 }
-function delScan(file){
-	if(!confirm("Are you sure you want to delete "+file))
-		return false;
+function delScan(file,prompt){
+	if(prompt){
+		if(!confirm("Are you sure you want to delete "+file))
+			return false;
+	}
 	if(typeof XMLHttpRequest!='function'){
 		return true;
 	}
@@ -890,7 +960,10 @@ function delScan(file){
 				if(data['state']==0){
 					printMsg('File Deleted',"The file "+data['file']+" has been removed.",'center',0);
 					var del=getID(file);
+					if(files[file])
+						delete(files[file]);
 					del.parentNode.removeChild(del);
+					
 				}
 				else
 					printMsg('Error 404',"Unable to find "+data['file']+" in the scans folder or permission is denied",'center',0);
@@ -907,23 +980,25 @@ function delScan(file){
 function updateCheck(vs,e){
 	if(typeof XMLHttpRequest!='function')
 		printMsg('Error','Your browser does not support <a href="http://www.w3schools.com/xml/xml_http.asp" target="_blank">XMLHttpRequest</a>, so you can not use this feature','center',0);
-	e.setAttribute('disabled','disabled');
+	if(e)
+		e.setAttribute('disabled','disabled');
 	var httpRequest = new XMLHttpRequest();
 	httpRequest.onreadystatechange = function(){
 		if(httpRequest.readyState==4){
 			if(httpRequest.status==200){
-				e.removeAttribute('disabled');
+				if(e)
+					e.removeAttribute('disabled');
 				var data=parseJSON(httpRequest.responseText);
 				if(data["state"]==1)
 					printMsg('Update Available','Version '+data["version"]+' is available for <a target="_blank" href="https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server/wiki/Change-Log">download</a>','center',-1);
-				else if(data["state"]==0)
+				else if(data["state"]==0&&e)
 					printMsg('Up to Date','Your current version of '+data["version"]+' is the latest available','center',-1);
-				else if(data["state"]==-1)
+				else if(data["state"]==-1&&e)
 					printMsg('Custom Copy','Your current version is newer than the latest version','center',-1);
-				else
+				else if(e)
 					printMsg('Error','There was a error connecting to <a href="http://github.com">github.com</a>','center',-1);
 			}
-			else{
+			else if(e){
 				printMsg('Error '+httpRequest.status,'Failed to connect to '+document.domain,'center',-1);
 				e.removeAttribute('disabled');
 			}
