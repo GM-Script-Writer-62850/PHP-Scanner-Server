@@ -301,7 +301,6 @@ function scannerChange(ele){
 	else
 		document.scanning.source.removeAttribute('disabled');
 	sourceChange(document.scanning.source);
-	
 }
 function sourceChange(ele){
 	var info,text,html,html2,html3,dpi;
@@ -364,7 +363,7 @@ function paperChange(ele){
 	var height=json['HEIGHT-'+document.scanning.source.value];
 	// Set Orientation
 	var paper=ele.value.split('-');
-	if(Number(paper[0])>height||Number(paper[1])>width||ele.value=='full'){
+	if(Number(paper[0])>height||Number(paper[1])>width){
 		document.scanning.ornt.selectedIndex=0;
 		document.scanning.ornt.disabled='disabled';
 	}
