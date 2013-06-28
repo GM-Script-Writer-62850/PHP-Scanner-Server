@@ -381,7 +381,7 @@ function rotateChange(ele){
 			break;
 		}
 	}
-	if(typeof prefix=="number"|| typeof document.evaluate=="undefined"||val==0)
+	if(typeof prefix=="number"||typeof document.evaluate=="undefined"||val==0)
 		return;
 	ele=document.evaluate("//div[@id='preview_img']/p/img[@title='Preview']",document,null,9,null).singleNodeValue;// Who wants to bet it takes MS till 2010 to support this
 	if(ele.src.indexOf('inc/images/blank.gif')>-1)
@@ -395,7 +395,7 @@ function rotateChange(ele){
 			if(document.scanning.loc_width.value>0&&document.scanning.loc_height.value>0)
 				setRegion(ias);
 		},800);// 800ms is the animation duration in the css
-	},2000);// should be long enough to see how it looks, given there is a 800ms animation
+	},2000);// Should be long enough to see how it looks, given there is a 800ms animation
 }
 function changeBrightContrast(){// Webkit based only :(
 	if(typeof document.body.style.webkitFilter!='string')
@@ -877,7 +877,6 @@ function configEmail(addr){
 					document.email.host.value=data["host"];
 					var s='display:none';
 					var t=document.email.prefix.nextSibling;
-					
 					if(data["prefix"]=="SSL"||data["prefix"]=="STARTTLS"){
 						document.email.prefix.selectedIndex=0;
 						t.setAttribute('style',s);

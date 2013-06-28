@@ -1,6 +1,6 @@
 <head>
 <meta http-equiv="Content-type" content="text/html; charset=UTF-8"/>
-<!--[if lt IE 9]><meta http-equiv="X-UA-Compatible" content="chrome=1"><![endif]-->
+<!--[if lt IE 10]><meta http-equiv="X-UA-Compatible" content="chrome=1"><![endif]-->
 <title><?php echo $GLOBALS['NAME']; ?> ~ <?php echo $GLOBALS['PAGE']; ?></title>
 <link id="style" rel="stylesheet" href="inc/style.php<?php
 if(isset($_COOKIE["colors"])){

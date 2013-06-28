@@ -19,6 +19,7 @@ else{
 }
 $BG_COLOR=$COLORS[0];
 $LK_COLOR=$COLORS[1];
+$transitionTime='0.8s'; // The rotateChange function in main.js needs to be adjust based on this value
 ?>
 @-moz-keyframes fadein { /* Firefox */
 	from {
@@ -63,11 +64,13 @@ $LK_COLOR=$COLORS[1];
 
 body, #header, #message table, .side_box, .side_box h2, #preview, #preview_links img, #preview_img p, #preview h2, .box, .box img, .box pre.border, .box h2, #footer, #debug pre{
 	-moz-transition-property: background, border, color;
-	-moz-transition-duration: 0.8s;
+	-moz-transition-duration: <?php echo $transitionTime; ?>;
 	-o-transition-property: background, border, color;
-	-o-transition-duration: 0.8s;
+	-o-transition-duration: <?php echo $transitionTime; ?>;
 	-webkit-transition-property: background, border, color;
-	-webkit-transition-duration: 0.8s;
+	-webkit-transition-duration: <?php echo $transitionTime; ?>;
+	transition-property: background, border, color;
+	transition-duration: <?php echo $transitionTime; ?>;
 }
 body {
 	margin: 0;
@@ -80,13 +83,13 @@ body {
 a {
 	color: #<?php echo $BG_COLOR; ?>;
 	-moz-transition-property: color;
-	-moz-transition-duration: 0.8s;
+	-moz-transition-duration: <?php echo $transitionTime; ?>;
 	-o-transition-property: color;
-	-o-transition-duration: 0.8s;
+	-o-transition-duration: <?php echo $transitionTime; ?>;
 	-webkit-transition-property: color;
-	-webkit-transition-duration: 0.8s;
+	-webkit-transition-duration: <?php echo $transitionTime; ?>;
 	transition-property: color;
-	transition-duration: 0.8s;
+	transition-duration: <?php echo $transitionTime; ?>;
 }
 
 a:hover {
@@ -116,10 +119,7 @@ a:hover {
 
 .tool .tip{
 	background-color: rgba(0, 0, 0, 0.75);
-	-moz-border-radius: 5px;
 	border-radius: 5px;
-	-webkit-border-radius: 5px;
-	-o-border-radius: 5px;
 	color: #ffffff;
 	display: none;
 	left: 105%;
@@ -131,11 +131,11 @@ a:hover {
 	z-index: 1;
 	white-space: nowrap;
 	text-decoration: none;
-	-moz-animation-duration: 0.8s; /* Firefox */
-	-webkit-animation-duration: 0.8s; /* Chrome and Safari */
-	-o-animation-duration: 0.8s; /* Opera (if they ever add this) */
-	-ms-animation-duration: 0.8s; /* IE 10 */
-	animation-duration: 0.8s; /* Standard */
+	-moz-animation-duration: <?php echo $transitionTime; ?>; /* Firefox */
+	-webkit-animation-duration: <?php echo $transitionTime; ?>; /* Chrome and Safari */
+	-o-animation-duration: <?php echo $transitionTime; ?>; /* Opera (if they ever add this) */
+	-ms-animation-duration: <?php echo $transitionTime; ?>; /* IE 10 */
+	animation-duration: <?php echo $transitionTime; ?>; /* Standard */
 }
 
 #container {
@@ -145,10 +145,7 @@ a:hover {
 	padding: 0.5em;
 	text-align: left;
 	background: #FFFFFF;
-	-moz-border-radius: 5px;
 	border-radius: 5px;
-	-webkit-border-radius: 5px;
-	-o-border-radius: 5px;
 }
 
 #header {
@@ -156,10 +153,7 @@ a:hover {
 	margin: 0 0 0.5em 0;
 	border: 1px solid #<?php echo $BG_COLOR; ?>;
 	background: url("images/logo.png") no-repeat scroll left center #<?php echo $BG_COLOR; ?>;
-	-moz-border-radius: 5px 5px 0 0;
 	border-radius: 5px 5px 0 0;
-	-webkit-border-radius: 5px 5px 0 0;
-	-o-border-radius: 5px 5px 0 0;
 }
 
 .tab {
@@ -169,10 +163,7 @@ a:hover {
 	padding: 2px 2px 0px 2px;
 	margin: 1.4em 0.5em 0.5em 0;
 	font-size: 16px;
-	-moz-border-radius: 5px;
 	border-radius: 5px;
-	-webkit-border-radius: 5px;
-	-o-border-radius: 5px;
 	text-transform: capitalize;
 }
 
@@ -192,17 +183,16 @@ a:hover {
 	padding: 0;
 	margin-bottom: 0.5em;
 	border-radius: 5px 5px 0 0;
-	-o-border-radius: 5px 5px 0 0;
-	-moz-border-radius: 5px 5px 0 0;
-	-webkit-border-radius: 5px 5px 0 0;
 	height: 0;
 	/*overflow: hidden; what was this even her for?*/
 	-moz-transition-property: height;
-	-moz-transition-duration: 0.8s;
+	-moz-transition-duration: <?php echo $transitionTime; ?>;
 	-o-transition-property: height;
-	-o-transition-duration: 0.8s;
+	-o-transition-duration: <?php echo $transitionTime; ?>;
 	-webkit-transition-property: height;
-	-webkit-transition-duration: 0.8s;
+	-webkit-transition-duration: <?php echo $transitionTime; ?>;
+	transition-property: height;
+	transition-duration: <?php echo $transitionTime; ?>;
 }
 
 .message.ie{
@@ -237,9 +227,6 @@ a:hover {
 .message table{
 	background-color: #<?php echo $BG_COLOR; ?>;
 	border-radius: 5px;
-	-o-border-radius: 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
 	margin: 0;
 	width: 100%;
 }
@@ -364,10 +351,7 @@ a:hover {
 	float: left;
 	padding: 0;
 	margin: 0 0 0.5em 0.5em;
-	-moz-border-radius: 5px 5px 0 0;
 	border-radius: 5px 5px 0 0;
-	-webkit-border-radius: 5px 5px 0 0;
-	-o-border-radius: 5px 5px 0 0;
 }
 
 .side_box h2 {
@@ -429,10 +413,7 @@ select.upper, select.upper option{
 	float: left;
 	padding: 0;
 	margin: 0 0 0.5em 0.5em;
-	-moz-border-radius: 5px 5px 0 0;
 	border-radius: 5px 5px 0 0;
-	-webkit-border-radius: 5px 5px 0 0;
-	-o-border-radius: 5px 5px 0 0;
 }
 
 #preview p{
@@ -449,13 +430,13 @@ select.upper, select.upper option{
 	width: 450px;
 	position: relative;
 	-moz-transition-property: transform, -moz-transform;
-	-moz-transition-duration: 0.8s;
+	-moz-transition-duration: <?php echo $transitionTime; ?>;
 	-o-transition-property: -o-transform, transform;
-	-o-transition-duration: 0.8s;
+	-o-transition-duration: <?php echo $transitionTime; ?>;
 	-webkit-transition-property: -webkit-transform, -webkit-filter, transform;
-	-webkit-transition-duration: 0.8s;
+	-webkit-transition-duration: <?php echo $transitionTime; ?>;
 	transition-property: transform, -webkit-transform, -o-transform, -moz-transform, -webkit-filter;
-	transition-duration: 0.8s;
+	transition-duration: <?php echo $transitionTime; ?>;
 	transform: rotate(0);
 	-moz-transform: rotate(0);
 	-o-transform: rotate(0);
@@ -527,10 +508,7 @@ img[src="inc/images/blank.gif"]{
 	float: left;
 	padding: 0;
 	margin: 0 0 0.5em 0.5em;
-	-moz-border-radius: 5px 5px 0 0;
 	border-radius: 5px 5px 0 0;
-	-webkit-border-radius: 5px 5px 0 0;
-	-o-border-radius: 5px 5px 0 0;
 }
 
 .box {
@@ -655,10 +633,7 @@ code{
 	margin: 0;
 	padding: 0;
 	border: 5px solid #<?php echo $BG_COLOR; ?>;
-	-moz-border-radius: 0 0 5px 5px;
 	border-radius: 0 0 5px 5px;
-	-webkit-border-radius: 0 0 5px 5px;
-	-o-border-radius: 0 05px 5px;
 }
 
 #footer p{
@@ -761,11 +736,13 @@ code{
 	width: 100%;
 	height: 100%;
 	-moz-transition-property: background-color;
-	-moz-transition-duration: 0.8s;
+	-moz-transition-duration: <?php echo $transitionTime; ?>;
 	-o-transition-property: background-color;
-	-o-transition-duration: 0.8s;
+	-o-transition-duration: <?php echo $transitionTime; ?>;
 	-webkit-transition-property: background-color;
-	-webkit-transition-duration: 0.8s;
+	-webkit-transition-duration: <?php echo $transitionTime; ?>;
+	transition-property: background-color;
+	transition-duration: <?php echo $transitionTime; ?>;
 }
 #popUpDiv{
 	position: fixed;
@@ -773,13 +750,13 @@ code{
 	text-align: center;
 	z-index: 9002;
 	border-radius: 5px;
-	-moz-border-radius: 5px;
-	-webkit-border-radius: 5px;
 	-moz-transition-property: opacity;
-	-moz-transition-duration: 0.8s;
+	-moz-transition-duration: <?php echo $transitionTime; ?>;
 	-o-transition-property: opacity;
-	-o-transition-duration: 0.8s;
+	-o-transition-duration: <?php echo $transitionTime; ?>;
 	-webkit-transition-property: opacity;
-	-webkit-transition-duration: 0.8s;
+	-webkit-transition-duration: <?php echo $transitionTime; ?>;
+	transition-property: opacity;
+	transition-duration: <?php echo $transitionTime; ?>;
 	padding: 5px;
 }

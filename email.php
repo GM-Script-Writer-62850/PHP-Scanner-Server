@@ -95,7 +95,7 @@ else if(isset($_GET['domain'])){
 		$data=$data->{"emailProvider"}->{"outgoingServer"};
 		$JSON->{"port"}=(int)$data->{"port"};
 		$JSON->{"host"}=(string)$data->{"hostname"};
-		$JSON->{"prefix"}=(string)$data->{"socketType"}; # No idea what this is good for @.@
+		$JSON->{"prefix"}=(string)$data->{"socketType"};
 		$JSON->{"type"}=(string)$data->attributes()->{"type"};
 		echo json_encode($JSON);
 	}
@@ -104,6 +104,6 @@ else if(isset($_GET['domain'])){
 	}
 }
 else{
-	echo '{"title":"404 Not Found","message":"No scan specified"}';
+	echo '{"title":"404 Not Found","message":"No scan or domain specified"}';
 }
 ?>

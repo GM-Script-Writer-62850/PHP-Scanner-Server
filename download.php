@@ -21,7 +21,7 @@ if(isset($_GET['downloadServer'])){
 	$file=file_get_contents("/tmp/scanner-$t.tar.bz2");
 	header('Content-Length: '.strlen($file));
 	echo $file;
-	unlink("/tmp/scanner-$t.tar.bz2");
+	@unlink("/tmp/scanner-$t.tar.bz2");
 }
 else if(isset($_GET['json'])){
 	$files=json_decode($_GET['json']);
