@@ -803,7 +803,7 @@ function emailManager(file){
 	(file?'<div class="label">To:</div><div class="control"><input type="text" name="to" value=""/></div>':'')+
 	'<div class="label">Password:</div><div class="control"><input type="password" name="pass" ondblclick="this.type=(this.type==\'text\'?\'password\':\'text\')" autocomplete="off"/></div>'+
 	'<div class="label">Host:</div><div class="control"><input type="text" name="host" value="smtp.gmail.com"/></div>'+
-	'<div class="label">Prefix:</div><div class="control tool"><select name="prefix"><option value="ssl">SSL</option><option value="tls">TLS</option><option value="plain">None</option></select><span class="tip" style="z-index:-1">Placeholder</span></div>'+
+	'<div class="label">Prefix:</div><div class="control tool"><select name="prefix"><option value="ssl">SSL</option><option value="tls">TLS</option><option value="plain">None</option></select><span class="tip" style="display:none"></span></div>'+
 	'<div class="label">Port:</div><div class="control"><input type="text" name="port" value="587"/></div>';
 	if(storeSupport){
 		html+='<div class="label">Remember Me:</div><div class="control"><input '+(file?'':'checked="checked" ')+'id="email-nopass" onchange="if(this.checked){getID(\'email-pass\').checked=false}'+(file?'':'else if(getID(\'email-nopass\').checked){getID(\'email-pass\').checked=true}')+'" type="checkbox" name="store"/> <small>(Exclude Password)</small></div>'+
@@ -875,18 +875,20 @@ function configEmail(addr){
 				if(!data["error"]){
 					document.email.port.value=data["port"];
 					document.email.host.value=data["host"];
+					var s='display:none';
 					var t=document.email.prefix.nextSibling;
-					if(data["host"]=="SSL"||data["host"]=="STARTTLS"){
+					
+					if(data["prefix"]=="SSL"||data["prefix"]=="STARTTLS"){
 						document.email.prefix.selectedIndex=0;
-						t.setAttribute('style','z-index:-1');
+						t.setAttribute('style',s);
 					}
-					else if(data["host"]=="TLS"){
+					else if(data["prefix"]=="TLS"){
 						document.email.prefix.selectedIndex=1;
-						t.setAttribute('style','z-index:-1');
+						t.setAttribute('style',s);
 					}
-					else if(data["host"]=="plain"){
+					else if(data["prefix"]=="plain"){
 						document.email.prefix.selectedIndex=2;
-						t.setAttribute('style','z-index:-1');
+						t.setAttribute('style',s);
 					}
 					else{
 						t.innerHTML='The autoconfigure<br/>database said<br>something about<br/>"'+data["prefix"]+'"';
