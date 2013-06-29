@@ -378,15 +378,15 @@ function rotateChange(ele){
 			break;
 		}
 	}
-	if(typeof prefix=="number"||typeof document.evaluate=="undefined"||val==0)
+	if(typeof prefix=="number"||val==0)
 		return;
-	ele=document.evaluate("//div[@id='preview_img']/p/img[@title='Preview']",document,null,9,null).singleNodeValue;// Who wants to bet it takes MS till 2010 to support this
+	ele=previewIMG;
 	if(ele.src.indexOf('inc/images/blank.gif')>-1)
 		return;
 	ias.setOptions({ "hide": true, "disable": true, "fadeSpeed": false, "rotating": true });
 	ele.style[prefix]='rotate('+val+'deg)';// To DO add scale(X%)
 	setTimeout(function(){// We can not leave it rotated, it brutally screws up cropping
-		ele.style[prefix]=null;
+		ele.style[prefix]='';
 		setTimeout(function(){
 			ias.setOptions({ "hide": false, "disable": false, "fadeSpeed": 850, "rotating": false });
 			if(document.scanning.loc_width.value>0&&document.scanning.loc_height.value>0)
@@ -398,10 +398,9 @@ function changeBrightContrast(){// Webkit based only :(
 	// Does not work properly so lets disable it: brightness/contrast have a screwed up/illogical max %
 	//if(typeof document.body.style.webkitFilter!='string') 
 		return;
-	ele=document.evaluate("//div[@id='preview_img']/p/img[@title='Preview']",document,null,9,null).singleNodeValue;
-	if(ele.src.indexOf('inc/images/blank.gif')>-1)
+	if(previewIMG.src.indexOf('inc/images/blank.gif')>-1)
 		return;
-	ele.style.webkitFilter='brightness('+(Number(document.scanning.bright.value)+100)+'%) contrast('+(Number(document.scanning.contrast.value)+100)+'%)';
+	previewIMG.style.webkitFilter='brightness('+(Number(document.scanning.bright.value)+100)+'%) contrast('+(Number(document.scanning.contrast.value)+100)+'%)';
 }
 function fileChange(type){
 	if(type=='txt')
@@ -598,7 +597,7 @@ function toggleFile(file){
 }
 function bulkDownload(link,type){
 	if(typeof JSON=='undefined')
-		return printMsg('Sorry',"Your browser does not support the JSON object so you can not upload scans with that button.<br/>You have 3 choices: ignore, update your browser, and switch browsers",'center',0);
+		return printMsg('Sorry',"Your browser does not support the JSON object so you can not download scans with that button.<br/>You have 3 choices: ignore, update your browser, and switch browsers",'center',0);
 	var ct=0;
 	for(var i in filesLst){
 		ct++;
@@ -613,7 +612,7 @@ function bulkDownload(link,type){
 }
 function bulkPrint(link){
 	if(typeof JSON=='undefined')
-		return printMsg('Sorry',"Your browser does not support the JSON object so you can not upload scans with that button.<br/>You have 3 choices: ignore, update your browser, and switch browsers",'center',0);
+		return printMsg('Sorry',"Your browser does not support the JSON object so you can not print scans with that button.<br/>You have 3 choices: ignore, update your browser, and switch browsers",'center',0);
 	var ct=0;
 	for(var i in filesLst){
 		ct++;
@@ -644,7 +643,7 @@ function bulkDel(){
 }
 function bulkView(link){
 	if(typeof JSON=='undefined')
-		return printMsg('Sorry',"Your browser does not support the JSON object so you can not upload scans with that button.<br/>You have 3 choices: ignore, update your browser, and switch browsers",'center',0);
+		return printMsg('Sorry',"Your browser does not support the JSON object so you can not view scans with that button.<br/>You have 3 choices: ignore, update your browser, and switch browsers",'center',0);
 	var ct=0;
 	for(var i in filesLst){
 		ct++;
@@ -1031,6 +1030,7 @@ function enableColumns(ele,e){ // They work flawlessly in Firefox so it does not
 			ele.className='columns';
 			e.nextSibling[TC]='Disable';
 		}
+		return false;
 	}
 	else if(typeof document.body.style.WebkitColumnGap=="string"||typeof document.body.style.columnGap=="string")
 		printMsg('CSS3 Columns','Your browser supports them, but they do not work as expected.<br/>'+

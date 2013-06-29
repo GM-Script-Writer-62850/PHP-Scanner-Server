@@ -62,7 +62,7 @@ $transitionTime='0.8s'; // The rotateChange function in main.js needs to be adju
 	}
 }
 
-body, #header, #message table, .side_box, .side_box h2, #preview, #preview_links img, #preview_img p, #preview h2, .box, .box img, .box pre.border, .box h2, #footer, #debug pre, .tab.active > div {
+body, #header, #message table, .side_box, .side_box h2, #preview, #preview_links img, #preview_img p, #preview h2, .box, .box img, .box pre.border, .box h2, #footer, #debug pre, .tab.active > div.top {
 	-moz-transition-property: background, border, color;
 	-moz-transition-duration: <?php echo $transitionTime; ?>;
 	-o-transition-property: background, border, color;
@@ -96,12 +96,12 @@ a:hover {
 	color: #<?php echo $LK_COLOR; ?>;
 }
 
-.tool{
+.tool {
 	position: relative;
 	display: inline-block;
 }
 
-.tool:hover .tip{
+.tool:hover .tip {
 	display: block;
 	text-decoration: none !important;
 	font-variant: normal;
@@ -113,11 +113,11 @@ a:hover {
 	animation-name: fadein; /* Standard */
 }
 
-.tool .tip:hover{
+.tool .tip:hover {
 	display: none;
 }
 
-.tool .tip{
+.tool .tip {
 	background-color: black;
 	background-color: rgba(0, 0, 0, 0.75);
 	border-radius: 5px;
@@ -186,43 +186,43 @@ a:hover {
 	display: block;
 }
 
-.tab.active div.top{
+.tab.active div.top {
 	z-index: 2;
 	background-color: #<?php echo $BG_COLOR; ?>;
 }
 
-.tab.active div.bottom{
+.tab.active div.bottom {
 	background-color: white;
 }
 
-.tab.active div.topleft{
+.tab.active div.topleft {
 	left: -10px;
 	bottom: 0;
 }
 
-.tab.active div.bottomleft{
+.tab.active div.bottomleft {
 	left: -5px;
 	bottom: -5px;
 }
 
-.tab.active div.topright{
+.tab.active div.topright {
 	bottom: 0;
 	right: -10px;
 }
 
-.tab.active div.bottomright{
+.tab.active div.bottomright {
 	right: -5px;
 	bottom: -5px;
 }
 
-.column{
+.column {
 	float: left;
 	width: 235px;
 	margin: 0 8px 0 0;
 	padding: 0;
 }
 
-#nojs{
+#nojs {
 	text-align: center;
 }
 
@@ -243,7 +243,7 @@ a:hover {
 	transition-duration: <?php echo $transitionTime; ?>;
 }
 
-.message.ie{
+.message.ie {
 	background: url("images/best_viewed_in_firefox.png") bottom right no-repeat scroll #ffffff;
 	padding-bottom: 20px;
 }
@@ -260,7 +260,7 @@ a:hover {
 	background: #ff0000;
 }
 
-.message h2 .close{
+.message h2 .close {
 	float: right;
 	border: 1px #ffffff solid;
 	border-radius: 3px;
@@ -272,26 +272,26 @@ a:hover {
 	margin: 1em;
 }
 
-.message table{
+.message table {
 	background-color: #<?php echo $BG_COLOR; ?>;
 	border-radius: 5px;
 	margin: 0;
 	width: 100%;
 }
 
-.message td,th{
+.message td,th {
 	background-color: #ffffff;
 }
 
-.message ul{
+.message ul {
 	margin:0;
 }
 
-#debug{
+#debug {
 	display: none;
 }
 
-#debug pre{
+#debug pre {
 	background-color: #<?php echo $BG_COLOR==383838?'000000':'383838'?>;
 	color: #ffffff;
 	margin: 0;
@@ -306,90 +306,90 @@ a:hover {
 	margin: 0 0 0 0;
 }
 
-.icon{
+.icon {
 	padding: 16px 16px 0 0;
 	background-repeat: no-repeat;
 	background-image: url("images/buttons.png");
 	border: 1px solid #<?php echo $BG_COLOR; ?>;
 }
 
-.zip-off{
+.zip-off {
 	background-position: 0 0;
 }
 
-.zip{
+.zip {
 	background-position: -16px 0;
 }
 
-.download-off{
+.download-off {
 	background-position: -32px 0;
 }
 
-.download{
+.download {
 	background-position: -48px 0;
 }
 
-.pdf-off{
+.pdf-off {
 	background-position: 0 -16px;
 }
 
-.pdf{
+.pdf {
 	background-position: -16px -16px;
 }
 
-.print-off{
+.print-off {
 	background-position: -32px -16px;
 }
 
-.print{
+.print {
 	background-position: -48px -16px;
 }
 
-.view-off{
+.view-off {
 	background-position: 0 -32px;
 }
 
-.view{
+.view {
 	background-position: -16px -32px;
 }
 
-.edit-off{
+.edit-off {
 	background-position: -32px -32px;
 }
 
-.edit{
+.edit {
 	background-position: -48px -32px;
 }
 
-.del-off{
+.del-off {
 	background-position: -64px 0;
 }
 
-.del{
+.del {
 	background-position: -64px -16px;
 }
 
-.upload{
+.upload {
 	background-position: -48px -48px;
 }
 
-.upload-off{
+.upload-off {
 	background-position: -32px -48px;
 }
 
-.recent{
+.recent {
 	background-position: -64px -48px;
 }
 
-.recent-off{
+.recent-off {
 	background-position: -64px -32px;
 }
 
-.email{
+.email {
 	background-position: -16px -48px;
 }
 
-.email-off{
+.email-off {
 	background-position: 0 -48px;
 }
 
@@ -417,7 +417,7 @@ a:hover {
 	font-size: 12px;
 }
 
-div.ie_276228{/* http://support.microsoft.com/kb/276228 */
+div.ie_276228 {/* http://support.microsoft.com/kb/276228 */
 	margin: 0;
 	padding: 0;
 }
@@ -427,15 +427,15 @@ div.ie_276228{/* http://support.microsoft.com/kb/276228 */
 	width: 157px;
 }
 
-.side_box select[name="scanner"] option[disabled="disabled"]{
+.side_box select[name="scanner"] option[disabled="disabled"] {
 	background-color: yellow;
 }
 
-select.title, select.title option{
+select.title, select.title option {
 	text-transform: capitalize;
 }
 
-select.upper, select.upper option{
+select.upper, select.upper option {
 	text-transform: uppercase;
 }
 
@@ -464,16 +464,16 @@ select.upper, select.upper option{
 	border-radius: 5px 5px 0 0;
 }
 
-#preview p{
-	margin:5px;
+#preview p {
+	margin :5px;
 }
 
 #preview_links img, #preview_img p {
 	border: 1px solid #<?php echo $BG_COLOR; ?>;
-	text-align:center;
+	text-align: center;
 }
 
-#preview_img img{
+#preview_img img {
 	height: 471px;
 	width: 450px;
 	position: relative;
@@ -489,19 +489,19 @@ select.upper, select.upper option{
 	-moz-transform: rotate(0);
 	-o-transform: rotate(0);
 	-webkit-transform: rotate(0);
-	/*-webkit-filter:brightness(100%) contrast(100%);*/
+	/*-webkit-filter: brightness(100%) contrast(100%);*/
 }
 
-#preview_img p{
+#preview_img p {
 	position: relative;
 	overflow: hidden;
 }
 
-img[src="inc/images/blank.gif"]{
+img[src="inc/images/blank.gif"] {
 	background: url("images/preview.png") no-repeat scroll center center transparent;
 }
 
-#preview_img img[title="Scanning"], #preview_img img[title="Processing"]{
+#preview_img img[title="Scanning"], #preview_img img[title="Processing"] {
 	background: url("images/loading.gif") no-repeat scroll center center transparent;
 	position: absolute;
 	left: 0;
@@ -519,19 +519,19 @@ img[src="inc/images/blank.gif"]{
 	background: #<?php echo $BG_COLOR; ?>;
 }
 
-#scans{
+#scans {
 	float: left;
 	margin: 0;
 	padding: 0;
 	width: 100%;
 }
 
-#scans .box h2[selected=true]{
+#scans .box h2[selected=true] {
 	background-color: #<?php echo $LK_COLOR; ?>;
 	border-color: #<?php echo $LK_COLOR; ?>;
 }
 
-#scans.columns{
+#scans.columns {
 	-moz-column-count: 3;
 	-moz-column-gap: 0;
 	/* broken tool-tips in opera, chrome, safari, and IE10 (IE10 also breaks some images) */
@@ -542,12 +542,12 @@ img[src="inc/images/blank.gif"]{
 	padding-right: 6px;
 }
 
-#scans.columns .box{
+#scans.columns .box {
 	display: inline-block;
 	float: none;
 }
 
-.box, .box-full{
+.box, .box-full {
 	border: 1px solid #<?php echo $BG_COLOR; ?>;
 	float: left;
 	padding: 0;
@@ -559,11 +559,11 @@ img[src="inc/images/blank.gif"]{
 	width: 235px;
 }
 
-.box-full{
+.box-full {
 	width: 720px;
 }
 
-.box-full img{
+.box-full img {
 	max-width: 708px;
 }
 
@@ -592,27 +592,27 @@ img[src="inc/images/blank.gif"]{
 	margin: 5px;/*5px 10px 5px 5px*/
 }
 
-pre{
+pre {
 	overflow: auto;
 }
 
-code{
+code {
 	font-family: monospace;
 }
 
-.simplelist{
+.simplelist {
 	list-style: none;
 	padding: 0;
 	margin: 0 5px;
 }
 
-#paper-list ul{
+#paper-list ul {
 	list-style: none;
 	padding-right: 40px;
 	overflow: visible;
 }
 
-#paper-list.columns ul{
+#paper-list.columns ul {
 	-moz-column-count: 3;
 	-moz-column-gap: 50px;
 	/* broken tool-tips in opera/IE10 (IE10 also broke a image), messed up borders and broken tool-tips in chrome and safari */
@@ -622,16 +622,16 @@ code{
 	column-gap: 50px;
 }
 
-#paper-list li, .boxlist{
+#paper-list li, .boxlist {
 	border: 1px solid #<?php echo $BG_COLOR; ?>;
 	margin-top: -1px;
 	position: relative;
-	height:20px;
-	width:100%;
+	height: 20px;
+	width: 100%;
 	display: inline-block;
 }
 
-#paper-list .code{
+#paper-list .code {
 	float: right;
 	font-family: monospace;
 	position: absolute;
@@ -641,47 +641,47 @@ code{
 	padding-top: 3px;
 }
 
-#paper-list a,.simplelist a{
+#paper-list a, .simplelist a {
 	margin: 1px 0 -2px 1px;
 }
 
-#paperForm form{
+#paperForm form {
 	float: left;
 	width: 50%;
 }
 
-#paperForm form.m{
+#paperForm form.m {
 	border-left: 1px solid #<?php echo $BG_COLOR; ?>;
 	margin-left: -1px;
 }
 
-#paperForm form span{
+#paperForm form span {
 	width: 100px;
 	display: inline-block;
 }
-#paperForm form input[type="text"]{
+#paperForm form input[type="text"] {
 	width: 125px;
 }
 
-#text-editor{
-	text-align:center;
+#text-editor {
+	text-align: center;
 }
 
-#text-editor #preview_links{
-	text-align:left;
+#text-editor #preview_links {
+	text-align: left;
 }
 
-#text-editor textarea{
-	width:714px;
-	height:400px;
+#text-editor textarea {
+	width: 714px;
+	height: 400px;
 
 }
 
-#text-editor input{
-	width:350px;
+#text-editor input {
+	width: 350px;
 }
 
-#footer{
+#footer {
 	clear: both;
 	text-align: center;
 	height: 20px;
@@ -691,75 +691,75 @@ code{
 	border-radius: 0 0 5px 5px;
 }
 
-#footer p{
+#footer p {
 	margin: 0;
 	padding: 0;
 }
 
 /* popup div css */
 
-#popUpDiv #imgur-data{
-	text-align:left;
+#popUpDiv #imgur-data {
+	text-align: left;
 }
-#popUpDiv #imgur-data ul{
+#popUpDiv #imgur-data ul {
 	list-style: none;
 }
-#popUpDiv #imgur-data li li{
+#popUpDiv #imgur-data li li {
 	margin-left: 40px;
 }
-#popUpDiv #imgur-data .codes{
+#popUpDiv #imgur-data .codes {
 	display: inline-block;
 	width: 100%;
 	border-right: 1px solid black;
 }
-#popUpDiv #imgur-data .codes h2{
+#popUpDiv #imgur-data .codes h2 {
 	font-size:12px;
 	text-align:center;
 }
 
-#popUpDiv #email{
+#popUpDiv #email {
 	border: 1px solid #<?php echo $BG_COLOR; ?>;
 	border-radius: 5px 5px 0 0;
 	overflow: hidden;
 	padding: 5px;
 }
-#popUpDiv #email > h2{
+#popUpDiv #email > h2 {
 	background-color: #<?php echo $BG_COLOR; ?>;
 	color: #ffffff;
 	margin: -5px -5px 5px;
 	font-size: 15px;
 	padding: 0.5em;
 }
-#popUpDiv #email .security{
+#popUpDiv #email .security {
 	color: #ff0000;
 	border: 1px solid #ff0000;
 	border-radius: 5px 5px 0 0;
 	margin-bottom: 5px;
 }
-#popUpDiv #email .security h2{
+#popUpDiv #email .security h2 {
 	background-color: #ff0000;
 	color: #ffffff;
 	text-align: center;
 	margin: 0;
 	padding-bottom: 5px;
 }
-#popUpDiv #email .security ul{
+#popUpDiv #email .security ul {
 	margin-top: 0;
 	padding-right: 5px;
 	text-align: left;
 }
-#popUpDiv #email form{
+#popUpDiv #email form {
 	width: 265px;
 	text-align: left;
 	float: left;
 }
-#popUpDiv #email form .label{
+#popUpDiv #email form .label {
 	width: 95px;
 }
-#popUpDiv #email .control input:not([type="checkbox"]), #popUpDiv #email .control select{
+#popUpDiv #email .control input:not([type="checkbox"]), #popUpDiv #email .control select {
 	width: 150px;
 }
-#popUpDiv #email .help{
+#popUpDiv #email .help {
 	border: 1px solid #<?php echo $BG_COLOR; ?>;
 	border-radius: 5px 5px 0 0;
 	margin-bottom: 5px;
@@ -767,7 +767,7 @@ code{
 	width: 138px;
 	text-align: left;
 }
-#popUpDiv #email .help h2{
+#popUpDiv #email .help h2 {
 	background-color: #<?php echo $BG_COLOR; ?>;
 	color: #ffffff;
 	margin: 0;
@@ -776,14 +776,14 @@ code{
 	padding: 0.5em;
 	font-size: 12px;
 }
-#popUpDiv #email .help p{
-	margin:0;
-	padding:5px;
+#popUpDiv #email .help p {
+	margin: 0;
+	padding: 5px;
 }
 
 /* http://www.pat-burt.com/web-development/how-to-do-a-css-popup-without-opening-a-new-window/ */
-#blanket{
-	background-color:rgba(17,17,17,0.65);
+#blanket {
+	background-color: rgba(17,17,17,0.65);
 	position: fixed;
 	z-index: 9001;
 	top: 0;
@@ -799,7 +799,7 @@ code{
 	transition-property: background-color;
 	transition-duration: <?php echo $transitionTime; ?>;
 }
-#popUpDiv{
+#popUpDiv {
 	position: fixed;
 	background-color: #eeeeee;
 	text-align: center;

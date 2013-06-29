@@ -17,7 +17,7 @@ if(isset($_GET['downloadServer'])){
 	header("Content-type: application/x-bzip");
 	$t=time();
 	header("Content-Disposition: attachment; filename=\"PHP-Scanner-Server-".addslashes($_GET['ver']).".tar.bz2\"");
-	shell_exec("tar cjf /tmp/scanner-$t.tar.bz2 --exclude=\"scans/*\" --exclude=\"config/*.json\" --exclude=\"config/*.txt\" ./");// '--exclude=\"password.md5\"' What was this in there for?
+	shell_exec("tar cjf /tmp/scanner-$t.tar.bz2 --exclude=\"scans/*\" --exclude=\"config/*.*\" ./");// '--exclude=\"password.md5\"' What was this in there for?
 	$file=file_get_contents("/tmp/scanner-$t.tar.bz2");
 	header('Content-Length: '.strlen($file));
 	echo $file;
