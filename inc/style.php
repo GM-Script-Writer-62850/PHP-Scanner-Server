@@ -62,7 +62,7 @@ $transitionTime='0.8s'; // The rotateChange function in main.js needs to be adju
 	}
 }
 
-body, #header, #message table, .side_box, .side_box h2, #preview, #preview_links img, #preview_img p, #preview h2, .box, .box img, .box pre.border, .box h2, #footer, #debug pre{
+body, #header, #message table, .side_box, .side_box h2, #preview, #preview_links img, #preview_img p, #preview h2, .box, .box img, .box pre.border, .box h2, #footer, #debug pre, .tab.active > div {
 	-moz-transition-property: background, border, color;
 	-moz-transition-duration: <?php echo $transitionTime; ?>;
 	-o-transition-property: background, border, color;
