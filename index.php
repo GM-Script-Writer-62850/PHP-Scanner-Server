@@ -3,7 +3,7 @@
 $FreeSpaceWarn=2048;// In Megabytes
 $Fortune=true;// Enable/disable fortunes in the debug console
 $ExtraScanners=false;// Adds sample scanners from ./inc/scanhelp/
-$CheckForUpdates=false;// Enables auto update checking
+$CheckForUpdates=true;// Enables auto update checking
 // Sorry for the lack of explanations in the code feel free to ask what something does
 
 $NAME="PHP Scanner Server";
