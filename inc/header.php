@@ -4,7 +4,7 @@
 <title><?php echo $GLOBALS['NAME']; ?> ~ <?php echo $GLOBALS['PAGE']; ?></title>
 <link id="style" rel="stylesheet" href="inc/style.php<?php
 if(isset($_COOKIE["colors"])){
-	echo "?colors=".$_COOKIE["colors"];
+	echo "?colors=".rawurlencode($_COOKIE["colors"]);
 }
 ?>" type="text/css"/>
 <?php
@@ -70,7 +70,7 @@ if($GLOBALS['PAGE']=='Config')
 <p>You can view the list of supported browsers in the <a href="index.php?page=About">release notes</a>.<br/>
 Please install <a href="http://www.mozilla.com/firefox/">Mozilla Firefox</a> (Recommended) alternatively, you may use<br/>
 <a href="http://lmgtfy.com/?q=Internet+Explorer+10+Download">Internet Explorer 10</a> (Windows 7 and 8 only) or
- <a href="http://code.google.com/chrome/chromeframe/">Google Chrome Frame</a> <sup><i>EOL January 2014</i></sup> for Internet Explorer.<br>
+ <a href="http://code.google.com/chrome/chromeframe/">Google Chrome Frame</a> <sup><i>EOL January 2014</i></sup> for Internet Explorer.<br/>
 <a href="http://lmgtfy.com/?q=Internet+Explorer+9+Download">Internet Explorer 9</a> will function, but you don't get all the fancy eye candy.
 </p>
 </div>

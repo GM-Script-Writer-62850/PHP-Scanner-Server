@@ -130,7 +130,7 @@ Supported Browsers:
 		http://www.opera.com/browser/
 	IE 9+
 		http://windows.microsoft.com/en-us/internet-explorer/ie-10-worldwide-languages
-	IE 6-8 with google chrome frame installed
+	IE 6-9 with Google Chrome Frame installed
 		http://code.google.com/chrome/chromeframe/ (EOL: January 2014)
 
 Enabling Auto-Deletion of old scans:
