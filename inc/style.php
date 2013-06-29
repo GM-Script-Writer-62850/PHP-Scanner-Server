@@ -534,7 +534,7 @@ img[src="inc/images/blank.gif"]{
 #scans.enable{
 	-moz-column-count: 3;
 	-moz-column-gap: 0;
-	/* broken tool-tips in opera, chrome, and safari */
+	/* broken tool-tips in opera, chrome, safari, and IE10 (IE10 also breaks some images) */
 	-webkit-column-count: 3; 
 	-webkit-column-gap: 0;
 	column-count: 3;
@@ -613,7 +613,7 @@ code{
 #paper-list ul{
 	-moz-column-count: 3;
 	-moz-column-gap: 50px;
-	/* broken tool-tips in opera, messed up borders and broken tool-tips in chrome and safari
+	/* broken tool-tips in opera/IE10 (IE10 also broke a image), messed up borders and broken tool-tips in chrome and safari
 	-webkit-column-count: 3;
 	-webkit-column-gap: 50px;
 	column-count: 3;

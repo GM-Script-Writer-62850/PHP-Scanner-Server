@@ -260,7 +260,7 @@ Select Region
 	<div class="control"><input onkeypress="return validateKey(this,event,ias);" type="text" name="loc_x2" value="0" size="3"/> pixle(s)</div>
 <div class="label">Y<sub>2</sub> (Bottom): </div>
 	<div class="control"><input onkeypress="return validateKey(this,event,ias);" type="text" name="loc_y2" value="0" size="3"/> pixle(s)</div>
-<div align="center"><input type="button" value="Update" onclick="setRegion(ias);"/><input type="button" onclick="clearRegion(ias,true)" value="Clear"/></div>
+<div align="center"><input type="button" value="Update" onclick="setRegion(ias);"/> <input type="button" onclick="clearRegion(ias,true)" value="Clear"/></div>
 </p>
 </div>
 
@@ -268,14 +268,14 @@ Select Region
 <h2>
 Scan Image
 </h2>
-<p align="center"><input type="submit" value="Scan Image" name="action"><input name="reset" type="reset" value="Reset Options" onclick="clearRegion(ias,false);setTimeout(scanReset,1);"/></p>
+<p align="center"><input type="submit" value="Scan Image" name="action"> <input name="reset" type="reset" value="Reset Options" onclick="clearRegion(ias,false);setTimeout(scanReset,1);"/></p>
 </div>
 
 <!-- Save Settings -->
 <div class="side_box">
 <h2>Settings</h2>
 <p>
-<input name="set_save" size="15" onkeypress="if(event.which==13||event.keyCode==13){this.nextSibling.click();return false;}"><input onclick="if(this.previousSibling.value==''){return false;}else{document.scanning.removeAttribute('onsubmit');}" type="submit" name="saveas" value="Save">
+<input name="set_save" type="text" size="15" onkeypress="if(event.which==13||event.keyCode==13){this.nextSibling.click();return false;}"/><input onclick="if(this.previousSibling.value==''){return false;}else{document.scanning.removeAttribute('onsubmit');}" type="submit" name="saveas" value="Save" style="margin-left:5px;"/>
 </p>
 <p align="center">
 <?php

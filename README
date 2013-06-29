@@ -5,8 +5,8 @@ Based on Linux Scanner Server 1.2 Beta
 
 Released under the GPL 2.0
 
-Last Update: 06/27/2013 (Month/Day/Year)
-For Version: 1.3-5
+Last Update: 06/29/2013 (Month/Day/Year)
+For Version: 1.3-6
 
 Change Log:
 	https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server/wiki/Change-Log
@@ -128,9 +128,9 @@ Supported Browsers:
 		http://www.apple.com/safari/download/
 	Opera (NOT Opera Mini)
 		http://www.opera.com/browser/
-	IE 10+
+	IE 9+
 		http://windows.microsoft.com/en-us/internet-explorer/ie-10-worldwide-languages
-	IE 6-9 with google chrome frame installed
+	IE 6-8 with google chrome frame installed
 		http://code.google.com/chrome/chromeframe/ (EOL: January 2014)
 
 Enabling Auto-Deletion of old scans:

@@ -276,9 +276,8 @@ function parseJSON(jsonTXT){
 	try{
 		if(typeof(JSON)=='object')
 			return JSON.parse(jsonTXT);
-		else{
+		else
 			return eval('('+jsonTXT+')');
-		}
 	}
 	catch(e){
 		printMsg('Invald Javascript Object Notation:','<textarea onclick="this.select()" style="width:100%;height:80px;">'+encodeHTML(jsonTXT)+'</textarea><br/>If you are reading this please report it as a bug. Please copy/paste the above, something as simple as a line break can cause errors here. If want to read this I suggest pasting it onto <a target="_blank" href="http://jsonlint.com/">jsonlint.com</a>.','center',0);

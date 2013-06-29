@@ -301,7 +301,7 @@ if($PAGE=="Scans"){
 			$IMAGE=$FILES[$i];
 			include "inc/scans.php";
 		}
-		echo '</div><script type="text/javascript">if(document.body.style.WebkitColumnGap==""||document.body.style.MozColumnGap==""||document.body.style.columnGap=="")getID("scans").className="enable"+(document.body.style.WebkitColumnGap==""?" webkit":"");</script>';
+		echo '</div><script type="text/javascript">if(document.body.style.MozColumnGap==""||document.body.style.WebkitColumnGap==""/*||document.body.style.columnGap==""*/)getID("scans").className="enable"+(document.body.style.WebkitColumnGap==""?" webkit":"");</script>';
 	}
 	checkFreeSpace($FreeSpaceWarn);
 	Footer();
@@ -1106,12 +1106,12 @@ else{
 echo '<script type="text/javascript">Debug("'.rawurlencode(html($debug)).html($here."$ ").'",'.(isset($_COOKIE["debug"])?$_COOKIE["debug"]:'false').');';
 if($CheckForUpdates){
 	$file="config/gitVersion.txt";
-	$time=is_file($time)?filemtime($file):time()/2;
+	$time=is_file($file)?filemtime($file):time()/2;
 	if($time+3600*24<time())
 		echo "updateCheck('$VER',null);";
 	else{
 		$file=file_get_contents($file);
-		if(version_compare($file,$VER))
+		if(version_compare($file,$VER)==1)
 			echo "updateCheck('$file',true);";
 	}
 }

@@ -132,7 +132,7 @@ Crop Image
 	<div class="control"><input onkeypress="return validateKey(this,event,ias);" type="text" name="loc_x2" value="0" size="3"/> pixle(s)</div>
 <div class="label">Y<sub>2</sub> (Bottom): </div>
 	<div class="control"><input onkeypress="return validateKey(this,event,ias);" type="text" name="loc_y2" value="0" size="3"/> pixle(s)</div>
-<div align="center"><input type="button" value="Update" onclick="setRegion(ias);"/><input type="button" onclick="clearRegion(ias,true)" value="Clear"/></div>
+<div align="center"><input type="button" value="Update" onclick="setRegion(ias);"/> <input type="button" onclick="clearRegion(ias,true)" value="Clear"/></div>
 </p>
 </div>
 
@@ -140,7 +140,7 @@ Crop Image
 <h2>
 Save Image
 </h2>
-<p align="center"><input type="submit" value="Save Changes" name="action"><input type="reset" value="Reset Options" onclick="clearRegion(ias,false)"/></p>
+<p align="center"><input type="submit" value="Save Changes" name="action"/> <input type="reset" value="Reset Options" onclick="clearRegion(ias,false)"/></p>
 </div>
 </form>
 <?php echo $FILETYPE=='txt'?'<script type="text/javascript">document.scanning.action.disabled=true;</script>':''; ?>
