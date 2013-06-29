@@ -1,5 +1,5 @@
 <?php
-// Chrome's css columns break things
+// Chrome's and IE's css columns break things
 header('Content-type: text/css');
 $expires=86400;//24 hrs
 header("Pragma: public");
@@ -531,7 +531,7 @@ img[src="inc/images/blank.gif"]{
 	border-color: #<?php echo $LK_COLOR; ?>;
 }
 
-#scans.enable{
+#scans.columns{
 	-moz-column-count: 3;
 	-moz-column-gap: 0;
 	/* broken tool-tips in opera, chrome, safari, and IE10 (IE10 also breaks some images) */
@@ -542,11 +542,7 @@ img[src="inc/images/blank.gif"]{
 	padding-right: 6px;
 }
 
-#scans.enable.webkit a.tool[style] .tip{ /* workaround for shitty column implementation*/
-	bottom: 101%;
-	left: 30%;
-}
-#scans.enable .box{
+#scans.columns .box{
 	display: inline-block;
 	float: none;
 }
@@ -611,16 +607,19 @@ code{
 }
 
 #paper-list ul{
-	-moz-column-count: 3;
-	-moz-column-gap: 50px;
-	/* broken tool-tips in opera/IE10 (IE10 also broke a image), messed up borders and broken tool-tips in chrome and safari
-	-webkit-column-count: 3;
-	-webkit-column-gap: 50px;
-	column-count: 3;
-	column-gap: 50px;*/
 	list-style: none;
 	padding-right: 40px;
 	overflow: visible;
+}
+
+#paper-list.columns ul{
+	-moz-column-count: 3;
+	-moz-column-gap: 50px;
+	/* broken tool-tips in opera/IE10 (IE10 also broke a image), messed up borders and broken tool-tips in chrome and safari */
+	-webkit-column-count: 3;
+	-webkit-column-gap: 50px;
+	column-count: 3;
+	column-gap: 50px;
 }
 
 #paper-list li, .boxlist{

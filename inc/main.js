@@ -1,4 +1,4 @@
-var ias, previewIMG, scanners, paper, filesLst={},TC='textContent';
+var ias, previewIMG, scanners, paper, filesLst={},TC='textContent';// TC can be changed to 'innerText' see header.php
 $(document).ready(function () {
 	e=$('img[title="Preview"]');
 	previewIMG=e[0];
@@ -1009,4 +1009,31 @@ function updateCheck(vs,e){
 	};
 	httpRequest.open('GET', 'download.php?update='+encodeURIComponent(vs)+'&'+new Date().getTime());
 	httpRequest.send(null);
+}
+function enableColumns(ele,e){ // They work flawlessly in Firefox so it does not call this function
+	if(e!=null){
+		ele=getID(ele);
+		if(ele.className){// there is a class name
+			if(ele.className=='columns'){
+				ele.removeAttribute('class');// disable
+				e.nextSibling[TC]='Enable';
+			}
+			else if(ele.className.indexOf('columns')==-1){
+				ele.className+=' columns';// enable
+				e.nextSibling[TC]='Disable';
+			}
+			else{
+				ele.className=ele.className.substring(0,ele.className.indexOf(' columns'));// Disable preserve original class name
+				e.nextSibling[TC]='Enable';
+			}
+		}
+		else{// enable
+			ele.className='columns';
+			e.nextSibling[TC]='Disable';
+		}
+	}
+	else if(typeof document.body.style.WebkitColumnGap=="string"||typeof document.body.style.columnGap=="string")
+		printMsg('CSS3 Columns','Your browser supports them, but they do not work as expected.<br/>'+
+			'You can try them out by clicking <span class="tool"><a href="#" onclick="return enableColumns(\''+ele+'\',this);">here</a><span class="tip">Enable</span></span>.<br/>'+
+			'Oh, and by the way they work in <a href="http://www.mozilla.org/en-US/firefox/all.html" target="_blank">Firefox</a> flawlessly.','center',-1);
 }

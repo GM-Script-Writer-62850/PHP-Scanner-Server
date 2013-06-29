@@ -7,7 +7,7 @@ $CheckForUpdates=true;// Enables auto update checking
 // Sorry for the lack of explanations in the code feel free to ask what something does
 
 $NAME="PHP Scanner Server";
-$VER="1.3-6";
+$VER="1.3-7_dev";
 $SAE_VER="1.4"; // Scanner access enabler version
 
 # ****************
@@ -301,7 +301,11 @@ if($PAGE=="Scans"){
 			$IMAGE=$FILES[$i];
 			include "inc/scans.php";
 		}
-		echo '</div><script type="text/javascript">if(document.body.style.MozColumnGap==""||document.body.style.WebkitColumnGap==""/*||document.body.style.columnGap==""*/)getID("scans").className="enable"+(document.body.style.WebkitColumnGap==""?" webkit":"");</script>';
+		echo '</div><script type="text/javascript">'.
+			'if(typeof document.body.style.MozColumnGap=="string")'.
+				'getID("scans").className="columns";'.// At least someone knows how to do something right
+			'else '.
+				'enableColumns("scans",null);</script>';
 	}
 	checkFreeSpace($FreeSpaceWarn);
 	Footer();

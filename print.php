@@ -1,5 +1,5 @@
 <!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html><head><meta http-equiv="Content-type" content="text/html; charset=UTF-8"/><style>div{text-align:center;padding:20px;display:inline-block;/*page-break-after:always;*/}</style><title><?php
+<html><head><meta http-equiv="Content-type" content="text/html; charset=UTF-8"/><link rel="shortcut icon" href="inc/images/favicon.png"/><style type="text/css">div{text-align:center;padding:20px;display:inline-block;/*page-break-after:always;*/}</style><title><?php
 if(isset($_GET['file'])){
 	$files=json_decode('{"'.$_GET['file'].'":1}');
 	$prefix='';
