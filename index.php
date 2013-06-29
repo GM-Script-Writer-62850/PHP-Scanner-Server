@@ -7,7 +7,7 @@ $CheckForUpdates=true;// Enables auto update checking
 // Sorry for the lack of explanations in the code feel free to ask what something does
 
 $NAME="PHP Scanner Server";
-$VER="1.3-6_dev";
+$VER="1.3-6";
 $SAE_VER="1.4"; // Scanner access enabler version
 
 # ****************
