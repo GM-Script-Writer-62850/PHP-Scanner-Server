@@ -39,7 +39,7 @@ echo '<ul>';
 $ct=0;
 foreach($paper as $key=>$val){
 	$ct++;
-	echo '<li><a class="tool icon del" href="index.php?page=Paper%20Manager&delete='.html($key).'"><span class="tip">Delete</span></a> '.$key.' <div class="code tool">'.number_format(round($val->{"width"}/25.4,2),2,'.',',').'x'.str_pad(number_format(round($val->{"height"}/25.4,2),2,'.',','),5,' ',STR_PAD_LEFT).'<span class="tip">'.$val->{"width"}.'x'.$val->{"height"}.' milimeters</span></div></li>';
+	echo '<li><a class="tool icon del" href="index.php?page=Paper%20Manager&delete='.html($key).'"><span class="tip">Delete</span></a> '.$key.' <div class="code tool">'.number_format(round($val->{"width"}/25.4,2),2,'.',',').'x'.str_pad(number_format(round($val->{"height"}/25.4,2),2,'.',','),5,' ',STR_PAD_LEFT).'<span class="tip">'.$val->{"width"}.'x'.$val->{"height"}.' millimeters</span></div></li>';
 }
 echo "</ul>";
 if($ct==0)
@@ -63,13 +63,13 @@ if($add!=null&&$N_width!=null&&$N_height!=null){
 }
 ?></div>
 <div id="paperForm" class="box box-full"><h2>New Paper Maker</h2><form action="index.php?page=Paper%20Manager" method="POST"><p>
-Paper Name: <input type="text" name="add"/><br/>
-Paper Width: <input type="text" name="width"/> inches<br/>
-Paper Height: <input type="text" name="height"/> inches<br/>
+<span>Paper Name:</span><input type="text" name="add"/><br/>
+<span>Paper Width:</span><input type="text" name="width"/> inches<br/>
+<span>Paper Height:</span><input type="text" name="height"/> inches<br/>
 <input type="submit" value="Add paper size"/>
 </p></form><form class="m" action="index.php?page=Paper%20Manager" method="POST"><p>
-Paper Name: <input type="text" name="add"/><br/>
-Paper Width: <input type="text" name="Mwidth"/> milimeters<br/>
-Paper Height: <input type="text" name="Mheight"/> milimeters<br/>
+<span>Paper Name:</span><input type="text" name="add"/></span><br/>
+<span>Paper Width:</span><input type="text" name="Mwidth"/> millimeters<br/>
+<span>Paper Height:</span><input type="text" name="Mheight"/> millimeters<br/>
 <input type="submit" value="Add paper size"/>
 </p></form></div>

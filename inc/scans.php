@@ -20,6 +20,6 @@ else
 
 <a href="#" onclick="return emailManager('Scan_<?php echo $FILE; ?>');" class="tool icon email"><span class="tip">Email</span></a>
 <br/>
-<a class="tool" target="_blank" href="scans/Scan_<?php echo $FILE; ?>" style="width:100%;"><img src="scans/<?php echo html($IMAGE); ?>" style="width:100%"/><span class="tip">View full size</span></a>
+<a class="tool" target="_blank" href="scans/Scan_<?php echo $FILE; ?>" style="width:100%;"><img src="scans/<?php echo html($IMAGE); ?>" style="width:100%"/><span class="tip">View raw file</span></a>
 </p>
 </div>

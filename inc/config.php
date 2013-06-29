@@ -13,7 +13,7 @@ If none show up, your scanner may not be supported by Xsane.
 Make sure all scanners are plugged in and turned on.
 <br/><input type="hidden" name="action" value="Search-For-Scanners">
 <input type="submit" value="Search For Scanners" onclick="printMsg('Searching For Scanners','Please Wait...','center',0);"/>
-<br/><a href="index.php?action=Parallel-Form">Parallel Scanner Configuration</a>
+<br/><a href="index.php?page=Parallel-Form">Parallel Scanner Configuration</a>
 <br/><a href="index.php?page=Device%20Notes">Scanner List</a> | <a href="index.php?page=Access%20Enabler" title="For stubborn scanners">Access Enabler</a>
 </p>
 </form>

@@ -20,7 +20,7 @@ Scanner Device URI: <input type="text" name="device"><br/>
 		if($scan[$i]=="."||$scan[$i]=="..")
 			continue;
 		$json=json_decode(file_get_contents("config/parallel/".$scan[$i]));
-		echo '<li class="boxlist"><a class="icon del tool" href="index.php?action=Parallel-Form&file='.$scan[$i].'"><span class="tip">Delete</span></a> <a href="index.php?page=Device%20List&action='.$json->{"DEVICE"}.'">'.$json->{"NAME"}."</a></li>";
+		echo '<li class="boxlist"><a class="icon del tool" href="index.php?page=Parallel-Form&file='.$scan[$i].'"><span class="tip">Delete</span></a> <a href="index.php?page=Device%20List&action='.$json->{"DEVICE"}.'">'.$json->{"NAME"}."</a></li>";
 	}
 ?></ul><p><a onclick="printMsg('Searching For Scanners','Please Wait...','center',0);" href="index.php?page=Config&action=Search-For-Scanners"/>Re-scan for scanners</a>
 </p>

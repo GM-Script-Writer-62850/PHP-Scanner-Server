@@ -118,6 +118,7 @@ a:hover {
 }
 
 .tool .tip{
+	background-color: black;
 	background-color: rgba(0, 0, 0, 0.75);
 	border-radius: 5px;
 	color: #ffffff;
@@ -161,10 +162,57 @@ a:hover {
 	float: right;
 	background: #ffffff;
 	padding: 2px 2px 0px 2px;
-	margin: 1.4em 0.5em 0.5em 0;
+	margin: 22px 10px 0 0;
 	font-size: 16px;
 	border-radius: 5px;
 	text-transform: capitalize;
+	position: relative;
+}
+
+.tab.active {
+	padding-bottom: 27px;
+	border-radius: 5px 5px 0 0;
+}
+
+.tab div {
+	display: none;
+}
+
+.tab.active div {
+	border-radius: 5px;
+	height: 10px;
+	width: 10px;
+	position: absolute;
+	display: block;
+}
+
+.tab.active div.top{
+	z-index: 2;
+	background-color: #<?php echo $BG_COLOR; ?>;
+}
+
+.tab.active div.bottom{
+	background-color: white;
+}
+
+.tab.active div.topleft{
+	left: -10px;
+	bottom: 0;
+}
+
+.tab.active div.bottomleft{
+	left: -5px;
+	bottom: -5px;
+}
+
+.tab.active div.topright{
+	bottom: 0;
+	right: -10px;
+}
+
+.tab.active div.bottomright{
+	right: -5px;
+	bottom: -5px;
 }
 
 .column{
@@ -441,7 +489,7 @@ select.upper, select.upper option{
 	-moz-transform: rotate(0);
 	-o-transform: rotate(0);
 	-webkit-transform: rotate(0);
-	-webkit-filter:brightness(0%) contrast(100%);
+	/*-webkit-filter:brightness(100%) contrast(100%);*/
 }
 
 #preview_img p{
@@ -606,6 +654,14 @@ code{
 #paperForm form.m{
 	border-left: 1px solid #<?php echo $BG_COLOR; ?>;
 	margin-left: -1px;
+}
+
+#paperForm form span{
+	width: 100px;
+	display: inline-block;
+}
+#paperForm form input[type="text"]{
+	width: 125px;
 }
 
 #text-editor{

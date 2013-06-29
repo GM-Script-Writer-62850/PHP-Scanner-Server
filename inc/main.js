@@ -1,4 +1,4 @@
-var ias, previewIMG, scanners, paper, password, files={};
+var ias, previewIMG, scanners, paper, filesLst={},TC='textContent';
 $(document).ready(function () {
 	e=$('img[title="Preview"]');
 	previewIMG=e[0];
@@ -202,10 +202,9 @@ function encodeHTML(string){// http://stackoverflow.com/questions/24816/escaping
 	};
 	return String(string).replace(/[&<>"'\/]/g,function(s){return entityMap[s];});
 }
-function checkScanners(){// Does not support IE8 and below
+function checkScanners(){
 	if(typeof XMLHttpRequest!='function'||typeof JSON=='undefined'){
-		printMsg('Sorry',"Your browser does not support the XMLHttpRequest function and the JSON object so this page can not check if the scanner is in-use or not in real time.<br/>You have 3 choices: Ignore This, update your browser, and switch browsers",'center',0);
-		return;
+		return printMsg('Sorry',"Your browser does not support the XMLHttpRequest function and the JSON object so this page can not check if the scanner is in-use or not in real time.<br/>You have 3 choices: Ignore This, update your browser, and switch browsers",'center',0);
 	}
 	var httpRequest = new XMLHttpRequest();
 	httpRequest.onreadystatechange = function(){
@@ -232,12 +231,10 @@ function checkScanners(){// Does not support IE8 and below
 					}
 					scanners=scan;
 					loc=document.scanning.scanner.selectedIndex;
-					if(document.all){// http://support.microsoft.com/kb/276228
+					if(document.all)// http://support.microsoft.com/kb/276228
 						document.scanning.scanner.parentNode.innerHTML='<p><select onchange="scannerChange(this)" style="width:238px;" name="scanner">'+str+'</select></p>';
-					}
-					else{
+					else
 						document.scanning.scanner.innerHTML=str;
-					}
 					document.scanning.scanner.selectedIndex=loc;
 					alert("The number of scanners connected to the server has been altered\nPlease double check the scanner you are using");
 				}
@@ -264,7 +261,7 @@ function printMsg(t,m,a,r){
 	var ele=getID('new_mes');
 	div.className="message";
 	div.innerHTML="<h2>"+t+'<a class="close icon tool del" onclick="this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode);return false;" href="#"><span class="tip">Close</span></a>'+"</h2><div"+(a!='center'?' style="text-align:'+a+';"':'')+">"+m+"</div>";
-	if(r!=-1)
+	if(r!=-1&& typeof ele.insertBefore=='function')
 		ele.insertBefore(div,ele.childNodes[0]);
 	else
 		ele.appendChild(div);
@@ -279,11 +276,12 @@ function parseJSON(jsonTXT){
 	try{
 		if(typeof(JSON)=='object')
 			return JSON.parse(jsonTXT);
-		else
+		else{
 			return eval('('+jsonTXT+')');
+		}
 	}
 	catch(e){
-		printMsg('Invald Javascript Object Notation:','<textarea onclick="this.select()" style="width:100%;height:80px;">'+jsonTXT+'</textarea><br/>If you are reading this please report it as a bug. Please copy/paste the above, something as simple as a line break can cause errors here. If want to read this I suggest pasting it onto <a target="_blank" href="http://jsonlint.com/">jsonlint.com</a>.','center',0);
+		printMsg('Invald Javascript Object Notation:','<textarea onclick="this.select()" style="width:100%;height:80px;">'+encodeHTML(jsonTXT)+'</textarea><br/>If you are reading this please report it as a bug. Please copy/paste the above, something as simple as a line break can cause errors here. If want to read this I suggest pasting it onto <a target="_blank" href="http://jsonlint.com/">jsonlint.com</a>.','center',0);
 	}
 }
 function scannerChange(ele){
@@ -294,7 +292,7 @@ function scannerChange(ele){
 		html+='<option value="'+sources[i]+'">'+(sources[i]=='ADF'?'Automatic Document Feeder':sources[i])+'</option>';
 	}
 	if(document.all)// http://support.microsoft.com/kb/276228	
-		document.scanning.source.parentNode.innerHTML='<select name="source" class="title">'+html+'</select>';
+		document.scanning.source.parentNode.innerHTML='<select name="source" class="title" onchange="sourceChange(this)">'+html+'</select>';
 	else
 		document.scanning.source.innerHTML=html;
 	if(document.scanning.source.value=='Inactive')
@@ -352,7 +350,7 @@ function sourceChange(ele){
 	sendE(document.scanning.size,'change');
 }
 function paperChange(ele){
-	ele.parentNode.nextSibling.textContent=ele.childNodes[ele.selectedIndex].title;
+	ele.parentNode.nextSibling[TC]=ele.childNodes[ele.selectedIndex].title;
 	if(ele.value=='full'){
 		document.scanning.ornt.selectedIndex=0;
 		document.scanning.ornt.disabled='disabled';
@@ -373,7 +371,7 @@ function paperChange(ele){
 }
 function rotateChange(ele){
 	var val=ele.value;
-	ele.nextSibling.textContent=(val==180?'Upside-down':(val<0?'Counterclockwise':'Clockwise'));
+	ele.nextSibling[TC]=(val==180?'Upside-down':(val<0?'Counterclockwise':'Clockwise'));
 	var prefixes = 't WebkitT MozT OT msT'.split(' ');
 	for(var prefix in prefixes){
 		if(typeof document.body.style[prefixes[prefix]+'ransform']!="undefined"){
@@ -398,12 +396,13 @@ function rotateChange(ele){
 	},2000);// Should be long enough to see how it looks, given there is a 800ms animation
 }
 function changeBrightContrast(){// Webkit based only :(
-	if(typeof document.body.style.webkitFilter!='string')
+	// Does not work properly so lets disable it: brightness/contrast have a screwed up/illogical max %
+	//if(typeof document.body.style.webkitFilter!='string') 
 		return;
 	ele=document.evaluate("//div[@id='preview_img']/p/img[@title='Preview']",document,null,9,null).singleNodeValue;
 	if(ele.src.indexOf('inc/images/blank.gif')>-1)
 		return;
-	ele.style.webkitFilter='brightness('+document.scanning.bright.value+'%) contrast('+(Number(document.scanning.contrast.value)+100)+'%)';
+	ele.style.webkitFilter='brightness('+(Number(document.scanning.bright.value)+100)+'%) contrast('+(Number(document.scanning.contrast.value)+100)+'%)';
 }
 function fileChange(type){
 	if(type=='txt')
@@ -429,14 +428,14 @@ function toggleDebug(keyboard){
 			debug.removeAttribute('style');
 			Set_Cookie( 'debug', false, 1, '/', '', '' );
 			if(keyboard&&debugLink)
-				debugLink.textContent='Show';
+				debugLink[TC]='Show';
 			return false;
 		}
 		else{
 			debug.style.display='inline';
 			Set_Cookie( 'debug', true, 1, '/', '', '' );
 			if(keyboard&&debugLink)
-				debugLink.textContent='Hide';
+				debugLink[TC]='Hide';
 			return true;
 		}
 	}
@@ -476,7 +475,7 @@ function disableIcons(){// Converts disabled icons to act like disabled icons
 			icon.href="javascript:void();";
 			icon.setAttribute("onclick","return false;");
 			icon.setAttribute('style','cursor:inherit;');
-			icon.childNodes[0].textContent+=" (Disabled)";
+			icon.childNodes[0][TC]+=" (Disabled)";
 		}
 	}
 	catch(e){
@@ -497,7 +496,7 @@ function disableIcons(){// Converts disabled icons to act like disabled icons
 				icons[i].href="javascript:void();";
 				icons[i].setAttribute("onclick","return false;");
 				icons[i].setAttribute('style','cursor:inherit;');
-				icons[i].childNodes[0].textContent+=" (Disabled)";
+				icons[i].childNodes[0][TC]+=" (Disabled)";
 			}
 		}
 	}
@@ -589,36 +588,40 @@ function PDF_popup(file){
 	return false;
 }
 function toggleFile(file){
-	if(!files[file.textContent]){
-		files[file.textContent]=1;
+	if(!filesLst[file[TC]]){
+		filesLst[file[TC]]=1;
 		file.setAttribute('selected',true);
 	}
 	else{
-		delete(files[file.textContent]);
+		delete(filesLst[file[TC]]);
 		file.setAttribute('selected',false);
 	}
 }
 function bulkDownload(link,type){
+	if(typeof JSON=='undefined')
+		return printMsg('Sorry',"Your browser does not support the JSON object so you can not upload scans with that button.<br/>You have 3 choices: ignore, update your browser, and switch browsers",'center',0);
 	var ct=0;
-	for(var i in files){
+	for(var i in filesLst){
 		ct++;
 		break;
 	}
 	if(ct>0){
-		link.href="download.php?type="+encodeURIComponent(type)+"&json="+encodeURIComponent(JSON.stringify(files));
+		link.href="download.php?type="+encodeURIComponent(type)+"&json="+encodeURIComponent(JSON.stringify(filesLst));
 		return true;
 	}
 	else
 		return printMsg('Error','No files selected','center',-1);
 }
 function bulkPrint(link){
+	if(typeof JSON=='undefined')
+		return printMsg('Sorry',"Your browser does not support the JSON object so you can not upload scans with that button.<br/>You have 3 choices: ignore, update your browser, and switch browsers",'center',0);
 	var ct=0;
-	for(var i in files){
+	for(var i in filesLst){
 		ct++;
 		break;
 	}
 	if(ct>0){
-		window.open("print.php?json="+encodeURIComponent(JSON.stringify(files)));
+		window.open("print.php?json="+encodeURIComponent(JSON.stringify(filesLst)));
 		return true;
 	}
 	else
@@ -626,28 +629,30 @@ function bulkPrint(link){
 }
 function bulkDel(){
 	var p='Delete all of these';
-	for(var i in files)
+	for(var i in filesLst)
 		p+="\n"+i;
 	if(p.length==19)
 		return printMsg('Error','No files selected','center',-1);
 	if(!confirm(p))
 		return false;
-	var files2=files;
+	var files2=filesLst;
 	for(var i in files2){
 		if(delScan(i,false))
 			return printMsg('Error','Unsupported Browser','center',-1);
-		delete(files[i]);
+		delete(filesLst[i]);
 	}
 	return false;
 }
 function bulkView(link){
+	if(typeof JSON=='undefined')
+		return printMsg('Sorry',"Your browser does not support the JSON object so you can not upload scans with that button.<br/>You have 3 choices: ignore, update your browser, and switch browsers",'center',0);
 	var ct=0;
-	for(var i in files){
+	for(var i in filesLst){
 		ct++;
 		break;
 	}
 	if(ct>0){
-		window.open("index.php?page=View&json="+encodeURIComponent(JSON.stringify(files)));
+		document.location="index.php?page=View&json="+encodeURIComponent(JSON.stringify(filesLst));
 		return true;
 	}
 	else
@@ -670,10 +675,8 @@ function selectScans(b){
 	return false;
 }
 function upload(file){
-	if(typeof XMLHttpRequest!='function'){
-		printMsg('Sorry',"Your browser does not support the XMLHttpRequest function so you can not upload scans with that button.<br/>You have 3 choices: ignore, update your browser, and switch browsers",'center',0);
-		return false;
-	}
+	if(typeof XMLHttpRequest!='function')
+		return printMsg('Sorry',"Your browser does not support the XMLHttpRequest function so you can not upload scans with that button.<br/>You have 3 choices: ignore, update your browser, and switch browsers",'center',0);
 	if(getID(file)){
 		popup('blanket',365);
 		return true;
@@ -770,17 +773,15 @@ function upload(file){
 }
 function emailManager(file){
 	var storeSupport=(typeof localStorage=="object"&&typeof JSON=="object"?true:false),data=false;
-	if(file==null&&!storeSupport){
-		printMsg('Sorry',"Your browser does not support saving email settings<br/>You have 3 choices: ignore, update your browser, and switch browsers",'center',0);
-		return false;
-	}
-	if(typeof XMLHttpRequest!='function'){
-		printMsg('Sorry',"Your browser does not support the XMLHttpRequest function so you can not email scans with that button.<br/>You have 3 choices: ignore, update your browser, and switch browsers",'center',0);
-		return false;
-	}
+	if(file==null&&!storeSupport)
+		return printMsg('Sorry',"Your browser does not support saving email settings<br/>You have 3 choices: ignore, update your browser, and switch browsers",'center',0);
+	if(typeof XMLHttpRequest!='function')
+		return printMsg('Sorry',"Your browser does not support the XMLHttpRequest function so you can not email scans with that button.<br/>You have 3 choices: ignore, update your browser, and switch browsers",'center',0);
 	if(file=='Scan_Compilation'){
+		if(typeof JSON=='undefined')
+			return printMsg('Sorry',"Your browser does not support the JSON object so you can not upload scans with that button.<br/>You have 3 choices: ignore, update your browser, and switch browsers",'center',0);
 		var files_ct=0;
-		for(var i in files)
+		for(var i in filesLst)
 			files_ct++;
 		if(files_ct==0)
 			return printMsg('Error','No files selected','center',-1);
@@ -797,7 +798,7 @@ function emailManager(file){
 	html+='<li>You can double click the password blank to see the password.</li>'+
 	(document.location.protocol=='http:'?'<li>This does not use a secure connection to get your login from your browser to the server.</li>':'')+'</ul></div>'+
 	'<form name="email" target="_blank" action="email.php" onsubmit="return validateEmail(this);">'+
-	'<input type="hidden" name="'+(file=='Scan_Compilation'?'json':'file')+'" value="'+(file=='Scan_Compilation'?encodeHTML(JSON.stringify(files)):file)+'"/>'+
+	'<input type="hidden" name="'+(file=='Scan_Compilation'?'json':'file')+'" value="'+(file=='Scan_Compilation'?encodeHTML(JSON.stringify(filesLst)):file)+'"/>'+
 	'<div class="label">'+(file?'From':'Email')+':</div><div class="control"><input type="text" onchange="configEmail(this.value)" name="from" value="johndoe@gmail.com"/></div>'+
 	(file?'<div class="label">Subject:</div><div class="control"><input type="text" name="title" value="[Scanned '+(file=='Scan_Compilation'?'Compilation':(file.substr(-3)!='txt'?'Image':'Text'))+'] '+(file=='Scan_Compilation'?files_ct+' Scans':file.substr(5))+'"/></div>':'')+
 	(file?'<div class="label">To:</div><div class="control"><input type="text" name="to" value=""/></div>':'')+
@@ -816,7 +817,7 @@ function emailManager(file){
 	'</div>';
 	getID("blanket").childNodes[0].innerHTML=html
 	if(data){
-		data=JSON.parse(data);
+		data=json_decode(data);
 		document.email.from.value=data["from"];
 		document.email.pass.value=data["pass"];
 		document.email.host.value=data["host"];
@@ -894,7 +895,7 @@ function configEmail(addr){
 						t.removeAttribute('style');
 					}
 					if(data['type']!='smtp')
-						printMsg('Please File a bug report','Your email provider is not supported, if you do support can be added for it','center',-1);
+						printMsg('Please File a bug report','Your email provider ('+addr+') is not supported, if you do support can be added for it','center',-1);
 				}
 			}
 		}
@@ -904,7 +905,7 @@ function configEmail(addr){
 }
 function sendEmail(ele){
 	if(typeof XMLHttpRequest!='function')
-		printMsg('Error','Your browser does not support <a href="http://www.w3schools.com/xml/xml_http.asp" target="_blank">XMLHttpRequest</a>, so you can not use this feature','center',0);
+		return printMsg('Error','Your browser does not support <a href="http://www.w3schools.com/xml/xml_http.asp" target="_blank">XMLHttpRequest</a>, so you can not use this feature','center',0);
 	var now=new Date().getTime();
 	printMsg('Sending Email<span id="email-'+now+'"></span>','Please Wait...<br/>This could take a while depending on the file size of the scan and the upload speed at '+document.domain,'center',0);
 	var httpRequest = new XMLHttpRequest();
@@ -961,8 +962,8 @@ function delScan(file,prompt){
 				if(data['state']==0){
 					printMsg('File Deleted',"The file "+data['file']+" has been removed.",'center',0);
 					var del=getID(file);
-					if(files[file])
-						delete(files[file]);
+					if(filesLst[file])
+						delete(filesLst[file]);
 					del.parentNode.removeChild(del);
 					
 				}
@@ -981,6 +982,8 @@ function delScan(file,prompt){
 function updateCheck(vs,e){
 	if(typeof XMLHttpRequest!='function')
 		printMsg('Error','Your browser does not support <a href="http://www.w3schools.com/xml/xml_http.asp" target="_blank">XMLHttpRequest</a>, so you can not use this feature','center',0);
+	if(e===true)
+		printMsg('Update Available','Version '+vs+' is available for <a target="_blank" href="https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server/wiki/Change-Log">download</a>','center',-1);
 	if(e)
 		e.setAttribute('disabled','disabled');
 	var httpRequest = new XMLHttpRequest();

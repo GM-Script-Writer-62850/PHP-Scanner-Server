@@ -126,12 +126,12 @@ Supported Browsers:
 		http://www.chromium.org/getting-involved/dev-channel
 	Safari
 		http://www.apple.com/safari/download/
-	Opera
+	Opera (NOT Opera Mini)
 		http://www.opera.com/browser/
 	IE 10+
 		http://windows.microsoft.com/en-us/internet-explorer/ie-10-worldwide-languages
 	IE 6-9 with google chrome frame installed
-		http://code.google.com/chrome/chromeframe/
+		http://code.google.com/chrome/chromeframe/ (EOL: January 2014)
 
 Enabling Auto-Deletion of old scans:
 	cleaner.php: Old scan auto-deletion tool.
@@ -144,8 +144,8 @@ Enabling Auto-Deletion of old scans:
 	or this line (Will not require root unless yuo want it to work when you are not loged in)
 		*/5 * * * * curl http://localhost/path/to/cleaner.php
 
-	It will Check every 5 minutes for scans older than 1 hour (3600 seconds value
-	in cleaner.php) and deletes them.
+	It will Check every 5 minutes for scans older than 1 day (86400 seconds value
+		in cleaner.php) and deletes them.
 
 Frequently asked questions/issues:
 	The brightness and contrast options do not work on lucid lynx.
@@ -162,6 +162,8 @@ Frequently asked questions/issues:
 				https://launchpad.net/~ubuntu-security/+archive/ppa/+buildjob/2086533/+files/imagemagick_6.6.2.6-1ubuntu1.1_i386.deb
 	Why should I enable auto delete?
 		So your Hard Drive does not end up full of scans
+	What does EOL stand for 
+		End Of Life, meaning it will no longer receive updates
 	Every time I load a page it is blank.
 		Somehow there is a error somewhere check your apache error log for
 			for me the file was located at
@@ -177,6 +179,8 @@ Frequently asked questions/issues:
 		Try making the image larger the text is probably too small for tesseract-ocr to read
 	How can I change the amount of free disk space to warn at
 		It is set on line 3 of index.php
+	How can I turn the auto update checker off
+		It is set on line 6 of index.php
 	How can I change the time files are kept with auto-delete enabled
 		Open cleaner.php and change the 3600 on line 7 to a different number (3600 is one hour in seconds)
 	I see my scanner with the command "scanimage -L" but it is not being detected
@@ -188,7 +192,7 @@ Frequently asked questions/issues:
 			scanner-access-enabler-1.4.tar.bz2 (http://www.mediafire.com/?4r1aw9ix9ayb0u0)
 	Why can't I change the orientation on the scan page
 		because the selected paper size will not fit in the scanner one way
-	Why is the pdf download not working I keep getting a file with a error in it
+	Why is the pdf download (single page) not working I keep getting a file with a error in it
 		The script assumes fpdf.php is located in /usr/share/php/fpdf/ this is set on line 2 of download.php
 
 Credit where credit is due:

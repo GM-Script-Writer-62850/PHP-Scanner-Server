@@ -3,7 +3,7 @@
 $FreeSpaceWarn=2048;// In Megabytes
 $Fortune=true;// Enable/disable fortunes in the debug console
 $ExtraScanners=false;// Adds sample scanners from ./inc/scanhelp/
-$CheckForUpdates=true;// Enables auto update checking
+$CheckForUpdates=false;// Enables auto update checking
 // Sorry for the lack of explanations in the code feel free to ask what something does
 
 $NAME="PHP Scanner Server";
@@ -497,7 +497,7 @@ else if($PAGE=="Config"){
 		for($i=0,$max=count($OP);$i<$max;$i++){
 			$CANNERS.='<tr><td>'.html($OP[$i]->{"NAME"}).'</td><td>'.html($OP[$i]->{"DEVICE"}).'</td></tr>';
 		}
-		$CANNERS.='<tr><td colspan="2" align="center">Missing a scanner? Make sure the scanner is plugged in and turned on.<br/>You may have to use the <a href="index.php?page=Access%20Enabler">Access Enabler</a>.<br/><a href="index.php?action=Parallel-Form">[Click here for parallel-port scanners]</a>'.
+		$CANNERS.='<tr><td colspan="2" align="center">Missing a scanner? Make sure the scanner is plugged in and turned on.<br/>You may have to use the <a href="index.php?page=Access%20Enabler">Access Enabler</a>.<br/><a href="index.php?page=Parallel-Form">[Click here for parallel-port scanners]</a>'.
 			($save?'':'</td></tr><tr><td colspan="2" style="color:red;font-weight:bold;text-align:center;">Bad news: <code>'.$user.'</code> does not have permission to write files to the <code>'.html(getcwd()).'/config</code> folder.<br/><code>sudo chown '.$user.' '.html(getcwd()).'/config</code>').
 			'</td></tr>';
 		$CANNERS.='</tbod></table>';
@@ -506,7 +506,7 @@ else if($PAGE=="Config"){
 		}
 		if(count($OP)==0)
 			Print_Message("No Scanners Found","There were no scanners found on this server. Make sure the scanners are plugged in and turned on. The scanner must also be supported by SANE.<br/>".
-				"<a href=\"index.php?action=Parallel-Form\">[Click here for parallel-port scanners]</a><br/>".
+				"<a href=\"index.php?page=Parallel-Form\">[Click here for parallel-port scanners]</a><br/>".
 				"If it is supported by sane and still does not showup (usb) or does not work (parallel) you may need to use the <a href=\"index.php?page=Access%20Enabler\">Access Enabler</a>".
 				(in_array('lp',explode(' ',exe('groups www-data',true)))===false?'<br/>It appears www-data is not in the lp group did you read the <a href="index.php?page=About">Installation Notes</a>?':''),'center');
 		else
@@ -516,7 +516,7 @@ else if($PAGE=="Config"){
 # ****************
 # Parallel Port Scanner Configuration
 # ****************
-else if($ACTION=="Parallel-Form"){
+else if($PAGE=="Parallel-Form"){
 	InsertHeader("Parallel Port Scanner Setup");
 	$file=fileSafe(Get_Values('file'));
 	$name=Get_Values('name');
@@ -633,7 +633,7 @@ else if($PAGE=="Device Notes"){
 				$MODES=count(explode('|',$CANNERS[$i]->{"MODE-$val"}));
 				$DPI=explode('|',$CANNERS[$i]->{"DPI-$val"});
 				echo ($val=='Inactive'?'<li>This scanner supports<ul>':"<li>The '<a onclick=\"printMsg('Loading','Please Wait...','center',0);\" href=\"index.php?page=Device%20Notes&action=$DEVICE&source=$val\">$val</a>' source supports<ul>").
-					"<li>A bay width of <span class=\"tool\">$WIDTH\"<span class=\"tip\">".$CANNERS[$i]->{"WIDTH-$val"}." mm</span><span></li>".
+					"<li>A bay width of <span class=\"tool\">$WIDTH\"<span class=\"tip\">".$CANNERS[$i]->{"WIDTH-$val"}." mm</span></span></li>".
 					"<li>A bay height of <span class=\"tool\">$HEIGHT\"<span class=\"tip\">".$CANNERS[$i]->{"HEIGHT-$val"}." mm</span></span></li>".
 					'<li>A scanner resolution of '.$DPI[$DPI[0]=='auto'?1:0].' DPI to '.number_format($DPI[count($DPI)-1]).' DPI</li>'.
 					'<li>'.($CANNERS[$i]->{"DUPLEX-$val"}?'D':'No d').'uplex (double sided) scanning</li>'.
@@ -1105,10 +1105,15 @@ else{
 }
 echo '<script type="text/javascript">Debug("'.rawurlencode(html($debug)).html($here."$ ").'",'.(isset($_COOKIE["debug"])?$_COOKIE["debug"]:'false').');';
 if($CheckForUpdates){
-	$time="config/gitVersion.txt";
-	$time=is_file($time)?filemtime($time):time()/2;
+	$file="config/gitVersion.txt";
+	$time=is_file($time)?filemtime($file):time()/2;
 	if($time+3600*24<time())
 		echo "updateCheck('$VER',null);";
+	else{
+		$file=file_get_contents($file);
+		if(version_compare($file,$VER))
+			echo "updateCheck('$file',true);";
+	}
 }
 echo '</script>';
 ?></body></html>

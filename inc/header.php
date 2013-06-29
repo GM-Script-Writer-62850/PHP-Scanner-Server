@@ -16,24 +16,37 @@ if($GLOBALS['PAGE']=='Config')
 <script type="text/javascript" src="jquery.imgareaselect-0.9.10/scripts/jquery.min.js"></script>
 <script type="text/javascript" src="jquery.imgareaselect-0.9.10/scripts/jquery.imgareaselect.pack.js"></script>
 <script type="text/javascript" src="inc/main.js"></script>
+<!--[if lt IE 9]><script type="text/javascript">TC='innerText';</script>
+<style type="text/css">.imgareaselect-handle,.imgareaselect-outer{filter:alpha(opacity=50);}</style><![endif]-->
 </head>
-
 <body>
 <div id="blanket" style="display:none;background-color:transparent;"><div id="popUpDiv" style="opacity:0;"></div></div>
 <div id="container">
 
 <div id="header">
 
-<div class="tab">
+<div class="tab<?php echo in_array($GLOBALS['PAGE'],Array("Config","About","Paper Manager","Access Enabler","Device Notes","Parallel-Form"))?' active':''; ?>">
 <a href="index.php?page=Config">Configure</a>
+<div class="topleft top"></div>
+<div class="bottomleft bottom"></div>
+<div class="topright top"></div>
+<div class="bottomright bottom"></div>
 </div>
 
-<div class="tab">
+<div class="tab<?php echo in_array($GLOBALS['PAGE'],Array("Scans","View","Edit"))?' active':''; ?>">
 <a href="index.php?page=Scans">Scanned Files</a>
+<div class="topleft top"></div>
+<div class="bottomleft bottom"></div>
+<div class="topright top"></div>
+<div class="bottomright bottom"></div>
 </div>
 
-<div class="tab">
+<div class="tab<?php echo $GLOBALS['PAGE']=="Scan"?' active':''; ?>">
 <a href="index.php?page=Scan">Use Scanner</a>
+<div class="topleft top"></div>
+<div class="bottomleft bottom"></div>
+<div class="topright top"></div>
+<div class="bottomright right bottom"></div>
 </div>
 
 <div class="tab">
@@ -47,14 +60,16 @@ if($GLOBALS['PAGE']=='Config')
 <noscript id="nojs">
 <div style="height:auto;" class="message">
 <h2>JavaScript Disabled</h2>
-<p>This application requires JavaScript to function. Please enable JavaScript, then reload this page.
-</p>
+<p>This application requires JavaScript to function. Please enable JavaScript, then reload this page.</p>
 </div>
 </noscript>
 
 <!--[if lt IE 9]>
 <div style="height:auto;text-align:center;" class="message ie">
-<h2>Error: Legacy browsers are not supported</h2>
-<p>Please install <a href="http://www.mozilla.com/firefox/">Mozilla Firefox</a> (Recommended) alternatively, you may use<br/><a href="http://lmgtfy.com/?q=Internet+Explorer+9+Download&l=1">Internet Explorer 9</a> (Windows Vista and 7 only) or <a href="http://code.google.com/chrome/chromeframe/">Google Chrome Frame</a>.</p>
+<h2>Error: Legacy Browsers are NOT Supported</h2>
+<p>You can view the list of supported browsers in the <a href="index.php?page=About">release notes</a>.<br/>
+Please install <a href="http://www.mozilla.com/firefox/">Mozilla Firefox</a> (Recommended) alternatively, you may use<br/>
+<a href="http://lmgtfy.com/?q=Internet+Explorer+10+Download&l=1">Internet Explorer 10</a> (Windows 7 and 8 only) or <a href="http://code.google.com/chrome/chromeframe/">Google Chrome Frame</a> <sup><i>EOL January 2014</i></sup> for Internet Explorer.
+</p>
 </div>
 <![endif]-->

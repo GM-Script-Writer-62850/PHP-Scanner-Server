@@ -131,7 +131,7 @@ for(var i=modes.length-1;i>-1;i--){
 </select></div>
 </div>
 
-<div id="duplex"<?php echo $CANNERS[$SEL]->{"DUPLEX-$defSource"}?' style="display:none;"':'' ?>>
+<div id="duplex"<?php echo $CANNERS[$SEL]->{"DUPLEX-$defSource"}?'':' style="display:none;"'; ?>>
 <div class="label tool">
 <span>Duplex<span class="tip">Double Sided Scan</span></span>:
 </div>
