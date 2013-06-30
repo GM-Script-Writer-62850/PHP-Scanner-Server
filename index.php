@@ -84,6 +84,7 @@ function Put_Values() { # Update values back to form (There is no redo for cropi
 function Print_Message($TITLE,$MESSAGE,$ALIGN) { # Add a Message div after the page has loaded
 	$TITLE=addslashes($TITLE);
 	$MESSAGE=addslashes($MESSAGE);
+	$ALIGN=addslashes($ALIGN);
 	include "inc/message.php";
 }
 
@@ -138,7 +139,7 @@ function validNum($arr){
 }
 
 function exe($shell,$force){
-	$output=str_replace("\\n","\n",shell_exec($shell.($force?' 2>&1':'')).($force?'':'The output of this command unfortunately has to be suppressed to prevent errors :(\nRun `sudo -u www-data '.$shell.'` for output info'));
+	$output=str_replace("\\n","\n",shell_exec($shell.($force?' 2>&1':'')).($force?'':'The output of this command unfortunately has to be suppressed to prevent errors :(\nRun `sudo -u '.$GLOBALS['user']." $shell` for output info"));
 	$GLOBALS['debug'].=$GLOBALS['here'].'$ '.$shell."\n".$output.(substr($output,-1)=="\n"?"":"\n");
 	return $output;
 }
@@ -315,7 +316,6 @@ if($PAGE=="Scans"){
 # ****************
 else if($PAGE=="Config"){
 	InsertHeader("Configure");
-
 	if($ACTION=="Delete-Setting"){ # Delete saved scan settings
 		$val=Get_Values('value');
 		if($val==null){
@@ -512,7 +512,7 @@ else if($PAGE=="Config"){
 			Print_Message("No Scanners Found","There were no scanners found on this server. Make sure the scanners are plugged in and turned on. The scanner must also be supported by SANE.<br/>".
 				"<a href=\"index.php?page=Parallel-Form\">[Click here for parallel-port scanners]</a><br/>".
 				"If it is supported by sane and still does not showup (usb) or does not work (parallel) you may need to use the <a href=\"index.php?page=Access%20Enabler\">Access Enabler</a>".
-				(in_array('lp',explode(' ',exe('groups www-data',true)))===false?'<br/>It appears www-data is not in the lp group did you read the <a href="index.php?page=About">Installation Notes</a>?':''),'center');
+				(in_array('lp',explode(' ',str_replace("\n",' ',exe("groups $user",true))))?'':"<br/>It appears $user is not in the lp group did you read the <a href=\"index.php?page=About\">Installation Notes</a>?"),'center');
 		else
 			Print_Message("Scanners Found:",$CANNERS,'center');
 	}

@@ -539,12 +539,14 @@ img[src="inc/images/blank.gif"] {
 	-webkit-column-gap: 0;
 	column-count: 3;
 	column-gap: 0;
-	padding-right: 6px;
+	margin-left: 4px;
+	overflow: visible;
 }
 
 #scans.columns .box {
 	display: inline-block;
 	float: none;
+	margin-left: 0;
 }
 
 .box, .box-full {
