@@ -815,7 +815,7 @@ function emailManager(file){
 	'</div>';
 	getID("blanket").childNodes[0].innerHTML=html
 	if(data){
-		data=json_decode(data);
+		data=parseJSON(data);
 		document.email.from.value=data["from"];
 		document.email.pass.value=data["pass"];
 		document.email.host.value=data["host"];
