@@ -68,7 +68,7 @@ if(typeof document.body.style.MozColumnGap=="string")
 else
 	enableColumns("paper-list",null);
 </script>
-<div id="paperForm" class="box box-full"><h2>New Paper Maker</h2><form action="index.php?page=Paper%20Manager" method="POST"><p>
+<div class="box box-full dualForm"><h2>New Paper Maker</h2><form action="index.php?page=Paper%20Manager" method="POST"><p>
 <span>Paper Name:</span><input type="text" name="add"/><br/>
 <span>Paper Width:</span><input type="text" name="width"/> inches<br/>
 <span>Paper Height:</span><input type="text" name="height"/> inches<br/>

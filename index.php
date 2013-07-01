@@ -4,6 +4,7 @@ $FreeSpaceWarn=2048;// In Megabytes
 $Fortune=true;// Enable/disable fortunes in the debug console
 $ExtraScanners=false;// Adds sample scanners from ./inc/scanhelp/
 $CheckForUpdates=true;// Enables auto update checking
+$RequireLogin=false;// Require user to login (A 'geek' could bypass this without too much trouble using JavaScript); Create the user 'root' 1st, also Authorization is root's password
 // Sorry for the lack of explanations in the code feel free to ask what something does
 
 $NAME="PHP Scanner Server";
@@ -98,7 +99,7 @@ function Update_Links($l,$p) { # Change the Preview Pane image links via JavaScr
 	echo '<script type="text/javascript" src="inc/previewlinks.php?page='.html($p).'&file='.html($l).'"></script>';
 }
 
-function InsertHeader($l) { # Spit out HTML header
+function InsertHeader($page) { # Spit out HTML header
 	include "inc/header.php";
 }
 
@@ -248,9 +249,18 @@ foreach($dirs as $dir){
 }
 
 # ****************
+# Login Page
+# ****************
+if(($RequireLogin&&!isset($_COOKIE['Authenticated']))||$PAGE=='Login'){
+	$PAGE='Login';
+	InsertHeader('Authenticate Required');
+	include('inc/login.php');
+	Footer();
+}
+# ****************
 # All Scans Page
 # ****************
-if($PAGE=="Scans"){
+else if($PAGE=="Scans"){
 	InsertHeader("Scanned Images");
 
 	# Delete selected scanned image
@@ -345,7 +355,7 @@ else if($PAGE=="Config"){
 				$sheet[3]=$sheet[1];
 				$sheet[1]=$tmp;
 			}
-			$PAPER->{$sheet[0]}=json_decode('{"height":'.$sheet[3].',"width":'.$sheet[1].'}');
+			$PAPER->{$sheet[0]}=array("height" => $sheet[3], "width" => $sheet[1]);
 		}
 
 		if(SaveFile("config/paper.json",json_encode($PAPER))){
@@ -415,7 +425,7 @@ else if($PAGE=="Config"){
 				$help=file_get_contents('inc/scanhelp/'.$val);
 				$help=substr($help,strpos($help,'Options specific to device `')+28);
 				$help=substr($help,0,strpos($help,"':"));
-				$OP[$ct]=json_decode('{"ID":'.$ct.',"INUSE":0,"DEVICE":"'.$help.'","NAME":"'.$val.'"}');
+				$OP[$ct]=array("ID" => $ct, "INUSE" => 0, "DEVICE" => $help, "NAME" => $val);
 				$FakeCt++;
 			}
 		}
@@ -833,20 +843,14 @@ else{
 	if(strlen($SAVEAS)>0){ # Save settings to conf file
 		if(strlen($SET_SAVE)>0){
 			$ACTION="Save Set";
-			$SCANNER=addslashes($SCANNER);
-			$SIZE=addslashes($SIZE);
-			$QUALITY=addslashes($QUALITY);
-			$ORNT=addslashes($ORNT);
-			$MODE=addslashes($MODE);
-			$FILETYPE=addslashes($FILETYPE);
+			$setting=array("scanner" => $SCANNER, "source" => $SOURCE, "duplex" => $DUPLEX, "quality" => $QUALITY, "size" => $SIZE ,"ornt" => $ORNT, "mode" => "$MODE", "bright" => $BRIGHT, "contrast" => $CONTRAST, "rotate" => $ROTATE, "scale" => $SCALE, "filetype" => $FILETYPE, "lang" => $LANG);
 			if(file_exists("config/settings.json")){
 				$file=json_decode(file_get_contents("config/settings.json"));
-				$file->{$SET_SAVE}=json_decode("{\"scanner\":$SCANNER,\"source\":\"$SOURCE\",\"duplex\":\"$DUPLEX\",\"quality\":$QUALITY,\"size\":\"$SIZE\",\"ornt\":\"$ORNT\",\"mode\":\"$MODE\",\"bright\":$BRIGHT,\"contrast\":$CONTRAST,\"rotate\":$ROTATE,\"scale\":$SCALE,\"filetype\":\"$FILETYPE\",\"lang\":\"$LANG\"}");
+				$file->{$SET_SAVE}=$setting;
 				SaveFile("config/settings.json",json_encode($file));
 			}
 			else{
-				$line='{"'.$SET_SAVE.'":{"scanner":'.$SCANNER.',"quality":'.$QUALITY.',"size":"'.$SIZE.'","ornt":"'.$ORNT.'","mode":"'.$MODE.'","bright":'.$BRIGHT.',"contrast":'.$CONTRAST.',"rotate":'.$ROTATE.',"scale":'.$SCALE.',"filetype":"'.$FILETYPE.'","lang":"'.$LANG.'"}}';
-				if(!SaveFile("config/settings.json",$line)){
+				if(!SaveFile("config/settings.json",$json_encode(array($SET_SAVE => $setting)))){
 					Print_Message("Permission Error:","<code>$user</code> does not have permission to write files to the <code>".getcwd()."/config</code> folder.<br/>$notes",'center');
 				}
 			}

@@ -1,4 +1,5 @@
-ErrorDocument 404 /
+ErrorDocument 403 /inc/
+ErrorDocument 404 /inc/
 
 # I will leave these here for you to enable
 # ErrorDocument 401 https://i.chzbgr.com/maxW500/1935027968/hE19A8C6D/

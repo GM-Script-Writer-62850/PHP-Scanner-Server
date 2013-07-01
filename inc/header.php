@@ -1,8 +1,9 @@
+<?php $path=is_numeric($GLOBALS['PAGE'])?'/':''; ?>
 <head>
 <meta http-equiv="Content-type" content="text/html; charset=UTF-8"/>
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="chrome=1"><![endif]-->
-<title><?php echo $GLOBALS['NAME']; ?> ~ <?php echo $GLOBALS['PAGE']; ?></title>
-<link id="style" rel="stylesheet" href="inc/style.php<?php
+<title><?php echo $GLOBALS['NAME']; ?> ~ <?php echo $GLOBALS['PAGE']; ?> - <?php echo $page; ?></title>
+<link id="style" rel="stylesheet" href="<?php echo $path; ?>inc/style.php<?php
 if(isset($_COOKIE["colors"])){
 	echo "?colors=".rawurlencode($_COOKIE["colors"]);
 }
@@ -11,11 +12,11 @@ if(isset($_COOKIE["colors"])){
 if($GLOBALS['PAGE']=='Config')
 	echo '<link id="style_new" rel="stylesheet" href="inc/style.php'.(isset($_COOKIE["colors"])?'?colors='.$_COOKIE["colors"]:'').'" type="text/css"/>';
 ?>
-<link rel="shortcut icon" href="inc/images/favicon.png"/>
-<link rel="stylesheet" type="text/css" href="jquery.imgareaselect-0.9.10/css/imgareaselect-animated.css"/>
-<script type="text/javascript" src="jquery.imgareaselect-0.9.10/scripts/jquery.min.js"></script>
-<script type="text/javascript" src="jquery.imgareaselect-0.9.10/scripts/jquery.imgareaselect.pack.js"></script>
-<script type="text/javascript" src="inc/main.js"></script>
+<link rel="shortcut icon" href="<?php echo $path; ?>inc/images/favicon.png"/>
+<link rel="stylesheet" type="text/css" href="<?php echo $path; ?>jquery.imgareaselect-0.9.10/css/imgareaselect-animated.css"/>
+<script type="text/javascript" src="<?php echo $path; ?>jquery.imgareaselect-0.9.10/scripts/jquery.min.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>jquery.imgareaselect-0.9.10/scripts/jquery.imgareaselect.pack.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>inc/main.js"></script>
 <!--[if lt IE 9]><script type="text/javascript">TC='innerText';</script>
 <style type="text/css">.imgareaselect-handle,.imgareaselect-outer{filter:alpha(opacity=50);}</style><![endif]-->
 </head>
@@ -26,7 +27,7 @@ if($GLOBALS['PAGE']=='Config')
 <div id="header">
 
 <div class="tab<?php echo in_array($GLOBALS['PAGE'],Array("Config","About","Paper Manager","Access Enabler","Device Notes","Parallel-Form"))?' active':''; ?>">
-<a href="index.php?page=Config">Configure</a>
+<a href="<?php echo $path; ?>index.php?page=Config">Configure</a>
 <div class="topleft top"></div>
 <div class="bottomleft bottom"></div>
 <div class="topright top"></div>
@@ -34,7 +35,7 @@ if($GLOBALS['PAGE']=='Config')
 </div>
 
 <div class="tab<?php echo in_array($GLOBALS['PAGE'],Array("Scans","View","Edit"))?' active':''; ?>">
-<a href="index.php?page=Scans">Scanned Files</a>
+<a href="<?php echo $path; ?>index.php?page=Scans">Scanned Files</a>
 <div class="topleft top"></div>
 <div class="bottomleft bottom"></div>
 <div class="topright top"></div>
@@ -42,15 +43,19 @@ if($GLOBALS['PAGE']=='Config')
 </div>
 
 <div class="tab<?php echo $GLOBALS['PAGE']=="Scan"?' active':''; ?>">
-<a href="index.php?page=Scan">Use Scanner</a>
+<a href="<?php echo $path; ?>index.php?page=Scan">Use Scanner</a>
 <div class="topleft top"></div>
 <div class="bottomleft bottom"></div>
 <div class="topright top"></div>
 <div class="bottomright right bottom"></div>
 </div>
 
-<div class="tab">
+<div class="tab<?php echo $GLOBALS['PAGE']=="Login"||is_numeric($GLOBALS['PAGE'])?' active':''; ?>">
 <a href="/"><?php echo $_SERVER['SERVER_NAME']; ?></a>
+<div class="topleft top"></div>
+<div class="bottomleft bottom"></div>
+<div class="topright top"></div>
+<div class="bottomright bottom"></div>
 </div>
 
 </div>
@@ -60,7 +65,7 @@ if($GLOBALS['PAGE']=='Config')
 <noscript id="nojs">
 <div style="height:auto;" class="message">
 <h2>JavaScript Disabled</h2>
-<p>This application requires JavaScript to function. Please enable JavaScript, then reload this page.</p>
+<p>This application requires JavaScript to function. Please enable JavaScript, then reload this page.<?php echo $GLOBALS['PAGE']=='Login'?'<br/><b>LOGIN REQUIRES JAVASCRIPT</b>':''; ?></p>
 </div>
 </noscript>
 

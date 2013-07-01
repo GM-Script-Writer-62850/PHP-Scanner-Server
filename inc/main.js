@@ -1037,3 +1037,34 @@ function enableColumns(ele,e){ // They work flawlessly in Firefox so it does not
 			'You can try them out by clicking <span class="tool"><a href="#" onclick="return enableColumns(\''+ele+'\',this);">here</a><span class="tip">Enable</span></span>.<br/>'+
 			'Oh, and by the way they work in <a href="http://www.mozilla.org/en-US/firefox/all.html" target="_blank">Firefox</a> flawlessly.','center',-1);
 }
+function login(form){
+	if(typeof XMLHttpRequest!='function')
+		return printMsg('Error','Your browser does not support <a href="http://www.w3schools.com/xml/xml_http.asp" target="_blank">XMLHttpRequest</a>, so you can not use this feature','center',0);
+	var httpRequest = new XMLHttpRequest();
+	httpRequest.onreadystatechange = function(){
+		if(httpRequest.readyState==4){
+			if(httpRequest.status==200){
+				var json=parseJSON(httpRequest.responseText);
+				printMsg(json["error"]?'Error':'Success',json["message"]+(json["error"]?'':"<br/>You may now access the server by clicking links"),'center',0);
+			}
+			else{
+				printMsg('Sending Error','Got a '+httpRequest.status+' error<br/>If you don\'t know what that means and want to know click <a target="_blank" href="http://www.w3.org/Protocols/HTTP/HTRESP.html">here</a>.','center',0);
+			}
+			sendE(getID('email-'+now).nextSibling,'click');
+		}
+	};
+	httpRequest.open('POST', "inc/login.php");
+	var params = "json=1"+
+		"&mode="+encodeURIComponent(form.mode.value)+
+		"&name="+encodeURIComponent(form.name.value)+
+		"&pass="+encodeURIComponent(form.pass.value);
+	if(form.auth)
+		params+="&auth="+encodeURIComponent(form.auth.value);
+	if(form.newp)
+		params+="&newp="+encodeURIComponent(form.newp.value);
+	httpRequest.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+	httpRequest.setRequestHeader("Content-length", params.length);
+	httpRequest.setRequestHeader("Connection", "close");
+	httpRequest.send(params);
+	return false;
+}

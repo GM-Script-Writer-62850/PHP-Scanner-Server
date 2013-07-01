@@ -1,7 +1,7 @@
 <?php
 // Chrome's and IE's css columns break things
-header('Content-type: text/css');
 $expires=86400;//24 hrs
+header('Content-type: text/css');
 header("Pragma: public");
 header("Cache-Control: maxage=".$expires);
 header('Expires: '.gmdate('D, d M Y H:i:s',time()+$expires).' GMT');
@@ -62,7 +62,7 @@ $transitionTime='0.8s'; // The rotateChange function in main.js needs to be adju
 	}
 }
 
-body, #header, #message table, .side_box, .side_box h2, #preview, #preview_links img, #preview_img p, #preview h2, .box, .box img, .box pre.border, .box h2, #footer, #debug pre, .tab.active > div.top {
+body, #header, #message table, .side_box, .side_box h2, #preview, #preview_links img, #preview_img p, #preview h2, .box, .box img, .box pre.border, .box h2, #footer, #debug pre, .tab.active > div.top, .dualForm .footer {
 	-moz-transition-property: background, border, color;
 	-moz-transition-duration: <?php echo $transitionTime; ?>;
 	-o-transition-property: background, border, color;
@@ -123,12 +123,14 @@ a:hover {
 	border-radius: 5px;
 	color: #ffffff;
 	display: none;
-	left: 105%;
 	padding: 5px;
 	font-family: sans-serif;
 	font-size: 12px;
 	position: absolute;
-	bottom: 50%;
+	left: 101%;
+	left: calc(100% + 1px);
+	bottom: 101%;
+	bottom: calc(100% + 1px);
 	z-index: 1;
 	white-space: nowrap;
 	text-decoration: none;
@@ -141,7 +143,7 @@ a:hover {
 
 #container {
 	width: 735px;
-	height: 100%;
+	/*height: 100%;*/
 	margin: auto;
 	padding: 0.5em;
 	text-align: left;
@@ -590,6 +592,10 @@ img[src="inc/images/blank.gif"] {
 	background: #<?php echo $BG_COLOR; ?>;
 }
 
+.box h3 {
+	text-align: center;
+}
+
 .box p {
 	margin: 5px;/*5px 10px 5px 5px*/
 }
@@ -647,22 +653,29 @@ code {
 	margin: 1px 0 -2px 1px;
 }
 
-#paperForm form {
+.dualForm form {
 	float: left;
 	width: 50%;
 }
 
-#paperForm form.m {
+.dualForm form.m {
 	border-left: 1px solid #<?php echo $BG_COLOR; ?>;
 	margin-left: -1px;
 }
 
-#paperForm form span {
+.dualForm form span {
 	width: 100px;
 	display: inline-block;
 }
-#paperForm form input[type="text"] {
+.dualForm form input[type="text"] {
 	width: 125px;
+}
+
+.dualForm .footer {
+	width: 100%;
+	border-top: 1px solid #<?php echo $BG_COLOR; ?>;
+	display: inline-block;
+	text-align: center;
 }
 
 #text-editor {

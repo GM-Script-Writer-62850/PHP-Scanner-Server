@@ -14,7 +14,7 @@ function ext2mime($ext){
 function returnFile($in,$out,$ext){
 	header("Pragma: public");
 	header("Content-type: ".ext2mime($ext));
-	header('Content-Disposition: attachment; filename="'.$out.'"');
+	header('Content-Disposition: attachment; filename="'.addslashes($out).'"');
 	if(is_file($in)){
 		header('Content-Length: '.filesize($in));
 		readfile($in);
@@ -25,7 +25,7 @@ function returnFile($in,$out,$ext){
 	}
 }
 if(isset($_GET['file'])){
-	if(strrpos($_GET['file'], "/")>-1)
+	if(strpos($_GET['file'], "/")>-1)
 		$_GET['file']=substr($_GET['file'],strrpos($_GET['file'],"/")+1);
 }
 if(isset($_GET['downloadServer'])){
@@ -74,10 +74,9 @@ else if(isset($_GET['json'])){
 else if(isset($_GET['file'])){
 	if(file_exists("scans/".$_GET['file'])){
 		if(isset($_GET['compress'])){
-			$name=substr($_GET['file'],0,strrpos($_GET['file'],"."));
 			$file='/tmp/download-'.md5(time().rand()).'.zip';
-			shell_exec("cd \"scans\" && zip -r \"$file\" \"".$_GET['file']."\"");
-			returnFile($file,"$name.zip",'zip');
+			shell_exec("cd \"scans\" && zip -r \"$file\" \"".addslashes($_GET['file'])."\"");
+			returnFile($file,substr($_GET['file'],0,strrpos($_GET['file'],".")),'zip');
 			@unlink($file);
 		}
 		else{
