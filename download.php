@@ -5,7 +5,23 @@ function ext2mime($ext){
 		case "png": return "image/png";
 		case "jpg": return "image/jpg";
 		case "tiff": return "image/tiff";
-		case "txt": return "text/plane";
+		case "txt": return "text/plain";
+		case "pdf": return "application/pdf";
+		case "bz2": return "application/x-bzip";
+		case "zip": return "application/zip";
+	}
+}
+function returnFile($in,$out,$ext){
+	header("Pragma: public");
+	header("Content-type: ".ext2mime($ext));
+	header('Content-Disposition: attachment; filename="'.$out.'"');
+	if(is_file($in)){
+		header('Content-Length: '.filesize($in));
+		readfile($in);
+	}
+	else{
+		header('Content-Length: '.strlen($in));
+		echo $in;
 	}
 }
 if(isset($_GET['file'])){
@@ -13,21 +29,15 @@ if(isset($_GET['file'])){
 		$_GET['file']=substr($_GET['file'],strrpos($_GET['file'],"/")+1);
 }
 if(isset($_GET['downloadServer'])){
-	header("Pragma: public");
-	header("Content-type: application/x-bzip");
-	$t=time();
-	header("Content-Disposition: attachment; filename=\"PHP-Scanner-Server-".addslashes($_GET['ver']).".tar.bz2\"");
-	shell_exec("tar cjf /tmp/scanner-$t.tar.bz2 --exclude=\"scans/*\" --exclude=\"config/*.*\" ./");// '--exclude=\"password.md5\"' What was this in there for?
-	$file=file_get_contents("/tmp/scanner-$t.tar.bz2");
-	header('Content-Length: '.strlen($file));
-	echo $file;
-	@unlink("/tmp/scanner-$t.tar.bz2");
+	$file="/tmp/scanner-".md5(time().rand()).".tar.bz2";
+	shell_exec("tar cjf $file --exclude=\"scans/*\" --exclude=\"config/*.*\" ./");// '--exclude=\"password.md5\"' What was this in there for?
+	returnFile($file,'PHP-Scanner-Server-'.$_GET['ver'].'.tar.bz2','bz2');
+	@unlink($file);
 }
 else if(isset($_GET['json'])){
 	$files=json_decode($_GET['json']);
 	$FILES='';
 	$type=isset($_GET['type'])?$_GET['type']:false;
-	header("Pragma: public");
 	foreach($files as $key => $val){
 		$file="Scan_$key";
 		if(is_numeric(strpos($file, "/")))
@@ -38,47 +48,43 @@ else if(isset($_GET['json'])){
 	if(strlen($FILES)>0 && is_string($type)){
 		$type=$_GET['type'];
 		if($type=='pdf'){
-			$file=md5(time().rand()).'.pdf';
-			shell_exec("convert $FILES+repage /tmp/$file");// -page Letter -gravity center
-			header("Content-type: application/pdf");
-			header("Content-Disposition: attachment; filename=\"Compilation.pdf\"");
+			$file='/tmp/'.md5(time().rand()).'.pdf';
+			$type='pdf';
+			$name='Compilation.pdf';
+			shell_exec("convert $FILES+repage $file");// -page Letter -gravity center
 		}
 		else if($type=='zip'){
-			$file=md5(time().rand()).'.zip';
-			header("Content-Disposition: attachment; filename=\"Compilation.zip\"");
-			shell_exec("zip \"/tmp/$file\" $FILES");
-			echo file_get_contents("/tmp/$download.zip");
+			$file='/tmp/'.md5(time().rand()).'.zip';
+			$type='zip';
+			$name='Compilation.zip';
+			shell_exec("zip \"$file\" $FILES");
 		}
 		else{
-			header("Content-type: plain/txt");
-			header("Content-Disposition: attachment; filename=\"Error.txt\"");
-			die("Does not support '$type' files");
+			$type='txt';
+			$name='Error.txt';
+			$file="Does not support '$type' files";
 		}
-		echo file_get_contents("/tmp/$file");
-		@unlink("/tmp/$file");
+		returnFile($file,$name,$type);
+		if(is_file($file))
+			@unlink($file);
 	}
-	else{
-		header("Content-type: plain/txt");
-		header("Content-Disposition: attachment; filename=\"Error.txt\"");
-		echo "No legit file names provided";
-	}
+	else
+		returnFile("No legit file names provided",'404_Error.txt','txt');
 }
 else if(isset($_GET['file'])){
 	if(file_exists("scans/".$_GET['file'])){
-		header("Pragma: public");
 		if(isset($_GET['compress'])){
-			$download=substr($_GET['file'],0,strrpos($_GET['file'],"."));
-			header("Content-Disposition: attachment; filename=\"$download.zip\"");
-			$download=md5(time().rand());
-			shell_exec("cd \"scans\" && zip -r \"/tmp/$download.zip\" \"".$_GET['file']."\"");
-			echo file_get_contents("/tmp/$download.zip");
-			unlink("/tmp/$download.zip");
+			$name=substr($_GET['file'],0,strrpos($_GET['file'],"."));
+			$file='/tmp/download-'.md5(time().rand()).'.zip';
+			shell_exec("cd \"scans\" && zip -r \"$file\" \"".$_GET['file']."\"");
+			returnFile($file,"$name.zip",'zip');
+			@unlink($file);
 		}
 		else{
 			$ext=substr($_GET['file'],strrpos($_GET['file'],".")+1);
 			if(isset($_GET['pdf'])){
-				header("Content-type: application/pdf");
-				header("Content-Disposition: attachment; filename=\"".substr($_GET['file'],0,strlen($ext)*-1)."pdf\"");
+				header("Content-type: ".ext2mime("pdf"));
+				header('Content-Disposition: attchment; filename="'.substr($_GET['file'],0,strlen($ext)*-1).'pdf"');
 				if(!isset($_GET['full'])){
 					$fontSize=16;
 					$marginLeft=10;
@@ -140,17 +146,12 @@ else if(isset($_GET['file'])){
 					$pdf->Output(substr($_GET['file'],0,strlen($ext)*-1)."pdf",'D');
 				}
 			}
-			else{
-				header("Content-type: ".ext2mime($ext));
-				header("Content-Disposition: attachment; filename=\"".$_GET['file']."\"");
-				echo file_get_contents("scans/".$_GET['file']);
-			}
+			else
+				returnFile("scans/".$_GET['file'],$_GET['file'],$ext);
 		}
 	}
-	else{
-		header($_SERVER['SERVER_PROTOCOL']." 404 Not Found");
-		echo "<html><head><title>404 Not Found</title></head><body><h1>404 Not Found</h1>The file ".htmlspecialchars($_GET['file'])." was not found in the scans folder.</body></html>";
-	}
+	else
+		returnFile("The file ".$_GET['file']." was not found in the scans folder.",'404.txt','txt');
 }
 else if(isset($_GET['update'])){
 	$file=@file_get_contents("https://raw.github.com/GM-Script-Writer-62850/PHP-Scanner-Server/master/README");
@@ -166,4 +167,6 @@ else if(isset($_GET['update'])){
 	else
 		echo '{"state":-2,"vs":null}';
 }
+else
+	returnFile("You: Hey download.php I want a download.\nMe: Ok here you go!\nYou: Ha ha, very funny that is not what I meant\nMe: Well maybe if you told me what you want I could give it to you","Reply.txt",'txt');
 ?>

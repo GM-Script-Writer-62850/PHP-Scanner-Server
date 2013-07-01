@@ -9,10 +9,10 @@ else if(isset($_GET['json'])){
 	$prefix='Scan_';
 }
 else
-	die('<head><title>Missing File</title></head><body><h1>Error</h1>No file(s) specifyed</body></html>');
+	die('<title>Missing File</title></head><body><h1>Error</h1>No file(s) specifyed</body></html>');
 if(count($files)==1){
 	foreach($files as $file => $val)
-		echo htmlspecialchars(substr($file,strlen($prefix),strrpos($file,'.')-strlen($prefix)));	
+		echo htmlspecialchars(substr($file,strlen($prefix),strrpos($file,'.')-strlen($prefix)));
 }
 else
 	echo "Compilation";

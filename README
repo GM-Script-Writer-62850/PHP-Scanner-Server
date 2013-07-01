@@ -5,7 +5,7 @@ Based on Linux Scanner Server 1.2 Beta
 
 Released under the GPL 2.0
 
-Last Update: 06/29/2013 (Month/Day/Year)
+Last Update: 06/30/2013 (Month/Day/Year)
 For Version: 1.3-6
 
 Change Log:
@@ -115,7 +115,7 @@ Permissions:
 
 Security Notes:
 	Anyone with access to the scanner can view all your scans
-	Do not give www-data more permission than needed, there may be security holes
+	Do not give www-data more permission than needed, there may be security holes (If you find any let me know, they are bugs)
 
 Supported Browsers:
 	Firefox (recommended)
@@ -148,6 +148,12 @@ Enabling Auto-Deletion of old scans:
 		in cleaner.php) and deletes them.
 
 Frequently asked questions/issues:
+	Why don't you have a .deb .rpm etc file I an install
+		This more like a addon than a program so I am note sure if one of thoes would be approate, I have written bash
+		scripts to install and update this, if you look they are on the Downloads page in the Wiki
+			https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server/wiki/Downloads
+	I am getting 404 errors for favicon.ico in my error log, how can I stop that
+		sudo ln -s ../mods-available/rewrite.load /etc/apache2/mods-enabled/ && sudo service apache2 restart
 	The brightness and contrast options do not work on lucid lynx.
 		This is because lucid has ImageMagick 6.5.7-8 and the brightness-contrast option was added in version 6.5.9
 			64Bit:
@@ -175,6 +181,7 @@ Frequently asked questions/issues:
 				display_errors = Off
 			and set it to On (it was on line 531 for me) 
 			at this point apache will need a restart (sudo service apache2 restart)
+		If the error was not caused by you not reading the instructions please file a bug report
 	The conversion to text was very poor/blank
 		Try making the image larger the text is probably too small for tesseract-ocr to read
 	How can I change the amount of free disk space to warn at
@@ -182,16 +189,18 @@ Frequently asked questions/issues:
 	How can I turn the auto update checker off
 		It is set on line 6 of index.php
 	How can I change the time files are kept with auto-delete enabled
-		Open cleaner.php and change the 3600 on line 7 to a different number (3600 is one hour in seconds)
+		Open cleaner.php and change the 86400 on line 2 to a different number (86400 is one day in seconds)
+			You can use math there and put 86400*7 to make it a week
 	I see my scanner with the command "scanimage -L" but it is not being detected
 		This is a permissions issue (and a royal pita)
+			http://127.0.0.1/index.php?page=Access%20Enabler (link works after installing)
 			http://jhansonxi.blogspot.com/2010/10/scanner-access-enabler.html
 		If that site goes the access enabler is included with this (1.2 lacks a desktop file)
 			scanner-access-enabler-1.1.tar.bz2 (http://www.mediafire.com/?86e6ykeueodu7tl)
 			scanner-access-enabler-1.2.tar.bz2 (http://www.mediafire.com/?p1plimo2yf31kl3)
 			scanner-access-enabler-1.4.tar.bz2 (http://www.mediafire.com/?4r1aw9ix9ayb0u0)
 	Why can't I change the orientation on the scan page
-		because the selected paper size will not fit in the scanner one way
+		because the selected paper size will olny fit in the scanner one way
 	Why is the pdf download (single page) not working I keep getting a file with a error in it
 		The script assumes fpdf.php is located in /usr/share/php/fpdf/ this is set on line 2 of download.php
 
@@ -199,7 +208,7 @@ Credit where credit is due:
 	PHiLLIP KLiEWER
 		Original CGI script
 	pqwoerituytrueiwoq (at) ubuntuforums.org
-		Conversion/upgrade/security fixes/cleanup
+		Conversion/upgrade/security/fixes/cleanup/upgrades
 	jhansonxi (at) ubuntuforums.org
 		Original CGI cleanup prior to conversion and scanner-access-enabler-*.tar.bz2
 	Everaldo Coelho
@@ -211,7 +220,7 @@ Credit where credit is due:
 	Andy Prevost, Marcus Bointon, and Jim Jagielski
 		phpmailer 5.2.6
 	openiconlibrary.sourceforge.net
-		Powered by Linux icon
+		Powered by Linux image
 
 Installation Notes:
 	Extract files to /var/www (or where ever your web pages are visible from)

@@ -1,4 +1,20 @@
+ErrorDocument 404 /
+
+# I will leave these here for you to enable
+# ErrorDocument 401 https://i.chzbgr.com/maxW500/1935027968/hE19A8C6D/
+# ErrorDocument 403 http://www.nathanpatel.org/drupal/sites/default/files/denied_cat.jpg
+# ErrorDocument 404 http://media.boingboing.net/wp-content/uploads/2011/12/404.jpg
+# ErrorDocument 404 http://404.cat/
+# ErrorDocument 500 http://farm8.staticflickr.com/7001/6509400855_aaaf915871_z.jpg
+
+# Compress file for faster network transfer
 php_value output_handler ob_gzhandler
 <IfModule mod_deflate.c>
-AddOutputFilterByType DEFLATE text/text text/html text/plain text/xml text/css application/x-javascript application/javascript text/javascript application/json
+	AddOutputFilterByType DEFLATE text/text text/html text/plain text/xml text/css application/x-javascript application/javascript text/javascript application/json
+</IfModule>
+
+# Some browsers look for a /favicon.ico file, this tells them where to get a favicon
+<IfModule mod_rewrite.c>
+	RewriteEngine on
+	RewriteRule ^favicon.ico$ /inc/images/favicon.png [L]
 </IfModule>
