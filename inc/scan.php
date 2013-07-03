@@ -322,7 +322,7 @@ Scan Image
 $ls='<span class="tool icon recent-off"><span class="tip">Last Scan (Disabled)</span></span>';
 if(isset($_COOKIE["scan"])&&isset($_COOKIE["preview"])){
 	if(file_exists("scans/".$_COOKIE["scan"])&&file_exists("scans/".$_COOKIE["preview"]))
-		echo "<a class=\"tool icon recent\" onclick=\"lastScan('".html($_COOKIE["scan"])."','".html($_COOKIE["preview"])."','".html($_COOKIE["scanner"])."',this,".(file_exists('config/IMGUR_API_KEY.txt')?'true':'false').");\" href=\"javascript:void(null)\"><span class=\"tip\">Last Scan</span></a>";
+		echo "<a class=\"tool icon recent\" onclick=\"lastScan('".html($_COOKIE["scan"])."','".html($_COOKIE["preview"])."','".html($_COOKIE["scanner"])."',this');\" href=\"javascript:void(null)\"><span class=\"tip\">Last Scan</span></a>";
 	else
 		echo $ls;
 }

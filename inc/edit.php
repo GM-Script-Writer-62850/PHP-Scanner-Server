@@ -163,13 +163,7 @@ else
 	echo '<span class="tool icon edit-off"><span class="tip">Edit (Disabled)</span></span> ';
 ?>
 <a class="tool icon view" href="index.php?page=View&file=Scan_<?php echo html($file); ?>"><span class="tip">View</span></a>
-<?php
-if(file_exists('config/IMGUR_API_KEY.txt')&&substr($file,-3)!='txt')
-	echo '<a class="tool icon upload" href="#" onclick="return upload(\'Scan_'.html($file,5).'\')"><span class="tip">Upload to Imgur</span></a>';
-else
-	echo '<span class="tool icon upload-off"><span class="tip">Upload to Imgur (Disabled)</span></span>';
-?>
-
+<a class="tool icon upload" href="#" onclick="return upload('Scan_'<?php echo html($file,5); ?>')"><span class="tip">Upload to Imgur</span></a>
 <a href="#" onclick="return emailManager('Scan_<?php echo html($file); ?>');" class="tool icon email"><span class="tip">Email</span></a>
 </p></div><!-- There are no line breaks on the next line to make the javascript ever so slightly faster -->
 <div id="preview_img"><p><img src="scans/Preview_<?php echo html(substr($file,0,strrpos($file,'.'))); ?>.jpg" title="Preview"/><img style="z-index:-1;" src="inc/images/blank.gif" title="Processing"/></p></div>

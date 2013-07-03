@@ -1,106 +1,74 @@
 <?php
-function imgurUpload($filename){
-	$data = file_get_contents($filename);
-
-	// $data is file data
-	$pvars = array('image' => base64_encode($data), 'key' => file_get_contents('config/IMGUR_API_KEY.txt'));
-	$timeout = 30;
+// Album Sample: {"album":{"data":{"id":"nmoNU","deletehash":"OVTHAA9q54go9qN"},"success":true,"status":200},"images":[{"data":{"id":"9miCuT2","deletehash":"hUZMx7pkHFncK4A","link":"http:\/\/i.imgur.com\/9miCuT2.png"},"success":true,"status":200},{"data":{"id":"FReOqEz","deletehash":"vlbGDmxQ38rzXcz","link":"http:\/\/i.imgur.com\/FReOqEz.png"},"success":true,"status":200}],"success":true}
+function json_curl($data,$type,$anon){// type = upload/image||album ; anon = true|false
+	$clientID='65bfadb95e040a0';
 	$curl = curl_init();
-
-	curl_setopt($curl, CURLOPT_URL, 'http://api.imgur.com/2/upload.json');
-	curl_setopt($curl, CURLOPT_TIMEOUT, $timeout);
+	curl_setopt($curl, CURLOPT_URL, "https://api.imgur.com/3/$type.json");
+	curl_setopt($curl, CURLOPT_TIMEOUT, 30);
 	curl_setopt($curl, CURLOPT_POST, 1);
 	curl_setopt($curl, CURLOPT_RETURNTRANSFER, 1);
-	curl_setopt($curl, CURLOPT_POSTFIELDS, $pvars);
-
-	$xml = curl_exec($curl);
-
-	curl_close ($curl);
-	return $xml;
+	curl_setopt($curl, CURLOPT_POSTFIELDS, $data);
+	curl_setopt($curl, CURLOPT_HTTPHEADER, array("Authorization: Client-ID $clientID"));
+	$data = curl_exec($curl);
+	curl_close($curl);
+	if(!$data)
+		return false;
+	else
+		return json_decode($data);
 }
-$JSON=json_decode("{}");
-if(isset($_GET['file'])){
-	if(strrpos($_GET['file'], "/")>-1)
-		$_GET['file']=substr($_GET['file'],strrpos($_GET['file'],"/")+1);
-	$file=$_GET['file'];
-	$JSON->{"error"}=json_decode("{}");
-	if(substr($file,-3)=='txt'){
-		$JSON->{"error"}->{"message"}="Text files can't be Uploaded to a image hosting website.";
-		echo json_encode($JSON);
+$anon=isset($_GET['anon'])?true:false;// Non-anon is not yet supported, that stuff gets complicated
+$success=true;
+$files=isset($_GET['file'])?array($_GET['file'] => 1):json_decode($_GET['files']);
+$Files=array();
+foreach($files as $file => $trash){
+	if(is_numeric(strpos($file,'/')))
+		$file=substr($file,strrpos($file,'/')+1);
+	if(substr($file,0,5)!="Scan_")
+		$file="Scan_$file";
+	if(file_exists("scans/$file"))
+		array_push($Files,$file);
+}
+if(isset($_GET['album'])&&count($Files)>1){//$_GET['album'] will become $title
+	$album=json_curl($_GET['album']==0?array():array('title' => $_GET['album']),'album',true); // album: https://api.imgur.com/endpoints/album#album-upload
+	if(is_bool($album)||is_null($album))
+		die('{"album":false,"images":[],"success":false}');
+	if(!$album->{"success"})
+		die(json_encode(array('album' => $album, 'images' => false, 'success' => false)));
+	if($anon&&!$album->{"data"}->{"deletehash"})
+		die('{"album":false,"images":[],"success":false}');
+	$destination=$anon?$album->{"data"}->{"deletehash"}:$album->{"data"}->{"id"};
+}
+$images=array();
+foreach($Files as $file){
+	$image = array( 
+		'type' => 'base64', 'name' => $file, 'title' => substr($file,5,strrpos($file,'.')-5), 
+		'description' => 'Uploaded from PHP Scanner Server');// image: https://api.imgur.com/endpoints/image#image-upload
+	if(substr($file,-4)=='.txt'){
+		$file2='/tmp/'.md5(time().rand()).'.png';
+		$file=addslashes($file);
+		shell_exec("convert \"scans/$file\" \"$file2\"");
+		$image=array_merge($image,array('image' => base64_encode(file_get_contents($file2))));
+		@unlink($file2);
 	}
-	else if(!file_exists('config/IMGUR_API_KEY.txt')){
-		$JSON->{"error"}->{"message"}='No key for <a href="http://imgur.com/register/api_anon" target="_blank">imgur.com</a> was found.';
-		echo json_encode($JSON);
+	else
+		$image=array_merge($image,array('image' => base64_encode(file_get_contents("scans/$file"))));
+	if(isset($destination))
+		$image=array_merge($image,array('album' => $destination));
+	$json=json_curl($image,'image',true);
+	if(!is_bool($json))
+		$json->{"data"}->{'file'}=$file;
+	array_push($images,$json);
+	if(is_bool($json)){//no reply
+		$success=false;
+		break;
 	}
-	else if(file_exists("scans/$file")){
-		$json=json_decode(imgurUpload("scans/$file"));
-		if(isset($json->{"error"})){
-			if($json->{"error"}->{"message"}=="Invalid API Key"){
-				$JSON->{"error"}->{"message"}='Invalid API Key<br/>Go to the <a href="index.php?page=Config"></a> page and create one.';
-				echo json_encode($JSON);
-			}
-			else{
-				$JSON->{"error"}->{"message"}=$json->{"error"}->{"message"};
-				echo json_encode($JSON);
-			}
-		}
-		else if(isset($json->{"upload"})){
-			$json->{"error"}=json_decode('{"message":null}');
-			$img=$json->{"upload"}->{"links"}->{"original"};
-			$imgP1=substr($img,0,strrpos($img,'.'));
-			$imgP2=substr($img,strrpos($img,'.'));
-			$json->{"upload"}->{"links"}->{"small_thumbnail"}=$imgP1.'t'.$imgP2;
-			$json->{"upload"}->{"links"}->{"medium_thumbnail"}=$imgP1.'m'.$imgP2;
-			$json->{"upload"}->{"links"}->{"huge_thumbnail"}=$imgP1.'h'.$imgP2;
-			$json->{"upload"}->{"links"}->{"big_square"}=$imgP1.'b'.$imgP2;
-			echo json_encode($json);
-		}
-	}
-	else{
-		$JSON->{"error"}->{"message"}="$file does not exist.";
-		echo json_encode($JSON);
+	if(!$json->{"success"}){
+		$success=false;
+		break;
 	}
 }
-else{
-	$JSON->{"error"}->{"message"}="No file specified.";
-	echo json_encode($JSON);
-}
-/* Sample result for invalid key
-	{
-		"error": {
-			"message": "Invalid API Key",
-			"request": "/2/upload.json",
-			"method": "post",
-			"format": "json",
-			"parameters": "image = iVBORw0KGgoAAAANSUhEUgAAABAAAAAQCAYAAAAf8/9hAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAABIAAAASABG..."
-		}
-	}
- * Sample valid key
-	 {
-		"upload": {
-			"image": {
-				"name": null,
-				"title": null,
-				"caption": null,
-				"hash": "33sqk",
-				"deletehash": "cJhJhSj3BGJRuyL",
-				"datetime": "2012-03-07 19:50:25",
-				"type": "image/png",
-				"animated": "false",
-				"width": 16,
-				"height": 16,
-				"size": 367,
-				"views": 0,
-				"bandwidth": 0
-			},
-			"links": {
-				"original": "http://i.imgur.com/33sqk.png",
-				"imgur_page": "http://imgur.com/33sqk",
-				"delete_page": "http://imgur.com/delete/cJhJhSj3BGJRuyL",
-				"small_square": "http://i.imgur.com/33sqks.jpg",
-				"large_thumbnail": "http://i.imgur.com/33sqkl.jpg"
-			}
-		}
-	}
-*/
+if(count($Files)==0)
+	echo '{"album":false,"images":[],"success":false,"message":"Invalid File(s)"}';
+else
+	echo json_encode(array('album' => (isset($destination)?$album:false), 'images' => $images, 'success' => $success));
 ?>

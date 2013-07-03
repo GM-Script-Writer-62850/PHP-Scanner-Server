@@ -17,11 +17,6 @@ getID("preview_links").innerHTML="<h2>"+file+"</h2>\
 		echo '<a href=\\"index.php?page=Edit&file="+file+"\\" class=\\"tool icon edit\\"><span class=\\"tip\\">Edit</span></a> \\';
 	?>
 	<a href=\"index.php?page=View&file=Scan_"+file+"\" class=\"tool icon view\"><span class=\"tip\">View</span></a> \
-	<?php
-	if(substr($file,-3)!='txt'&&file_exists('../config/IMGUR_API_KEY.txt'))
-		echo '<a href=\\"#\\" class=\\"tool icon upload\\" onclick=\\"return upload(\'Scan_"+file+"\')\\"><span class=\\"tip\\">Upload to Imgur</span></a>';
-	else
-		echo '<span class=\\"tool icon upload-off\\"><span class=\\"tip\\">Upload to Imgur (Disabled)</span></span>';
-	?> \
+	<a href=\"#\" class=\"tool icon upload\" onclick=\"return upload('Scan_"+file+"')\"><span class=\"tip\">Upload to Imgur</span></a> \
 	<a href=\"#\" onclick=\"return emailManager('Scan_"+file+"');\" class=\"tool icon email\"><span class=\"tip\">Email</span></a> \
 </p>";

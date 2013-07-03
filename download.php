@@ -76,7 +76,7 @@ else if(isset($_GET['file'])){
 		if(isset($_GET['compress'])){
 			$file='/tmp/download-'.md5(time().rand()).'.zip';
 			shell_exec("cd \"scans\" && zip -r \"$file\" \"".addslashes($_GET['file'])."\"");
-			returnFile($file,substr($_GET['file'],0,strrpos($_GET['file'],".")),'zip');
+			returnFile($file,$_GET['file'],'zip');
 			@unlink($file);
 		}
 		else{

@@ -297,13 +297,13 @@ else if($PAGE=="Scans"){
 			'<a onclick="return bulkDel()" class="tool icon del" href="#"><span class="tip">Delete</span></a> '.
 			'<a onclick="return false" class="tool icon edit-off" href="#"><span class="tip">Edit (Disabled)</span></a> '.
 			'<a onclick="return bulkView(this)" class="tool icon view" href="#"><span class="tip">View</span></a> '.
-			'<a onclick="return false" class="tool icon upload-off" href="#"><span class="tip">Upload to Imgur (Not Yet Implemented)</span></a> '.
+			'<a onclick="return bulkUpload()" class="tool icon upload" href="#"><span class="tip">Upload to Imgur</span></a> '.
 			'<a onclick="return emailManager(\'Scan_Compilation\')" class="tool icon email" href="#"><span class="tip">Email</span></a>'.
 			'<br/>Double Click a file name to select/deselect it<br/>'.
 			'The order they are selected determines the page order<br/>'.
 			'<a href="#" onclick="return selectScans(false);"><button>Select All</button></a> '.
 			'<a href="#" onclick="return selectScans(true);"><button>Select None</button></a>'.
-			'</p></div>';
+			'</p></div><script type="text/javascript" src="inc/imgur-box.js" id="imgur-box-setup"></script>';//I am not typing that script in here and escaping all that
 		$FILES=explode("\n",substr(exe('cd "scans"; ls "Preview"*',true),0,-1));
 		echo '<div id="scans">';
 		for($i=0,$max=count($FILES);$i<$max;$i++){
@@ -371,23 +371,6 @@ else if($PAGE=="Config"){
 		}
 		else{
 			Print_Message("Paper:","Failed to delete paper configuration","center");
-		}
-	}
-	else if($ACTION=="Imgur-Key-Save"){
-		$key=$_POST['key'];
-		if(SaveFile("config/IMGUR_API_KEY.txt",$key)){
-			Print_Message("Imgur:","Your Imgur API key (<code>$key</code>) has be saved successfully!","center");
-		}
-		else{
-			Print_Message("Imgur:","Failed to save your Imgur API key<br/><code>$user</code> does not have permission to write files to the <code>".html(getcwd()).'/config</code> folder.','center');
-		}
-	}
-	else if($ACTION=="Imgur-Key-Delete"){
-		if(@unlink("config/IMGUR_API_KEY.txt")){
-			Print_Message("Imgur:","Imgur API key has been deleted","center");
-		}
-		else{
-			Print_Message("Imgur:","Failed to delete Imgur API key","center");
 		}
 	}
 
@@ -699,7 +682,7 @@ else if($PAGE=="Edit"){
 				}
 				copy("scans/$preview","scans/Preview_$name-edit-$int.jpg");
 				if(SaveFile("scans/Scan_$name-edit-$int.txt",$_POST['file-text'])){
-					Print_Message("Saved","You hve successfully edited $file",'center');
+					Print_Message("Saved","You have successfully edited $file",'center');
 					$file="$name-edit-$int.txt";
 				}
 			}

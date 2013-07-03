@@ -9,14 +9,11 @@ $icons='<a class="tool icon download" href="download.php?file='.html($file).'"><
 	'<a class="tool icon upload" href="#" onclick="return upload(\''.html($file,5).'\')"><span class="tip">Upload to Imgur</span></a> '.
 	'<a href="#" onclick="return emailManager(\''.html($file).'\');" class="tool icon email"><span class="tip">Email</span></a>';
 if(file_exists("scans/$file")){
-	if(!file_exists('config/IMGUR_API_KEY.txt')||substr($file,-3)=='txt'){
-		$icons=str_replace('tool icon upload', 'tool icon upload-off', $icons);
-	}
 	if(substr($file,-3)=='txt'){
 		echo "<div class=\"box box-full\"><h2>".html($file)."</h2>";
 		echo "<p>$icons</p>";
-		echo "<pre class=\"border\" id=\"text-file\">".html(file_get_contents("scans/$file"))."</pre></div>";
-		echo '<script type="text/javascript">e=document.getElementById(\'text-file\');if(e.offsetHeight==2)e.innerHTML=\'Tesseract was unable to find any text in the scan.\'</script>';
+		echo "<pre class=\"border\" id=\"text-file-".html($file)."\">".html(file_get_contents("scans/$file"))."</pre></div>";
+		echo '<script type="text/javascript">e=document.getElementById(\'text-file-'.addslashes($file).'\');if(e.offsetHeight==2)e.innerHTML=\'Tesseract was unable to find any text in the scan.\';</script>';
 	}
 	else{
 		echo "<div class=\"box box-full\"><h2>".html($file)."</h2>";

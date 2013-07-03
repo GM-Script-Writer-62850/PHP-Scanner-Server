@@ -11,13 +11,7 @@ echo $FILE;
 <a class="tool icon del" href="index.php?page=Scans&delete=Remove&file=<?php echo $FILE; ?>" onclick="return delScan('<?php echo $FILE; ?>',true)"><span class="tip">Delete</span></a>
 <a class="tool icon edit" href="index.php?page=Edit&file=<?php echo $FILE; ?>"><span class="tip">Edit</span></a>
 <a class="tool icon view" href="index.php?page=View&file=Scan_<?php echo $FILE; ?>"><span class="tip">View</span></a>
-<?php
-if(file_exists('config/IMGUR_API_KEY.txt')&&substr($FILE,-3)!='txt')
-	echo '<a class="tool icon upload" href="#" onclick="return upload(\'Scan_'.$FILE.'\');"><span class="tip">Upload to Imgur</span></a>';
-else
-	echo '<span class="tool icon upload-off"><span class="tip">Upload to Imgur (Disabled)</span></span>';
-?>
-
+<a class="tool icon upload" href="#" onclick="return upload('Scan_<?php echo $FILE; ?>');"><span class="tip">Upload to Imgur</span></a>
 <a href="#" onclick="return emailManager('Scan_<?php echo $FILE; ?>');" class="tool icon email"><span class="tip">Email</span></a>
 <br/>
 <a class="tool" target="_blank" href="scans/Scan_<?php echo $FILE; ?>" style="width:100%;"><img src="scans/<?php echo html($IMAGE); ?>" style="width:100%"/><span class="tip">View raw file</span></a>

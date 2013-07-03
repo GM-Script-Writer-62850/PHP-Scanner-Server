@@ -11,11 +11,11 @@ if(isset($_POST['json'])&&!isset($PAGE)){
 	}
 	$file="../config/accounts.json";
 	$json=json_decode(is_file($file)?file_get_contents($file):'{}');
-	
+
 	$mode=$_POST["mode"];
 	$user=$_POST["name"];
 	$pass=$_POST["pass"];
-	
+
 	if(strlen($user)==0)
 		die('{"message":"You must have a name","error":true}');
 	if($mode=="login"){
@@ -99,17 +99,18 @@ else if(isset($_GET['nojs']))
 <h3>Login</h3><p>
 <input type="hidden" name="mode" value="login"/>
 <span>User Name:</span><input type="text" name="name"/><br/>
-<span>Password:</span><input type="password" name="pass"/><br/>
+<span>Password:</span><input type="password" name="pass" ondblclick="this.type=(this.type=='text'?'password':'text')"/><br/>
 <input type="submit" value="Login"/>
 </p></form>
 <form class="m" action="/inc/login.php" method="POST" onsubmit="return login(this);" autocomplete="off">
 <h3>Create Account</h3><p>
 <input type="hidden" name="mode" value="create"/>
 <span>User Name:</span><input type="text" name="name"/></span><br/>
-<span>Password:</span><input type="password" name="pass"/><br/>
-<span>Authorization:</span><input type="password" name="auth"/><br/>
+<span>Password:</span><input type="password" name="pass" ondblclick="this.type=(this.type=='text'?'password':'text')"/><br/>
+<span>Authorization:</span><input type="password" name="auth" ondblclick="this.type=(this.type=='text'?'password':'text')"/><br/>
 <input type="submit" value="Register"/>
 </p></form>
+<div class="footer">Double click a password blank to toggle show/hide password</div>
 </div>
 
 <div class="box box-full dualForm"><h2>Account Recovery</h2>
@@ -117,16 +118,16 @@ else if(isset($_GET['nojs']))
 <h3>Change Password</h3><p>
 <input type="hidden" name="mode" value="change"/>
 <span>User Name:</span><input type="text" name="name"/><br/>
-<span>Old Password:</span><input type="password" name="pass"/><br/>
-<span>New Password:</span><input type="password" name="newp"/><br/>
+<span>Old Password:</span><input type="password" name="pass" ondblclick="this.type=(this.type=='text'?'password':'text')"/><br/>
+<span>New Password:</span><input type="password" name="newp" ondblclick="this.type=(this.type=='text'?'password':'text')"/><br/>
 <input type="submit" value="Change"/>
 </p></form>
 <form class="m" action="/inc/login.php?nojs=true" method="POST" onsubmit="return login(this);" autocomplete="off">
 <h3>Forgot Password</h3><p>
 <input type="hidden" name="mode" value="forgot"/>
 <span>User Name:</span><input type="text" name="name"/></span><br/>
-<span>New Password:</span><input type="password" name="pass"/><br/>
-<span>Authorization:</span><input type="password" name="auth"/><br/>
+<span>New Password:</span><input type="password" name="pass" ondblclick="this.type=(this.type=='text'?'password':'text')"/><br/>
+<span>Authorization:</span><input type="password" name="auth" ondblclick="this.type=(this.type=='text'?'password':'text')"/><br/>
 <input type="submit" value="Change"/>
 </p></form>
 <div class="footer">Leave 'New Password' blank to delete the account</div>

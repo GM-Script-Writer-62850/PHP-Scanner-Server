@@ -16,6 +16,7 @@ if($GLOBALS['PAGE']=='Config')
 <link rel="stylesheet" type="text/css" href="<?php echo $path; ?>jquery.imgareaselect-0.9.10/css/imgareaselect-animated.css"/>
 <script type="text/javascript" src="<?php echo $path; ?>jquery.imgareaselect-0.9.10/scripts/jquery.min.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>jquery.imgareaselect-0.9.10/scripts/jquery.imgareaselect.pack.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>inc/model-dialog.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>inc/main.js"></script>
 <!--[if lt IE 9]><script type="text/javascript">TC='innerText';</script>
 <style type="text/css">.imgareaselect-handle,.imgareaselect-outer{filter:alpha(opacity=50);}</style><![endif]-->

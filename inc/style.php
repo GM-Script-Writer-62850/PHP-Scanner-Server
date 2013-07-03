@@ -653,6 +653,32 @@ code {
 	margin: 1px 0 -2px 1px;
 }
 
+#imgur-uploads{
+	padding-bottom: 5px;
+}
+
+#imgur-uploads .box{
+	margin: 5px 0 0 5px;
+	text-align: center;
+	width: 172px;
+}
+
+#imgur-uploads .box h2 > span{
+	width: calc(100% - 20px);
+	display: inline-block;
+	word-wrap: break-word;
+}
+
+#imgur-uploads .box h2 a{
+	float: right;
+}
+
+#imgur-uploads .box img{
+	width: 160px;
+	height: 160px;
+	margin: 3px 3px 0;
+}
+
 .dualForm form {
 	float: left;
 	width: 50%;
@@ -667,7 +693,7 @@ code {
 	width: 100px;
 	display: inline-block;
 }
-.dualForm form input[type="text"] {
+.dualForm form input[type="text"], .dualForm form input[type="password"] {
 	width: 125px;
 }
 
