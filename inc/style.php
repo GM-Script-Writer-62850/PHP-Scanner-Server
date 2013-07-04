@@ -537,7 +537,7 @@ img[src="inc/images/blank.gif"] {
 	-moz-column-count: 3;
 	-moz-column-gap: 0;
 	/* broken tool-tips in opera, chrome, safari, and IE10 (IE10 also breaks some images) */
-	-webkit-column-count: 3; 
+	-webkit-column-count: 3;
 	-webkit-column-gap: 0;
 	column-count: 3;
 	column-gap: 0;
@@ -653,30 +653,31 @@ code {
 	margin: 1px 0 -2px 1px;
 }
 
-#imgur-uploads{
+#imgur-uploads {
 	padding-bottom: 5px;
 }
 
-#imgur-uploads .box{
+#imgur-uploads .box {
 	margin: 5px 0 0 5px;
 	text-align: center;
 	width: 172px;
 }
 
-#imgur-uploads .box h2 > span{
+#imgur-uploads .box h2 > span {
 	width: calc(100% - 20px);
 	display: inline-block;
 	word-wrap: break-word;
 }
 
-#imgur-uploads .box h2 a{
+#imgur-uploads h2 a {
 	float: right;
 }
 
-#imgur-uploads .box img{
+#imgur-uploads .box img {
 	width: 160px;
 	height: 160px;
 	margin: 3px 3px 0;
+	cursor: pointer;
 }
 
 .dualForm form {

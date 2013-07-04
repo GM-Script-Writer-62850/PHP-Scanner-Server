@@ -44,14 +44,7 @@
 <span class="tool">Source<span class="tip">Scan source (such as a document-feeder)</span></span>:
 </div>
 <div class="control">
-<div class="ie_276228"><select name="source" class="title" onchange="sourceChange(this)">
-<script type="text/JavaScript">
-var sources='<?php echo $CANNERS[$SEL]->{"SOURCE"}; ?>'.split('|');
-for(var i=0,s=sources.length;i<s;i++){
-	document.write('<option value="'+sources[i]+'">'+(sources[i]=='ADF'?'Automatic Document Feeder':sources[i])+'</option>');
-}
-</script>
-</select></div>
+<div class="ie_276228"><select name="source" class="title" onchange="sourceChange(this)"></select></div>
 </div>
 </div>
 
@@ -59,32 +52,17 @@ for(var i=0,s=sources.length;i<s;i++){
 <span class="tool">Quality<span class="tip">Resolution</span></span>:
 </div>
 <div class="control tool">
-<div class="ie_276228"><select name="quality" class="upper"><script type="text/JavaScript">
-var dpi='<?php echo $CANNERS[$SEL]->{"DPI-$defSource"}; ?>'.split('|');
-for(var i=0,max=dpi.length;i<max;i++){
-	document.write('<option value="'+dpi[i]+'">'+dpi[i]+' '+(isNaN(dpi[i])?'':'DPI')+'</option>');
-}
-</script>
-</select></div><span class="tip">Dots Per Inch</span>
+<div class="ie_276228"><select name="quality" class="upper"></select></div><span class="tip">Dots Per Inch</span>
 </div>
 
 <div class="label">
 <span class="tool">Size<span class="tip">How big the paper is</span></span>:
 </div>
 <div class="control tool">
-<div class="ie_276228"><select <?php //echo ((($WIDTH=="0"||$WIDTH==NULL)&&($HEIGHT=="0"||$HEIGHT==NULL))===false?'disabled="disabled" ':''); ?>name="size" onchange="paperChange(this);">
-<option value="full" title="<?php echo $CANNERS[$SEL]->{"WIDTH-$defSource"}.' mm x '.$CANNERS[$SEL]->{"HEIGHT-$defSource"}.'t mm'; ?>">Full Scan: <?php echo round($CANNERS[$SEL]->{"WIDTH-$defSource"}/25.4,2).'" x '.round($CANNERS[$SEL]->{"HEIGHT-$defSource"}/25.4,2); ?>'"</option><?php
-if(file_exists("config/paper.json"))
-	$paper=json_decode(file_get_contents("config/paper.json"));
-else
-	$paper=json_decode('{"Picture":{"height":152.4,"width":101.6},"Paper":{"height":279.4,"width":215.9}}');
-foreach($paper as $key=>$val){
-	if($CANNERS[$SEL]->{"WIDTH-$defSource"}>=$val->{"width"}&&$CANNERS[$SEL]->{"HEIGHT-$defSource"}>=$val->{"height"})
-		echo '<option value="'.$val->{"width"}.'-'.$val->{"height"}.'" title="'.$val->{"width"}.' mm x '.$val->{"height"}.' mm">'.$key.': '.round($val->{"width"}/25.4,2).'" x '.round($val->{"height"}/25.4,2).'"</option>';
-}
-?>
-</select></div><span class="tip"><?php echo $CANNERS[$SEL]->{"WIDTH-$defSource"}.' mm x '.$CANNERS[$SEL]->{"HEIGHT-$defSource"}.' mm'; ?></span>
-<script type="text/javascript">paper=<?php echo json_encode($paper);?></script>
+<div class="ie_276228"><select <?php //echo ((($WIDTH=="0"||$WIDTH==NULL)&&($HEIGHT=="0"||$HEIGHT==NULL))===false?'disabled="disabled" ':''); ?>name="size" onchange="paperChange(this);"></select>
+</div><span class="tip"><?php echo $CANNERS[$SEL]->{"WIDTH-$defSource"}.' mm x '.$CANNERS[$SEL]->{"HEIGHT-$defSource"}.' mm'; ?></span>
+<script type="text/javascript">paper=<?php 
+echo file_exists("config/paper.json")?file_get_contents("config/paper.json"):'{"Picture":{"height":152.4,"width":101.6},"Paper":{"height":279.4,"width":215.9}}'; ?></script>
 </div>
 
 <?php
@@ -112,23 +90,7 @@ foreach($paper as $key=>$val){
 <span class="tool">Mode<span class="tip">Color Type</span></span>:
 </div>
 <div class="control">
-<div class="ie_276228"><select name="mode" class="title">
-<script type="text/JavaScript">
-var modes='<?php echo $CANNERS[$SEL]->{"MODE-$defSource"}; ?>'.split('|');
-for(var i=modes.length-1;i>-1;i--){
-	var text;
-	switch(modes[i]){
-		case 'Gray':
-	  		text='Grayscale';break;
-		case 'Lineart':
-	  		text='Line Art';break;
-		default:
-			text=modes[i];
-	}
-	document.write('<option value="'+modes[i]+'">'+text+'</option>');
-}
-</script>
-</select></div>
+<div class="ie_276228"><select name="mode" class="title"></select></div>
 </div>
 
 <div id="duplex"<?php echo $CANNERS[$SEL]->{"DUPLEX-$defSource"}?'':' style="display:none;"'; ?>>
@@ -220,10 +182,10 @@ for(var i=0;i<=200;i+=10){
 </div>
 <div class="control">
 <select name="filetype" onchange="fileChange(this.value)">
-<option value="png">*.png</option>
-<option value="jpg">*.jpg</option>
-<option value="tiff">*.tiff</option>
-<option value="txt">*.txt</option>
+<option value="png">Portable Network Graphic: *.png</option>
+<option value="jpg">Joint Photography Group: *.jpg</option>
+<option value="tiff">Tagged Image File Format: *.tiff</option>
+<option value="txt">Text File: *.txt</option>
 </select>
 </div>
 

@@ -17,6 +17,7 @@ if($GLOBALS['PAGE']=='Config')
 <script type="text/javascript" src="<?php echo $path; ?>jquery.imgareaselect-0.9.10/scripts/jquery.min.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>jquery.imgareaselect-0.9.10/scripts/jquery.imgareaselect.pack.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>inc/model-dialog.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>inc/cookie.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>inc/main.js"></script>
 <!--[if lt IE 9]><script type="text/javascript">TC='innerText';</script>
 <style type="text/css">.imgareaselect-handle,.imgareaselect-outer{filter:alpha(opacity=50);}</style><![endif]-->
@@ -27,7 +28,7 @@ if($GLOBALS['PAGE']=='Config')
 
 <div id="header">
 
-<div class="tab<?php echo in_array($GLOBALS['PAGE'],Array("Config","About","Paper Manager","Access Enabler","Device Notes","Parallel-Form"))?' active':''; ?>">
+<div class="tab<?php echo in_array($GLOBALS['PAGE'],Array("Config","About","Paper Manager","Access Enabler","Device Notes","Parallel-Form","PHP Information"))?' active':''; ?>">
 <a href="<?php echo $path; ?>index.php?page=Config">Configure</a>
 <div class="topleft top"></div>
 <div class="bottomleft bottom"></div>

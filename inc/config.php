@@ -20,6 +20,19 @@ Make sure all scanners are plugged in and turned on.
 </div>
 
 <div class="box">
+<h2>Trouble Shooting</h2>
+<p>
+If you are having issues loading the Scanned Files page due to over population you can <a href="index.php?page=Scans&delete=Remove" onclick="return confirm('Delete all scanned files?')">
+Remove All the Scans</a> with that link. If you are having another issue you may want to read the <a href="index.php?page=About">Release Notes</a> or
+ take a look at the <a href="index.php?page=PHP%20Information">PHP Configuration</a>.
+</p>
+</div>
+
+</div>
+
+<div class="column">
+
+<div class="box">
 <h2>Paper Configuration</h2>
 <p>
 <a href="index.php?page=Config&action=Detect-Paper">Detect paper</a><br/>
@@ -30,17 +43,6 @@ if(file_exists("config/paper.json"))
 else
 	echo 'Paper sizes need to be detected.';
 ?></p>
-</div>
-
-</div>
-
-<div class="column">
-
-<div class="box">
-<h2>Scanned Files on Server</h2>
-<p>
-<a href="index.php?page=Scans&delete=Remove" onclick="return confirm('Delete all scanned files?')">Remove All Scans</a>
-</p>
 </div>
 
 <div class="box">
@@ -56,7 +58,7 @@ else
 		echo '">'.html($id).'</a></li>';
 	}
 ?></ul><p>
-If you want to save a setting for your own use, right-click it and save it to your web browser bookmarks.
+If you want to save a setting for your own use, right-click it and save it to your web browser's bookmarks.
 </p>
 </div>
 
@@ -82,7 +84,7 @@ if(isset($_COOKIE["debug"])){
 else{
 	echo 'Show';
 }
-?></a> the debug log. You can toggle the Debug Log at any time by pressing this:<br/><code>[Ctrl]+[Shift]+[D]</code>
+?></a> the Debug Console. You can toggle the Debug Console at any time by pressing this:<br/><code>[Ctrl]+[Shift]+[D]</code>
 </p>
 </div>
 

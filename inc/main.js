@@ -156,20 +156,6 @@ function changeColor(colors){
 	N.href='inc/style.php?colors='+colors+'&nocache='+new Date().getTime();
 	document.body.setAttribute('onunload',"if(!document.cookie)alert('The color theme was not saved because you have cookies disabled')");
 }
-function Set_Cookie( name, value, expires, path, domain, secure ){// http://techpatterns.com/downloads/javascript_cookies.php
-	var today = new Date();
-	today.setTime( today.getTime() );
-	if ( expires ){
-		expires = expires * 1000 * 60 * 60 * 24;
-	}
-	var expires_date = new Date( today.getTime() + (expires) );
-
-	document.cookie = name + "=" +escape( value ) +
-		( ( expires ) ? ";expires=" + expires_date.toGMTString() : "" ) +
-		( ( path ) ? ";path=" + path : "" ) +
-		( ( domain ) ? ";domain=" + domain : "" ) +
-		( ( secure ) ? ";secure" : "" );
-}
 function lastScan(scan,preview,scanner,ele){
 	generic=scan.slice(5);
 	previewIMG.src='scans/'+preview;
@@ -285,10 +271,15 @@ function parseJSON(jsonTXT){
 }
 function scannerChange(ele){
 	var info=parseJSON(ele.childNodes[ele.selectedIndex].className);
-	var html='';
+	var html='',text;
 	sources=info['SOURCE'].split('|');
 	for(i=0,s=sources.length;i<s;i++){
-		html+='<option value="'+sources[i]+'">'+(sources[i]=='ADF'?'Automatic Document Feeder':sources[i])+'</option>';
+		switch(sources[i]){
+			case 'ADF': text='Automatic Document Feeder';break;
+			case 'Auto': text='Automatic';break;
+			default: text=sources[i];
+		}
+		html+='<option value="'+sources[i]+'">'+text+'</option>';
 	}
 	if(document.all)// http://support.microsoft.com/kb/276228	
 		document.scanning.source.parentNode.innerHTML='<select name="source" class="title" onchange="sourceChange(this)">'+html+'</select>';
@@ -592,7 +583,7 @@ function storeImgurUploads(img){
 			ele2=document.createElement('div');
 			ele2.className='box box-full';
 			ele2.id='imgur-uploads';
-			ele2.innerHTML='<h2>Imgur Uploads</h2>';
+			ele2.innerHTML='<h2>Imgur Uploads<a href="#" onclick="return imgurDel(\'imgur-uploads\',false)" class="tool icon del"><span class="tip">Hide</span></a></h2>';
 			ele.parentNode.insertBefore(ele2,ele);
 			ele=ele2;
 		}
@@ -824,6 +815,13 @@ function imgurPopup(file,links){
 		popup('blanket',365);
 }
 function imgurDel(id,img){
+	if(img===false){
+		if(confirm("Are you sure you want to hide ALL imgur uploads?\nThis only deletes the images from this page,\nnot imgur.")===false)
+			return false;
+		localStorage.removeItem('imgur');
+	}
+	else if(confirm("Are you sure you want to hide that image?\nThis only deletes the image from this page,\nnot imgur.")===false)
+		return false;
 	e=getID(id);
 	if(e)
 		e.parentNode.removeChild(e);
@@ -1083,33 +1081,46 @@ function updateCheck(vs,e){
 	httpRequest.open('GET', 'download.php?update='+encodeURIComponent(vs)+'&'+new Date().getTime());
 	httpRequest.send(null);
 }
-function enableColumns(ele,e){ // They work flawlessly in Firefox so it does not call this function
+function enableColumns(ele,e,b){ // They work flawlessly in Firefox so it does not call this function
 	if(e!=null){
 		ele=getID(ele);
 		if(ele.className){// there is a class name
 			if(ele.className=='columns'){
 				ele.removeAttribute('class');// disable
-				e.nextSibling[TC]='Enable';
+				if(e){
+					e.nextSibling[TC]='Enable';
+					Delete_Cookie( 'columns', '/', '' );
+				}
 			}
 			else if(ele.className.indexOf('columns')==-1){
 				ele.className+=' columns';// enable
-				e.nextSibling[TC]='Disable';
+				if(e){
+					e.nextSibling[TC]='Disable';
+					Set_Cookie( 'columns', true, 1, '/', '', '' );
+				}
 			}
 			else{
 				ele.className=ele.className.substring(0,ele.className.indexOf(' columns'));// Disable preserve original class name
-				e.nextSibling[TC]='Enable';
+				if(e){
+					e.nextSibling[TC]='Enable';
+					Delete_Cookie( 'columns', '/', '' );
+				}
 			}
 		}
 		else{// enable
 			ele.className='columns';
 			e.nextSibling[TC]='Disable';
+			Set_Cookie( 'columns', true, 1, '/', '', '' );
 		}
 		return false;
 	}
-	else if(typeof document.body.style.WebkitColumnGap=="string"||typeof document.body.style.columnGap=="string")
+	else if(typeof document.body.style.WebkitColumnGap=="string"||typeof document.body.style.columnGap=="string"){
 		printMsg('CSS3 Columns','Your browser supports them, but they do not work as expected.<br/>'+
-			'You can try them out by clicking <span class="tool"><a href="#" onclick="return enableColumns(\''+ele+'\',this);">here</a><span class="tip">Enable</span></span>.<br/>'+
+			'You can try them out by clicking <span class="tool"><a href="#" onclick="return enableColumns(\''+ele+'\',this,null);">here</a><span class="tip">'+(b?'Disable':'Enable')+'</span></span>.<br/>'+
 			'Oh, and by the way they work in <a href="http://www.mozilla.org/en-US/firefox/all.html" target="_blank">Firefox</a> flawlessly.','center',-1);
+		if(b)
+			enableColumns(ele,false,null)
+	}
 }
 function login(form){
 	if(typeof XMLHttpRequest!='function')

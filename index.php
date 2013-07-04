@@ -285,6 +285,7 @@ else if($PAGE=="Scans"){
 	}
 
 	# Display Thumbnails of scanned images, if any
+	echo '<script type="text/javascript" src="inc/imgur-box.js" id="imgur-box-setup"></script>';
 	if(count(scandir("scans"))==2){ // Wonder if I should rewrite this section without using the exe function, but I think that will make the code much longer
 		Print_Message("No Images","All files have been removed. There are no scanned images to display.",'center');
 	}
@@ -292,7 +293,7 @@ else if($PAGE=="Scans"){
 		echo '<div class="box box-full"><h2>Bulk Operations</h2><p style="text-align:center;">'.
 			'<a onclick="return false" class="tool icon download-off" href="#"><span class="tip">Download (Disabled)</span></a> '.
 			'<a onclick="return bulkDownload(this,\'zip\')" class="tool icon zip" href="#"><span class="tip">Download Zip</span></a> '.
-			'<a onclick="return bulkDownload(this,\'pdf\');" class="tool icon pdf" href="#"><span class="tip">Download PDF</span></a> '.
+			'<a onclick="return bulkDownload(this,\'pdf\')" class="tool icon pdf" href="#"><span class="tip">Download PDF</span></a> '.
 			'<a onclick="return bulkPrint(this)" class="tool icon print" href="#"><span class="tip">Print</span></a> '.
 			'<a onclick="return bulkDel()" class="tool icon del" href="#"><span class="tip">Delete</span></a> '.
 			'<a onclick="return false" class="tool icon edit-off" href="#"><span class="tip">Edit (Disabled)</span></a> '.
@@ -303,7 +304,7 @@ else if($PAGE=="Scans"){
 			'The order they are selected determines the page order<br/>'.
 			'<a href="#" onclick="return selectScans(false);"><button>Select All</button></a> '.
 			'<a href="#" onclick="return selectScans(true);"><button>Select None</button></a>'.
-			'</p></div><script type="text/javascript" src="inc/imgur-box.js" id="imgur-box-setup"></script>';//I am not typing that script in here and escaping all that
+			'</p></div>';
 		$FILES=explode("\n",substr(exe('cd "scans"; ls "Preview"*',true),0,-1));
 		echo '<div id="scans">';
 		for($i=0,$max=count($FILES);$i<$max;$i++){
@@ -316,7 +317,7 @@ else if($PAGE=="Scans"){
 			'if(typeof document.body.style.MozColumnGap=="string")'.
 				'getID("scans").className="columns";'.// At least someone knows how to do something right
 			'else '.
-				'enableColumns("scans",null);</script>';
+				'enableColumns("scans",null,'.(isset($_COOKIE["columns"])?'true':'false').');</script>';
 	}
 	checkFreeSpace($FreeSpaceWarn);
 	Footer();
@@ -546,6 +547,14 @@ else if($PAGE=="About"){
 	InsertHeader("Release Notes");
 	include "inc/about.php";
 	Footer();
+}
+# ***************
+# PHP Info
+# ***************
+else if($PAGE=="PHP Information"){
+        InsertHeader($PAGE);
+        echo '<div class="box box-full"><h2>'.$PAGE.'</h2><iframe src="inc/phpinfo.php" style="border:none;width:100%;height:500px;margin:0;"></iframe></div>';
+        Footer();
 }
 # ***************
 # Paper Manager
@@ -850,10 +859,10 @@ else{
 			$file='{}';
 		include "inc/scan.php";
 	}
-	echo '<script type="text/javascript">scanReset();</script>';
-	if(strlen($ACTION)>0){ # Only update values back to form if they aren't empty
+	if(strlen($ACTION)>0) # Only update values back to form if they aren't empty
 		Put_Values();
-	}
+	else
+		echo '<script type="text/javascript">scanReset();</script>';
 	Footer();
 
 	if($ACTION=="Scan Image"){# Check to see if scanner is in use
