@@ -14,10 +14,10 @@
 </div>
 <div class="control">
 <select name="filetype" onchange="fileChange(this.value)">
-<option value="png">*.png</option>
-<option value="jpg">*.jpg</option>
-<option value="tiff">*.tiff</option>
-<option value="txt">*.txt</option>
+<option value="png">Portable Network Graphic: *.png</option>
+<option value="jpg">Joint Photography Group: *.jpg</option>
+<option value="tiff">Tagged Image File Format: *.tiff</option>
+<option value="txt">Text File: *.txt</option>
 </select>
 <script type="text/javascript">document.scanning.filetype.value='<?php echo substr($file,strrpos($file,'.')+1); ?>';</script>
 </div>

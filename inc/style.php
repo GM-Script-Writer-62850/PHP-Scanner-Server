@@ -176,6 +176,14 @@ a:hover {
 	border-radius: 5px 5px 0 0;
 }
 
+.tab a {
+	display: inline-block;
+	max-width: 175px;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
 .tab div {
 	display: none;
 }

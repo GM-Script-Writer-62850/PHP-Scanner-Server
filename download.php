@@ -102,16 +102,14 @@ else if(isset($_GET['file'])){
 						$pdf->MultiCell(0,5,file_get_contents("scans/".$_GET['file']),0,"L",false);
 					}
 					else{
-						$image=explode("x",shell_exec("identify -format '%wx%h' \"scans/".$_GET['file']."\""));
+						$image=explode("x",shell_exec("identify -format '%wx%h' \"scans/".addslashes($_GET['file'])."\""));
 						$width=$width-($marginLeft*2);
 						$height=$height-$marginTop*2-$fontSize*0.75;
-						$pWidth=$width/100;
-						$pHeight=$height/100;
 
-						if($pHeight-$pWidth<=$image[0]/100-$image[1]/100)
-							$height=0;
-						else
+						if($height/$width<=$image[1]/$image[0])
 							$width=0;
+						else
+							$height=0;
 						$pdf->Image('scans/'.$_GET['file'],$marginLeft,$marginTop/2+$fontSize,$width,$height);
 					}
 					$pdf->Output(substr($_GET['file'],0,strlen($ext)*-1)."pdf",'D');
@@ -132,14 +130,13 @@ else if(isset($_GET['file'])){
 						$pdf->MultiCell(0,5,file_get_contents("scans/".$_GET['file']),0,"L",false);
 					}
 					else{
-						$image=explode("x",shell_exec("identify -format '%wx%h' \"scans/".$_GET['file']."\""));
-						$pWidth=$width/100;
-						$pHeight=$height/100;
+						$image=explode("x",shell_exec("identify -format '%wx%h' \"scans/".addslashes($_GET['file'])."\""));
 
-						if($pHeight-$pWidth<=$image[0]/100-$image[1]/100)
-							$height=0;
-						else
+						if($height/$width<=$image[1]/$image[0])
 							$width=0;
+						else
+							$height=0;
+
 						$pdf->Image('scans/'.$_GET['file'],$marginLeft,$marginTop,$width,$height);
 					}
 					$pdf->Output(substr($_GET['file'],0,strlen($ext)*-1)."pdf",'D');
