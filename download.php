@@ -34,7 +34,7 @@ if(isset($_GET['downloadServer'])){
 	returnFile($file,'PHP-Scanner-Server-'.$_GET['ver'].'.tar.bz2','bz2');
 	@unlink($file);
 }
-else if((isset($_GET['type'])?$_GET['type']:0=='pdf')&&!isset($_GET['raw'])){
+else if((isset($_GET['type'])?$_GET['type']:'')=='pdf'&&!isset($_GET['raw'])){
 	header("Content-type: ".ext2mime("pdf"));
 	$Pwidth=215.9;
 	$Pheight=279.4;
