@@ -49,7 +49,7 @@ else if((isset($_GET['type'])?$_GET['type']:0=='pdf')&&!isset($_GET['raw'])){
 	$marginTop=$full?0:20;
 	$pages=0;
 	$files=json_decode($_GET['json']);
-	if(files==null)
+	if($files==null)
 		$files=array();
 	foreach($files as $key => $val){
 		$file=$key;
@@ -111,7 +111,7 @@ else if((isset($_GET['type'])?$_GET['type']:0=='pdf')&&!isset($_GET['raw'])){
 }
 else if(isset($_GET['json'])){
 	$files=json_decode($_GET['json']);
-	if(files==null)
+	if($files==null)
 		$files=array();
 	$FILES='';
 	$type=isset($_GET['type'])?$_GET['type']:false;
