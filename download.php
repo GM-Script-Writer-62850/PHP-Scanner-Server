@@ -34,23 +34,104 @@ if(isset($_GET['downloadServer'])){
 	returnFile($file,'PHP-Scanner-Server-'.$_GET['ver'].'.tar.bz2','bz2');
 	@unlink($file);
 }
-else if(isset($_GET['json'])){
+else if((isset($_GET['type'])?$_GET['type']:0=='pdf')&&!isset($_GET['raw'])){
+	header("Content-type: ".ext2mime("pdf"));
+	$Pwidth=215.9;
+	$Pheight=279.4;
+	$fontSize=16;
+	$width=$Pwidth;
+	$height=$Pheight;
+	require($Fpdf_loc);
+	$pdf=new FPDF('P','mm',array($width,$height));
+	$full=isset($_GET['full']);
+	$pdf=new FPDF('P','mm',array($width,$height));
+	$marginLeft=$full?0:10;
+	$marginTop=$full?0:20;
+	$pages=0;
 	$files=json_decode($_GET['json']);
-	$FILES='';
-	$type=isset($_GET['type'])?$_GET['type']:false;
+	if(files==null)
+		$files=array();
 	foreach($files as $key => $val){
-		$file="Scan_$key";
+		$file=$key;
 		if(is_numeric(strpos($file, "/")))
 			$file=substr($file,strrpos($file,"/")+1);
-		if(is_file("scans/$file"))
+		$file="Scan_$file";
+		if(!is_file("scans/$file"))
+			continue;
+		$ext=substr($file,strrpos($file,'.')+1);
+		$width=$Pwidth;
+		$height=$Pheight;
+		$pdf->AddPage();
+		$pages+=1;
+		if($full){
+			if($ext=='txt'){
+				$pdf->SetFont('Arial','',$fontSize*0.75);
+				$pdf->MultiCell(0,5,file_get_contents("scans/$file"),0,"L",false);
+			}
+			else{
+				$image=explode("x",shell_exec("identify -format '%wx%h' \"scans/".addslashes($file)."\""));
+				if($height/$width<=$image[1]/$image[0])
+					$width=0;
+				else
+					$height=0;
+				$pdf->Image("scans/$file",$marginLeft,$marginTop,$width,$height);
+			}
+		}
+		else{
+			$pdf->SetFont('Arial','B',$fontSize);
+			$pdf->MultiCell(0,$fontSize,$file,0,"C",false);
+			if($ext=='txt'){
+				$pdf->SetFont('Arial','',$fontSize*0.75);
+				$pdf->MultiCell(0,5,file_get_contents("scans/$file"),0,"L",false);
+			}
+			else{
+				$image=explode("x",shell_exec("identify -format '%wx%h' \"scans/".addslashes($file)."\""));
+				$width=$width-($marginLeft*2);
+				$height=$height-$marginTop*2-$fontSize*0.75;
+				if($height/$width<=$image[1]/$image[0])
+					$width=0;
+				else
+					$height=0;
+				$pdf->Image('scans/'.$file,$marginLeft,$marginTop/2+$fontSize,$width,$height);
+			}
+		}
+	}
+	if($pages>0){
+		$file=$pages>1?"Compilation.pdf":substr($file,0,strlen($ext)*-1)."pdf";
+		header('Content-Disposition: attchment; filename="'.$file.'"');
+		$pdf->Output($file,'D');
+	}
+	else{
+		$pdf->AddPage();
+		$pdf->SetFont('Arial','B',$fontSize);
+		$pdf->MultiCell(0,$fontSize,'None of thoes files exist :/',0,"C",false);
+		header('Content-Disposition: attchment; filename="Error.pdf"');
+		$pdf->Output("Error.pdf",'D');
+	}
+}
+else if(isset($_GET['json'])){
+	$files=json_decode($_GET['json']);
+	if(files==null)
+		$files=array();
+	$FILES='';
+	$type=isset($_GET['type'])?$_GET['type']:false;
+	$ct=0;
+	foreach($files as $key => $val){
+		$file=$key;
+		if(is_numeric(strpos($file, "/")))
+			$file=substr($file,strrpos($file,"/")+1);
+		$file="Scan_$file";
+		if(is_file("scans/$file")){
 			$FILES.='scans/"'.addslashes($file).'" ';
+			$ct+=1;
+		}
 	}
 	if(strlen($FILES)>0 && is_string($type)){
 		$type=$_GET['type'];
 		if($type=='pdf'){
+			$name=$ct==1?$file:'Compilation.pdf';
 			$file='/tmp/'.md5(time().rand()).'.pdf';
 			$type='pdf';
-			$name='Compilation.pdf';
 			shell_exec("convert $FILES+repage $file");// -page Letter -gravity center
 		}
 		else if($type=='zip'){
@@ -75,75 +156,13 @@ else if(isset($_GET['file'])){
 	if(file_exists("scans/".$_GET['file'])){
 		if(isset($_GET['compress'])){
 			$file='/tmp/download-'.md5(time().rand()).'.zip';
-			shell_exec("cd \"scans\" && zip -r \"$file\" \"".addslashes($_GET['file'])."\"");
+			shell_exec("cd 'scans' && zip \"$file\" \"".addslashes($_GET['file'])."\"");
 			returnFile($file,$_GET['file'],'zip');
 			@unlink($file);
 		}
 		else{
 			$ext=substr($_GET['file'],strrpos($_GET['file'],".")+1);
-			if(isset($_GET['pdf'])){
-				header("Content-type: ".ext2mime("pdf"));
-				header('Content-Disposition: attchment; filename="'.substr($_GET['file'],0,strlen($ext)*-1).'pdf"');
-				if(!isset($_GET['full'])){
-					$fontSize=16;
-					$marginLeft=10;
-					$marginTop=20;
-					$width=215.9;
-					$height=279.4;
-
-					require($Fpdf_loc);
-
-					$pdf=new FPDF('P','mm',array($width,$height));
-					$pdf->AddPage();
-					$pdf->SetFont('Arial','B',$fontSize);
-					$pdf->MultiCell(0,$fontSize,$_GET['file'],0,"C",false);
-					if($ext=='txt'){
-						$pdf->SetFont('Arial','',$fontSize*0.75);
-						$pdf->MultiCell(0,5,file_get_contents("scans/".$_GET['file']),0,"L",false);
-					}
-					else{
-						$image=explode("x",shell_exec("identify -format '%wx%h' \"scans/".addslashes($_GET['file'])."\""));
-						$width=$width-($marginLeft*2);
-						$height=$height-$marginTop*2-$fontSize*0.75;
-
-						if($height/$width<=$image[1]/$image[0])
-							$width=0;
-						else
-							$height=0;
-						$pdf->Image('scans/'.$_GET['file'],$marginLeft,$marginTop/2+$fontSize,$width,$height);
-					}
-					$pdf->Output(substr($_GET['file'],0,strlen($ext)*-1)."pdf",'D');
-				}
-				else{
-					$fontSize=16;
-					$marginLeft=0;
-					$marginTop=0;
-					$width=215.9;
-					$height=279.4;
-
-					require($Fpdf_loc);
-
-					$pdf=new FPDF('P','mm',array($width,$height));
-					$pdf->AddPage();
-					if($ext=='txt'){
-						$pdf->SetFont('Arial','',$fontSize*0.75);
-						$pdf->MultiCell(0,5,file_get_contents("scans/".$_GET['file']),0,"L",false);
-					}
-					else{
-						$image=explode("x",shell_exec("identify -format '%wx%h' \"scans/".addslashes($_GET['file'])."\""));
-
-						if($height/$width<=$image[1]/$image[0])
-							$width=0;
-						else
-							$height=0;
-
-						$pdf->Image('scans/'.$_GET['file'],$marginLeft,$marginTop,$width,$height);
-					}
-					$pdf->Output(substr($_GET['file'],0,strlen($ext)*-1)."pdf",'D');
-				}
-			}
-			else
-				returnFile("scans/".$_GET['file'],$_GET['file'],$ext);
+			returnFile("scans/".$_GET['file'],$_GET['file'],$ext);
 		}
 	}
 	else

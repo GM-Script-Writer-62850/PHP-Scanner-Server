@@ -168,7 +168,7 @@ function lastScan(scan,preview,scanner,ele){
 	sendE(document.scanning.size,'change');
 	ele.parentNode.parentNode.innerHTML='<h2>'+generic+'</h2><p><a class="tool icon download" href="download.php?file='+scan+'"><span class="tip">Download</span></a> '+
 		'<a class="tool icon zip" href="download.php?file='+scan+'&compress"><span class="tip">Download Zip</span></a> '+
-		'<a class="tool icon pdf" href="#" onclick="PDF_popup(\''+scan+'\');"><span class="tip">Download PDF</span></a> '+
+		'<a class="tool icon pdf" href="#" onclick="PDF_popup(\''+generic+'\');"><span class="tip">Download PDF</span></a> '+
 		'<a class="tool icon print" href="print.php?file='+scan+'" target="_blank"><span class="tip">Print</span></a> '+
 		'<a class="tool icon del" href="index.php?page=Scans&amp;delete=Remove&amp;file='+generic+'" onclick="return confirm(\'Delete this scan\')"><span class="tip">Delete</span></a> '+
 		'<a class="tool icon edit" href="index.php?page=Edit&amp;file='+generic+'"><span class="tip">Edit</span></a> '+
@@ -488,14 +488,32 @@ function disableIcons(){// Converts disabled icons to act like disabled icons
 		}
 	}
 }
-function PDF_popup(file){
+function PDF_popup(files){
+	if(typeof files=='string'){
+		files='{"'+files.replace(/"/g,'\"')+'":1}';
+	}
+	else{
+		if(typeof JSON=='undefined')
+			return printMsg('Sorry',"Your browser does not support the JSON object so you can not download scans with that button.<br/>You have 3 choices: ignore, update your browser, and switch browsers",'center',0);
+		var ct=0;
+		for(var i in files){
+			ct++;
+			break;
+		}
+		if(ct==0)
+			return printMsg('Error','No files selected','center',-1);
+		files=JSON.stringify(files);
+	}
+	files=encodeURIComponent(files);
 	getID("blanket").childNodes[0].innerHTML='How would you prefer for your PDF download?<br/>\
 		A scan placed on the page with a title or<br/>\
 		a would you prefer the scan as the page.<br/>\
-		<a href="download.php?file='+file+'&pdf" onclick="setTimeout(\'toggle(\\\'blanket\\\')\',100);">\
+		<a href="download.php?json='+files+'&type=pdf" onclick="setTimeout(\'toggle(\\\'blanket\\\')\',100);">\
 		<button><img src="inc/images/pdf-scaled.png" width="106" height="128"/></button></a>\
-		<a href="download.php?file='+file+'&pdf&full" onclick="setTimeout(\'toggle(\\\'blanket\\\')\',100);">\
+		<a href="download.php?json='+files+'&type=pdf&full" onclick="setTimeout(\'toggle(\\\'blanket\\\')\',100);">\
 			<button><img src="inc/images/pdf-full.png" width="106" height="128"/></button></a>\
+		<br/><a style="text-decoration:none;" href="download.php?json='+files+'&type=pdf&raw" onclick="setTimeout(\'toggle(\\\'blanket\\\')\',100);">\
+		<input type="button" value="I don\'t care just give me a PDF" style="width:261px"/></a>\
 		<br/><input type="button" value="Cancel" style="width:261px;" onclick="toggle(\'blanket\')"/>';
 	popup('blanket',290);
 	return false;

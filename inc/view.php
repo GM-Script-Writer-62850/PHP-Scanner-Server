@@ -1,7 +1,7 @@
 <?php
 $icons='<a class="tool icon download" href="download.php?file='.html($file).'"><span class="tip">Download</span></a> '.
 	'<a class="tool icon zip" href="download.php?file='.html($file).'&compress"><span class="tip">Download Zip</span></a> '.
-	'<a class="tool icon pdf" href="#" onclick="PDF_popup(\''.html($file).'\');"><span class="tip">Download PDF</span></a> '.
+	'<a class="tool icon pdf" href="#" onclick="PDF_popup(\''.html(substr($file,5)).'\');"><span class="tip">Download PDF</span></a> '.
 	'<a class="tool icon print" href="print.php?file='.html($file).'" target="_blank"><span class="tip">Print</span></a> '.
 	'<a class="tool icon del" href="index.php?page=Scans&delete=Remove&file='.html(substr($file,5)).'" onclick="return confirm(\'Delete this scan\')"><span class="tip">Delete</span></a> '.
 	'<a class="tool icon edit" href="index.php?page=Edit&file='.html(substr($file,5)).'"><span class="tip">Edit</span></a> '.

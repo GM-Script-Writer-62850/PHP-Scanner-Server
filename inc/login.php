@@ -7,7 +7,7 @@ if(isset($_POST['json'])&&!isset($PAGE)){
 		@fclose($file);
 	}
 	function Allow(){
-		setcookie("Authenticated",true,time()+86400,"/",$_SERVER['SERVER_NAME']);
+		setcookie("Authenticated",time(),0,"/",$_SERVER['SERVER_NAME']);
 	}
 	$file="../config/accounts.json";
 	$json=json_decode(is_file($file)?file_get_contents($file):'{}');
@@ -32,7 +32,7 @@ if(isset($_POST['json'])&&!isset($PAGE)){
 	}
 	else if($mode=="create"){
 		if(isset($json->{$user})){
-			die('{"message":"The user name \''.$user.'\' is taken","error":true}');
+			die('{"message":"The user name <code>'.htmlspecialchars($user).'</code> is taken","error":true}');
 		}
 		if(!isset($json->{"root"})&&$user=='root'){
 			if($pass!=$_POST["auth"])
@@ -43,7 +43,7 @@ if(isset($_POST['json'])&&!isset($PAGE)){
 		else if(isset($json->{'root'})){
 			if(md5($_POST["auth"])==$json->{"root"}->{"md5"}){
 				$json->{$user}=array("md5" => md5($pass) );
-				$msg="The user '$user' has been created";
+				$msg="The user <code>'.htmlspecialchars($user).'</code> has been created";
 			}
 		}
 		else
@@ -60,10 +60,10 @@ if(isset($_POST['json'])&&!isset($PAGE)){
 		$json->{$user}->{"md5"}=md5($pass);
 		if(strlen($_POST["newp"])==0){
 			unset($json->{$user});
-			$msg="The user '$user' has been deleted";
+			$msg="The user <code>'.htmlspecialchars($user).'</code> has been deleted";
 		}
 		else
-			$msg="'$user' now has a new password";
+			$msg="<code>'.htmlspecialchars($user).'</code> now has a new password";
 		Allow();
 	}
 	else if($mode=="change"){
@@ -75,10 +75,10 @@ if(isset($_POST['json'])&&!isset($PAGE)){
 			die('{"message":"Invalid password","error":true}');
 		if(strlen($_POST["newp"])==0){
 			unset($json->{$user});
-			$msg="The user '$user' has been deleted";
+			$msg="The user <code>'.htmlspecialchars($user).'</code> has been deleted";
 		}
 		else
-			$msg="'$user' now has a new password";
+			$msg="<code>'.htmlspecialchars($user).'</code> now has a new password";
 		Allow();
 	}
 	else

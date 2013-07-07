@@ -153,7 +153,7 @@ Save Image
 <p>
 <a class="tool icon download" href="download.php?file=Scan_<?php echo html($file); ?>"><span class="tip">Download</span></a>
 <a class="tool icon zip" href="download.php?file=Scan_<?php echo html($file); ?>&compress"><span class="tip">Download Zip</span></a>
-<a class="tool icon pdf" href="#" onclick="PDF_popup('Scan_<?php echo html($file); ?>');"><span class="tip">Download PDF</span></a>
+<a class="tool icon pdf" href="#" onclick="PDF_popup('<?php echo html($file); ?>');"><span class="tip">Download PDF</span></a>
 <a class="tool icon print" href="print.php?file=Scan_<?php echo html($file); ?>" target="_blank"><span class="tip">Print</span></a>
 <a class="tool icon del" href="index.php?page=Scans&delete=Remove&file=<?php echo html($file); ?>" onclick="return confirm('Delete this scan, This is NOT a do not save button')"><span class="tip">Delete</span></a>
 <?php

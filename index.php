@@ -5,6 +5,7 @@ $Fortune=true;// Enable/disable fortunes in the debug console
 $ExtraScanners=false;// Adds sample scanners from ./inc/scanhelp/
 $CheckForUpdates=true;// Enables auto update checking
 $RequireLogin=false;// Require user to login (A 'geek' could bypass this without too much trouble using JavaScript); Create the user 'root' 1st, also Authorization is root's password
+$SessionDuration=86400;// Max time (in seconds) signed in is 24hrs (irrelevant with the above off)
 // Sorry for the lack of explanations in the code feel free to ask what something does
 
 $NAME="PHP Scanner Server";
@@ -96,8 +97,8 @@ function Update_Preview($l) { # Change the Preview Pane image via JavaScript
 }
 
 function Update_Links($l,$p) { # Change the Preview Pane image links via JavaScript
-	echo '<script type="text/javascript" src="inc/previewlinks.php?page='.html($p).'&file='.html($l).'"></script>';
-}
+	echo '<script type="text/javascript" src="inc/previewlinks.php?file='.urlencode($l).'&page='.urlencode($p).'"></script>';
+}// main.js, previewlinks.php, scan.php, scans.php, view.php, and edit.php conatain icon links
 
 function InsertHeader($page) { # Spit out HTML header
 	include "inc/header.php";
@@ -251,7 +252,14 @@ foreach($dirs as $dir){
 # ****************
 # Login Page
 # ****************
-if(($RequireLogin&&!isset($_COOKIE['Authenticated']))||$PAGE=='Login'){
+$Auth=true;
+if($RequireLogin){
+	if(!isset($_COOKIE['Authenticated']))
+		$Auth=false;
+	else if(time()>intval($_COOKIE['Authenticated'])+$SessionDuration)// NOT FOR USE ON 32BIT OS IN 2038 http://en.wikipedia.org/wiki/Year_2038_problem
+		$Auth=false;
+}
+if($RequireLogin&&!$Auth||$PAGE=='Login'){
 	$PAGE='Login';
 	InsertHeader('Authenticate Required');
 	include('inc/login.php');
@@ -293,7 +301,7 @@ else if($PAGE=="Scans"){
 		echo '<div class="box box-full"><h2>Bulk Operations</h2><p style="text-align:center;">'.
 			'<a onclick="return false" class="tool icon download-off" href="#"><span class="tip">Download (Disabled)</span></a> '.
 			'<a onclick="return bulkDownload(this,\'zip\')" class="tool icon zip" href="#"><span class="tip">Download Zip</span></a> '.
-			'<a onclick="return bulkDownload(this,\'pdf\')" class="tool icon pdf" href="#"><span class="tip">Download PDF</span></a> '.
+			'<a onclick="return PDF_popup(filesLst)" class="tool icon pdf" href="#"><span class="tip">Download PDF</span></a> '.
 			'<a onclick="return bulkPrint(this)" class="tool icon print" href="#"><span class="tip">Print</span></a> '.
 			'<a onclick="return bulkDel()" class="tool icon del" href="#"><span class="tip">Delete</span></a> '.
 			'<a onclick="return false" class="tool icon edit-off" href="#"><span class="tip">Edit (Disabled)</span></a> '.

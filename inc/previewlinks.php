@@ -7,7 +7,7 @@ getID("preview_links").innerHTML="<h2>"+file+"</h2>\
 <p>\
 	<a href=\"download.php?file=Scan_"+file+"\" class=\"tool icon download\"><span class=\"tip\">Download</span></a> \
 	<a href=\"download.php?file=Scan_"+file+"&compress\" class=\"tool icon zip\"><span class=\"tip\">Download Zip</span></a> \
-	<a href=\"#\" onclick=\"PDF_popup('Scan_"+file+"');\" class=\"tool icon pdf\"><span class=\"tip\">Download PDF</span></a> \
+	<a href=\"#\" onclick=\"PDF_popup('"+file+"');\" class=\"tool icon pdf\"><span class=\"tip\">Download PDF</span></a> \
 	<a href=\"print.php?file=Scan_"+file+"\" target=\"_blank\" class=\"tool icon print\" target=\"_blank\"><span class=\"tip\">Print</span></a> \
 	<a href=\"index.php?page=Scans&delete=Remove&file="+file+"\" class=\"tool icon del\" onclick=\"return confirm('Delete this scan')\"><span class=\"tip\">Delete</span></a> \
 	<?php
