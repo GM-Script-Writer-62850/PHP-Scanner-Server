@@ -315,7 +315,8 @@ function sourceChange(ele){
 	html2='<option value="full" title="'+width+' mm x '+height+' mm">Full Scan: '+roundNumber(width/25.4,2)+'" x '+roundNumber(height/25.4,2)+'"</option>';
 	for(var i in paper){
 		if(width>=paper[i]['width']&&height>=paper[i]['height'])
-			html2+='<option value="'+paper[i]['width']+'-'+paper[i]['height']+'" title="'+paper[i]['width']+' mm x '+paper[i]['height']+' mm">'+i+': '+roundNumber(paper[i]['width']/25.4,2)+'" x '+roundNumber(paper[i]['height']/25.4,2)+'"</option>';
+			html2+='<option value="'+paper[i]['width']+'-'+paper[i]['height']+'" title="'+paper[i]['width']+' mm x '+paper[i]['height']+' mm"'+(i=='Letter'?' selected':'')+'>'+i+': '+
+				roundNumber(paper[i]['width']/25.4,2)+'" x '+roundNumber(paper[i]['height']/25.4,2)+'"</option>';
 	}
 	// Change Quality
 	html3='';
@@ -403,9 +404,9 @@ function Debug(html,show){
 	var div=document.createElement('div');
 	div.id="debug";
 	if(show)
-		div.style.display='inline';
+		div.style.display='inherit';
 	div.className="box box-full";
-	div.innerHTML='<h2>Debug Console</h2><pre>'+decodeURIComponent(html)+'</pre>';
+	div.innerHTML='<h2>Debug Console</h2><pre>'+html+'</pre>';
 	var nojs=getID('nojs');
 	nojs.parentNode.insertBefore(div,nojs);
 }
@@ -413,7 +414,7 @@ function toggleDebug(keyboard){
 	var debug=getID('debug');
 	var debugLink=getID('debug-link');
 	if(debug){
-		if(debug.style.display=='inline'){
+		if(debug.style.display=='inherit'){
 			debug.removeAttribute('style');
 			Set_Cookie( 'debug', false, 1, '/', '', '' );
 			if(keyboard&&debugLink)
@@ -421,7 +422,7 @@ function toggleDebug(keyboard){
 			return false;
 		}
 		else{
-			debug.style.display='inline';
+			debug.style.display='inherit';
 			Set_Cookie( 'debug', true, 1, '/', '', '' );
 			if(keyboard&&debugLink)
 				debugLink[TC]='Hide';
@@ -559,10 +560,10 @@ function bulkPrint(link){
 		return printMsg('Error','No files selected','center',-1);
 }
 function bulkDel(){
-	var p='Delete all of these';
+	var p='Delete all of these:';
 	for(var i in filesLst)
 		p+="\n"+i;
-	if(p.length==19)
+	if(p.length==20)
 		return printMsg('Error','No files selected','center',-1);
 	if(!confirm(p))
 		return false;
@@ -608,6 +609,8 @@ function storeImgurUploads(img){
 	}
 	for(var i in img){
 		if(typeof img[i] == 'boolean')
+			continue;
+		if(!img[i]['success'])
 			continue;
 		id=img[i]["data"]["id"];
 		b="http://i.imgur.com/"+id;
@@ -667,17 +670,17 @@ function bulkUpload(){
 					storeImgurUploads(json['images']);
 				}
 				else{
-					if(json['images'].length==0){
+					if(!json['images']){
 						if(!json['album'])
 							printMsg('Failed to create Album','Unknown connection error','center',0);
 						else
-							printMsg('Failed to populate Album',json['album']['data']['error']+(json['album']['status']==200?'':'<br/>'+json['album']['status']+' Error detected'),'center',0);
+							printMsg('Failed to create Album',json['album']['data']['error']+(json['album']['status']==200?'':'<br/>'+json['album']['status']+' Error detected'),'center',0);
 					}
 					else{
-						printMsg('Image Upload Error',(json['images'].length-2)+' image(s) were uploaded to your <a href="http://imgur.com/a/'+
+						printMsg('Image Upload Error',(json['images'].length-1)+' image(s) were uploaded to your <a href="http://imgur.com/a/'+
 							json['album']['data']['id']+'" target="_blank">album</a> before a error occurred<br>You delete hash is <i>'+
 							json['album']['data']['deletehash']+'</i>. Sorry, I do not know the URL to delete albums. XP','center',0);
-						if(json['images'].length-2>0)
+						if(json['images'].length-1>0)
 							storeImgurUploads(json['images']);
 					}
 				}
@@ -691,11 +694,11 @@ function bulkUpload(){
 	};
 	httpRequest.open('GET', 'imgur.php?anon=true&album='+encodeURIComponent(title)+'&nocache='+now+'&files='+encodeURIComponent(JSON.stringify(filesLst)));
 	httpRequest.send(null);
-	return true;
+	return false;
 }
 function selectScans(b){
 	try{
-		var scans=document.evaluate("//div[@id='scans']/div/h2[@selected='"+b+"']",document,null,6,null);
+		var scans=document.evaluate("//div[@id='scans']/div/h2"+(b==null?'':"[@selected='"+b+"']"),document,null,6,null);
 		for(var i=0;i<scans.snapshotLength;i++)
 			toggleFile(scans.snapshotItem(i));
 	}
@@ -703,7 +706,9 @@ function selectScans(b){
 		var list=getID('scans').getElementsByTagName('h2'),stat;
 		for(var i=0,ct=list.length;i<ct;i++){
 			stat=list[i].getAttribute('selected');
-			if(stat==b.toString())
+			if(b==null)
+				toggleFile(list[i])
+			else if(stat==b.toString())
 				toggleFile(list[i]);
 		}
 	}
@@ -739,8 +744,8 @@ function upload(file){
 				var json=parseJSON(httpRequest.responseText);
 				if(!json['images'][0])
 					printMsg('Upload Error','Failed to connect to imgur','center',0);
-				else if(json['images'][0]['error'])
-					printMsg('Upload Error',json['images'][0]['error']['message'],'center',0);
+				else if(json['images'][0]['data']['error'])
+					printMsg('Upload Error: '+json['images'][0]['status'],json['images'][0]['data']['error'],'center',0);
 				else{
 					var id=json['images'][0]["data"]["id"],b="http://i.imgur.com/"+id,a='.jpg';
 					var links={"original": json['images'][0]["data"]["link"],
@@ -779,58 +784,68 @@ function imgurPopup(file,links){
 		'<li>View on Imgur:<ul><li><a href="'+links['imgur_page']+'" target="_blank">'+links['imgur_page'].substr(7)+'</a></li></ul></li>'+
 		'<li>Direct Link:<ul><li><a href="'+links['original']+'" target="_blank">'+links['original'].substr(7)+'</a></li></ul></li>'+
 		'<li>Delete Link:<ul><li><a href="'+links['delete_page']+'" target="_blank">'+links['delete_page'].substr(7)+'</a></li></ul></li></ul></div>'+
-		'<h2 style="font-size:12px;text-align:center;">Embed Codes</h2><div style="width:100%;overflow-x:scroll;white-space: nowrap;">'+
+		'<h2 style="font-size:12px;text-align:center;">Embed Codes</h2><div id="imgur-scroller"><div></div></div><div id="imgur-codes">'+
 		'<div class="codes"><h2>Original</h2><ul>'+
-		'<li>Direct Link (email & IM)<ul><li><input onclick="this.select();" type="text" value="'+links['original']+'"/></li></ul></li>'+
-		'<li>HTML Image (websites & blogs)<ul><li><input onclick="this.select();" type="text" value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['original']+'&quot; alt=&quot;&quot; title=&quot;Hosted by imgur.com&quot; /&gt;&lt;/a&gt;"/></li></ul></li>'+
-		'<li>BBCode (message boards & forums)<ul><li><input onclick="this.select();" type="text" value="[IMG]'+links['original']+'[/IMG]"/></li></ul></li>'+
-		'<li>Linked BBCode (message boards)<ul><li><input onclick="this.select();" type="text" value="[URL='+links['imgur_page']+'][IMG]'+links['original']+'[/IMG][/URL]"/></li></ul></li>'+
-		'<li>Markdown Link (reddit comment)<ul><li><input onclick="this.select();" type="text" value="[Imgur]('+links['original']+')"/></li></ul></li>'+
+		'<li>Direct Link (email & IM)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="'+links['original']+'"/></li></ul></li>'+
+		'<li>HTML Image (websites & blogs)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['original']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot; /&gt;&lt;/a&gt;"/></li></ul></li>'+
+		'<li>BBCode (message boards & forums)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="[IMG]'+links['original']+'[/IMG]"/></li></ul></li>'+
+		'<li>Linked BBCode (message boards)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="[URL='+links['imgur_page']+'][IMG]'+links['original']+'[/IMG][/URL]"/></li></ul></li>'+
+		'<li>Markdown Link (reddit comment)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="[Imgur]('+links['original']+')"/></li></ul></li>'+
 		'</ul></div>'+
 		'<div class="codes"><h2>Huge Thumbnail</h2><ul>'+
-		'<li>Direct Link (email & IM)<ul><li><input onclick="this.select();" type="text" value="'+links['huge_thumbnail']+'"/></li></ul></li>'+
-		'<li>HTML Image (websites & blogs)<ul><li><input onclick="this.select();" type="text" value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['huge_thumbnail']+'&quot; alt=&quot;&quot; title=&quot;Hosted by imgur.com&quot; /&gt;&lt;/a&gt;"/></li></ul></li>'+
-		'<li>BBCode (message boards & forums)<ul><li><input onclick="this.select();" type="text" value="[IMG]'+links['huge_thumbnail']+'[/IMG]"/></li></ul></li>'+
-		'<li>Linked BBCode (message boards)<ul><li><input onclick="this.select();" type="text" value="[URL='+links['imgur_page']+'][IMG]'+links['huge_thumbnail']+'[/IMG][/URL]"/></li></ul></li>'+
-		'<li>Markdown Link (reddit comment)<ul><li><input onclick="this.select();" type="text" value="[Imgur]('+links['huge_thumbnail']+')"/></li></ul></li>'+
+		'<li>Direct Link (email & IM)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="'+links['huge_thumbnail']+'"/></li></ul></li>'+
+		'<li>HTML Image (websites & blogs)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['huge_thumbnail']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot; /&gt;&lt;/a&gt;"/></li></ul></li>'+
+		'<li>BBCode (message boards & forums)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="[IMG]'+links['huge_thumbnail']+'[/IMG]"/></li></ul></li>'+
+		'<li>Linked BBCode (message boards)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="[URL='+links['imgur_page']+'][IMG]'+links['huge_thumbnail']+'[/IMG][/URL]"/></li></ul></li>'+
+		'<li>Markdown Link (reddit comment)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="[Imgur]('+links['huge_thumbnail']+')"/></li></ul></li>'+
 		'</ul></div>'+
 		'<div class="codes"><h2>Large Thumbnail</h2><ul>'+
-		'<li>Direct Link (email & IM)<ul><li><input onclick="this.select();" type="text" value="'+links['large_thumbnail']+'"/></li></ul></li>'+
-		'<li>HTML Image (websites & blogs)<ul><li><input onclick="this.select();" type="text" value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['large_thumbnail']+'&quot; alt=&quot;&quot; title=&quot;Hosted by imgur.com&quot; /&gt;&lt;/a&gt;"/></li></ul></li>'+
-		'<li>BBCode (message boards & forums)<ul><li><input onclick="this.select();" type="text" value="[IMG]'+links['large_thumbnail']+'[/IMG]"/></li></ul></li>'+
-		'<li>Linked BBCode (message boards)<ul><li><input onclick="this.select();" type="text" value="[URL='+links['imgur_page']+'][IMG]'+links['large_thumbnail']+'[/IMG][/URL]"/></li></ul></li>'+
-		'<li>Markdown Link (reddit comment)<ul><li><input onclick="this.select();" type="text" value="[Imgur]('+links['large_thumbnail']+')"/></li></ul></li>'+
+		'<li>Direct Link (email & IM)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="'+links['large_thumbnail']+'"/></li></ul></li>'+
+		'<li>HTML Image (websites & blogs)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['large_thumbnail']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot; /&gt;&lt;/a&gt;"/></li></ul></li>'+
+		'<li>BBCode (message boards & forums)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="[IMG]'+links['large_thumbnail']+'[/IMG]"/></li></ul></li>'+
+		'<li>Linked BBCode (message boards)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="[URL='+links['imgur_page']+'][IMG]'+links['large_thumbnail']+'[/IMG][/URL]"/></li></ul></li>'+
+		'<li>Markdown Link (reddit comment)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="[Imgur]('+links['large_thumbnail']+')"/></li></ul></li>'+
 		'</ul></div>'+
 		'<div class="codes"><h2>Medium Thumbnail</h2><ul>'+
-		'<li>Direct Link (email & IM)<ul><li><input onclick="this.select();" type="text" value="'+links['medium_thumbnail']+'"/></li></ul></li>'+
-		'<li>HTML Image (websites & blogs)<ul><li><input onclick="this.select();" type="text" value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['medium_thumbnail']+'&quot; alt=&quot;&quot; title=&quot;Hosted by imgur.com&quot; /&gt;&lt;/a&gt;"/></li></ul></li>'+
-		'<li>BBCode (message boards & forums)<ul><li><input onclick="this.select();" type="text" value="[IMG]'+links['medium_thumbnail']+'[/IMG]"/></li></ul></li>'+
-		'<li>Linked BBCode (message boards)<ul><li><input onclick="this.select();" type="text" value="[URL='+links['imgur_page']+'][IMG]'+links['medium_thumbnail']+'[/IMG][/URL]"/></li></ul></li>'+
-		'<li>Markdown Link (reddit comment)<ul><li><input onclick="this.select();" type="text" value="[Imgur]('+links['medium_thumbnail']+')"/></li></ul></li>'+
+		'<li>Direct Link (email & IM)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="'+links['medium_thumbnail']+'"/></li></ul></li>'+
+		'<li>HTML Image (websites & blogs)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['medium_thumbnail']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot; /&gt;&lt;/a&gt;"/></li></ul></li>'+
+		'<li>BBCode (message boards & forums)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="[IMG]'+links['medium_thumbnail']+'[/IMG]"/></li></ul></li>'+
+		'<li>Linked BBCode (message boards)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="[URL='+links['imgur_page']+'][IMG]'+links['medium_thumbnail']+'[/IMG][/URL]"/></li></ul></li>'+
+		'<li>Markdown Link (reddit comment)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="[Imgur]('+links['medium_thumbnail']+')"/></li></ul></li>'+
 		'</ul></div>'+
 		'<div class="codes"><h2>Small Thumbnail</h2><ul>'+
-		'<li>Direct Link (email & IM)<ul><li><input onclick="this.select();" type="text" value="'+links['small_thumbnail']+'"/></li></ul></li>'+
-		'<li>HTML Image (websites & blogs)<ul><li><input onclick="this.select();" type="text" value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['small_thumbnail']+'&quot; alt=&quot;&quot; title=&quot;Hosted by imgur.com&quot; /&gt;&lt;/a&gt;"/></li></ul></li>'+
-		'<li>BBCode (message boards & forums)<ul><li><input onclick="this.select();" type="text" value="[IMG]'+links['small_thumbnail']+'[/IMG]"/></li></ul></li>'+
-		'<li>Linked BBCode (message boards)<ul><li><input onclick="this.select();" type="text" value="[URL='+links['imgur_page']+'][IMG]'+links['small_thumbnail']+'[/IMG][/URL]"/></li></ul></li>'+
-		'<li>Markdown Link (reddit comment)<ul><li><input onclick="this.select();" type="text" value="[Imgur]('+links['small_thumbnail']+')"/></li></ul></li>'+
+		'<li>Direct Link (email & IM)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="'+links['small_thumbnail']+'"/></li></ul></li>'+
+		'<li>HTML Image (websites & blogs)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['small_thumbnail']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot; /&gt;&lt;/a&gt;"/></li></ul></li>'+
+		'<li>BBCode (message boards & forums)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="[IMG]'+links['small_thumbnail']+'[/IMG]"/></li></ul></li>'+
+		'<li>Linked BBCode (message boards)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="[URL='+links['imgur_page']+'][IMG]'+links['small_thumbnail']+'[/IMG][/URL]"/></li></ul></li>'+
+		'<li>Markdown Link (reddit comment)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="[Imgur]('+links['small_thumbnail']+')"/></li></ul></li>'+
 		'</ul></div>'+
 		'<div class="codes"><h2>Big Square</h2><ul>'+
-		'<li>Direct Link (email & IM)<ul><li><input onclick="this.select();" type="text" value="'+links['big_square']+'"/></li></ul></li>'+
-		'<li>HTML Image (websites & blogs)<ul><li><input onclick="this.select();" type="text" value="&lt;a href=&quot;'+links['big_page']+'&quot;&gt;&lt;img src=&quot;'+links['big_square']+'&quot; alt=&quot;&quot; title=&quot;Hosted by imgur.com&quot; /&gt;&lt;/a&gt;"/></li></ul></li>'+
-		'<li>BBCode (message boards & forums)<ul><li><input onclick="this.select();" type="text" value="[IMG]'+links['big_square']+'[/IMG]"/></li></ul></li>'+
-		'<li>Linked BBCode (message boards)<ul><li><input onclick="this.select();" type="text" value="[URL='+links['imgur_page']+'][IMG]'+links['big_square']+'[/IMG][/URL]"/></li></ul></li>'+
-		'<li>Markdown Link (reddit comment)<ul><li><input onclick="this.select();" type="text" value="[Imgur]('+links['big_square']+')"/></li></ul></li>'+
+		'<li>Direct Link (email & IM)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="'+links['big_square']+'"/></li></ul></li>'+
+		'<li>HTML Image (websites & blogs)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['big_square']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot; /&gt;&lt;/a&gt;"/></li></ul></li>'+
+		'<li>BBCode (message boards & forums)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="[IMG]'+links['big_square']+'[/IMG]"/></li></ul></li>'+
+		'<li>Linked BBCode (message boards)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="[URL='+links['imgur_page']+'][IMG]'+links['big_square']+'[/IMG][/URL]"/></li></ul></li>'+
+		'<li>Markdown Link (reddit comment)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="[Imgur]('+links['big_square']+')"/></li></ul></li>'+
 		'</ul></div>'+
 		'<div class="codes" style="border: none;"><h2>Small Square</h2><ul>'+
-		'<li>Direct Link (email & IM)<ul><li><input onclick="this.select();" type="text" value="'+links['small_square']+'"/></li></ul></li>'+
-		'<li>HTML Image (websites & blogs)<ul><li><input onclick="this.select();" type="text" value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['small_square']+'&quot; alt=&quot;&quot; title=&quot;Hosted by imgur.com&quot; /&gt;&lt;/a&gt;"/></li></ul></li>'+
-		'<li>BBCode (message boards & forums)<ul><li><input onclick="this.select();" type="text" value="[IMG]'+links['small_square']+'[/IMG]"/></li></ul></li>'+
-		'<li>Linked BBCode (message boards)<ul><li><input onclick="this.select();" type="text" value="[URL='+links['imgur_page']+'][IMG]'+links['small_square']+'[/IMG][/URL]"/></li></ul></li>'+
-		'<li>Markdown Link (reddit comment)<ul><li><input onclick="this.select();" type="text" value="[Imgur]('+links['small_square']+')"/></li></ul></li>'+
+		'<li>Direct Link (email & IM)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="'+links['small_square']+'"/></li></ul></li>'+
+		'<li>HTML Image (websites & blogs)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['small_square']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot; /&gt;&lt;/a&gt;"/></li></ul></li>'+
+		'<li>BBCode (message boards & forums)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="[IMG]'+links['small_square']+'[/IMG]"/></li></ul></li>'+
+		'<li>Linked BBCode (message boards)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="[URL='+links['imgur_page']+'][IMG]'+links['small_square']+'[/IMG][/URL]"/></li></ul></li>'+
+		'<li>Markdown Link (reddit comment)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="[Imgur]('+links['small_square']+')"/></li></ul></li>'+
 		'</ul></div>'+
 		'</div></div><input type="button" value="Close" style="width:100%;" onclick="toggle(\'blanket\')"/>';
-		popup('blanket',365);
+	popup('blanket',365);
+	try{// Thanks to imgAreaSelect jQuery is here lets try using it :)
+		var scroll=$('#imgur-scroller');
+		var codes=$('#imgur-codes');
+		scroll[0].childNodes[0].style.width=(codes[0].childNodes[0].offsetWidth*7-1)+'px';
+		scroll.scroll(function(){codes.scrollLeft(scroll.scrollLeft());});
+	}
+	catch(e){// And if it messes up we have this
+		getID('imgur-scroller').style.display='none';
+		getID('imgur-codes').style.overflowX='scroll';
+	}
 }
 function imgurDel(id,img){
 	if(img===false){
@@ -1036,7 +1051,7 @@ function deleteEmail(){
 }
 function delScan(file,prompt){
 	if(prompt){
-		if(!confirm("Are you sure you want to delete "+file))
+		if(!confirm("Are you sure you want to delete:\n"+file))
 			return false;
 	}
 	if(typeof XMLHttpRequest!='function'){
@@ -1127,8 +1142,10 @@ function enableColumns(ele,e,b){ // They work flawlessly in Firefox so it does n
 		}
 		else{// enable
 			ele.className='columns';
-			e.nextSibling[TC]='Disable';
-			Set_Cookie( 'columns', true, 1, '/', '', '' );
+			if(e){
+				e.nextSibling[TC]='Disable';
+				Set_Cookie( 'columns', true, 1, '/', '', '' );
+			}
 		}
 		return false;
 	}

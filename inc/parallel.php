@@ -5,7 +5,7 @@
 <h2>Parallel Port Scanner</h2>
 <p>
 Sorry, <code>scanimage</code> does not detect scanners on parallel ports they must be setup manually.<br/>You must re-scan for scanners after adding with this page.</p>
-<form method="POST" action="index.php"><input type="hidden" name="action" value="Parallel-Form"/><p>
+<form method="POST" action="index.php"><input type="hidden" name="page" value="Parallel-Form"/><p>
 Scanner Name: <input type="text" name="name"><br/>
 Scanner Device URI: <input type="text" name="device"><br/>
 <input type="submit" value="Add Scanner"/></p>
@@ -20,7 +20,7 @@ Scanner Device URI: <input type="text" name="device"><br/>
 		if($scan[$i]=="."||$scan[$i]=="..")
 			continue;
 		$json=json_decode(file_get_contents("config/parallel/".$scan[$i]));
-		echo '<li class="boxlist"><a class="icon del tool" href="index.php?page=Parallel-Form&file='.$scan[$i].'"><span class="tip">Delete</span></a> <a href="index.php?page=Device%20List&action='.$json->{"DEVICE"}.'">'.$json->{"NAME"}."</a></li>";
+		echo '<li class="boxlist"><a class="icon del tool" href="index.php?page=Parallel-Form&file='.url($scan[$i]).'"><span class="tip">Delete</span></a> <a href="index.php?page=Device%20List&action='.url($json->{"DEVICE"}.'">'.$json->{"NAME"})."</a></li>";
 	}
 ?></ul><p><a onclick="printMsg('Searching For Scanners','Please Wait...','center',0);" href="index.php?page=Config&action=Search-For-Scanners"/>Re-scan for scanners</a>
 </p>

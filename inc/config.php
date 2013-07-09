@@ -51,9 +51,9 @@ else
 <a href="index.php?page=Config&action=Delete-Setting" onclick="return confirm('Delete all settings?')">Remove All Of These Settings</a></p><ul class="simplelist">
 <?php
 	foreach($file as $id => $opt){
-		echo '<li class="boxlist"><a class="tool icon del" href="index.php?page=Config&action=Delete-Setting&value='.urlencode($id).'" onclick="return confirm(\'Delete this setting: &#92;n'.html($id).'\')"><span class="tip">Delete</span></a> <a target="_blank" href="index.php?page=Scan&action=restore';
+		echo '<li class="boxlist"><a class="tool icon del" href="index.php?page=Config&action=Delete-Setting&value='.url($id).'" onclick="return confirm(\'Delete this setting: &#92;n'.html(js($id)).'\')"><span class="tip">Delete</span></a> <a target="_blank" href="index.php?page=Scan&action=restore';
 		foreach($opt as $key => $val){
-			echo '&'.html($key).'='.html($val);
+			echo '&'.url($key).'='.url($val);
 		}
 		echo '">'.html($id).'</a></li>';
 	}
@@ -118,7 +118,7 @@ Select a Color:
 <div class="box">
 <h2>Update Checker</h2>
 <p style="text-align:center;">
-<input type="button" onclick="updateCheck('<?php echo $VER; ?>',this)" value="Check for Updates"/>
+<input type="button" onclick="updateCheck('<?php echo html(js($VER)); ?>',this)" value="Check for Updates"/>
 </p>
 </div>
 

@@ -1,10 +1,17 @@
 <?php
+// functions from ../index.php
 function html($X){
-	return htmlspecialchars($X);// Name is too long and subject to frequent typos
+	return htmlspecialchars($X);
+}
+function url($X){
+	return rawurlencode($X);
+}
+function js($X){
+	return str_replace("\n",'\\n',addslashes($X));
 }
 $PAGE=http_response_code();
 $NAME="PHP Scanner Server";
-$VER="1.3-7_dev";
+$VER="1.3-7";
 $page="Error";
 include("header.php");
 ?>

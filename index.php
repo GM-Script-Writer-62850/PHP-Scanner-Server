@@ -8,8 +8,9 @@ $RequireLogin=false;// Require user to login (A 'geek' could bypass this without
 $SessionDuration=86400;// Max time (in seconds) signed in is 24hrs (irrelevant with the above off)
 // Sorry for the lack of explanations in the code feel free to ask what something does
 
+// The next 2 lines are also in ./inc/index.php
 $NAME="PHP Scanner Server";
-$VER="1.3-7_dev";
+$VER="1.3-7";
 $SAE_VER="1.4"; // Scanner access enabler version
 
 # ****************
@@ -54,50 +55,59 @@ $debug='';
 # ****************
 
 function Get_Values($name){
-	if(isset($_REQUEST[$name]))
-		return str_replace("`","'",$_REQUEST[$name]);// Backticks (`) are striped to prevent the use of malicious code
-	else
-		return null;
+	return isset($_REQUEST[$name])?$_REQUEST[$name]:null;
 }
 
 function html($X){
-	return htmlspecialchars($X);// Name is too long and subject to frequent typos
+	return htmlspecialchars($X);
+}
+
+function url($X){
+	return rawurlencode($X);
+}
+
+function js($X){
+	return str_replace("\n",'\\n',addslashes($X));
+}
+
+function shell($X){
+	return escapeshellarg($X);
 }
 
 function Put_Values() { # Update values back to form (There is no redo for croping)
 	echo '<script type="text/javascript">'.
-	"config({'scanner':".addslashes($GLOBALS['SCANNER']).
-		",'source':'".addslashes($GLOBALS['SOURCE'])."'".
-		",'quality':".addslashes($GLOBALS['QUALITY']).
-		",'duplex':".addslashes($GLOBALS['DUPLEX']).
-		",'size':'".addslashes($GLOBALS['SIZE'])."'".
-		",'ornt':'".addslashes($GLOBALS['ORNT'])."'".
-		",'mode':'".addslashes($GLOBALS['MODE'])."'".
-		",'bright':".addslashes($GLOBALS['BRIGHT']).
-		",'contrast':".addslashes($GLOBALS['CONTRAST']).
-		",'rotate':".addslashes($GLOBALS['ROTATE']).
-		",'scale':".addslashes($GLOBALS['SCALE']).
-		",'filetype':'".addslashes($GLOBALS['FILETYPE'])."'".
-		",'lang':'".addslashes($GLOBALS['LANG'])."'".
-		",'set_save':'".addslashes($GLOBALS['SET_SAVE'])."'".
+	"config({'scanner':".js($GLOBALS['SCANNER']).
+		",'source':'".js($GLOBALS['SOURCE'])."'".
+		",'quality':".js($GLOBALS['QUALITY']).
+		",'duplex':".js($GLOBALS['DUPLEX']).
+		",'size':'".js($GLOBALS['SIZE'])."'".
+		",'ornt':'".js($GLOBALS['ORNT'])."'".
+		",'mode':'".js($GLOBALS['MODE'])."'".
+		",'bright':".js($GLOBALS['BRIGHT']).
+		",'contrast':".js($GLOBALS['CONTRAST']).
+		",'rotate':".js($GLOBALS['ROTATE']).
+		",'scale':".js($GLOBALS['SCALE']).
+		",'filetype':'".js($GLOBALS['FILETYPE'])."'".
+		",'lang':'".js($GLOBALS['LANG'])."'".
+		",'set_save':'".js($GLOBALS['SET_SAVE'])."'".
 	"});</script>";
 }
 
 function Print_Message($TITLE,$MESSAGE,$ALIGN) { # Add a Message div after the page has loaded
-	$TITLE=addslashes($TITLE);
-	$MESSAGE=addslashes($MESSAGE);
-	$ALIGN=addslashes($ALIGN);
+	$TITLE=js(html($TITLE));
+	$MESSAGE=js($MESSAGE);
+	$ALIGN=js(html($ALIGN));
 	include "inc/message.php";
 }
 
 function Update_Preview($l) { # Change the Preview Pane image via JavaScript
 	echo '<script type="text/javascript">';
-	echo 'document.getElementById("preview_img").childNodes[0].childNodes[0].src="'.addslashes($l).'";';
+	echo 'document.getElementById("preview_img").childNodes[0].childNodes[0].src="'.js($l).'";';
 	echo '</script>';
 }
 
 function Update_Links($l,$p) { # Change the Preview Pane image links via JavaScript
-	echo '<script type="text/javascript" src="inc/previewlinks.php?file='.urlencode($l).'&page='.urlencode($p).'"></script>';
+	echo '<script type="text/javascript" src="inc/previewlinks.php?file='.url($l).'&page='.url($p).'"></script>';
 }// main.js, previewlinks.php, scan.php, scans.php, view.php, and edit.php conatain icon links
 
 function InsertHeader($page) { # Spit out HTML header
@@ -121,7 +131,7 @@ function SaveFile($file,$content){// @ Suppresses any warnings
 function checkFreeSpace($X){
 	$pace=disk_free_space('scans')/1024/1024;
 	if($pace<$X){// There is less than X MB of free space
-		Print_Message("Warning: Low Disk Space","There is only ".number_format($pace)." MB of free space, please delete some scans.<br/>Low disk space can cause really bad problems.",'center');
+		Print_Message("Warning: Low Disk Space","There is only ".number_format($pace)." MB of free space, please delete some scan(s) if any.<br/>Low disk space can cause really bad problems.",'center');
 	}
 	return $pace;
 }
@@ -134,7 +144,7 @@ function fileSafe($l){
 
 function validNum($arr){
 	for($i=0,$m=count($arr);$i<$m;$i++){
-		if(is_int($arr[$i]))
+		if(!is_numeric($arr[$i]))
 			return false;
 	}
 	return true;
@@ -167,7 +177,7 @@ function findLangs(){
 		}
 	}
 	else if(is_dir($langs)){
-		$langs=explode("\n",substr(exe("ls $langs | grep 'tesseract-ocr-' | sed 's/tesseract-ocr-//'",true),0,-1));
+		$langs=explode("\n",substr(exe("ls ".shell($langs)." | grep 'tesseract-ocr-' | sed 's/tesseract-ocr-//'",true),0,-1));
 	}
 	else{
 		Print_Message("Tesseract Error:","Unable to find any installed language files or documentation.<br/>You can edit lines 145 and or 146 of <code>".getcwd()."/index.php</code> with the correct location for your system.","center");
@@ -179,7 +189,7 @@ function findLangs(){
 function uuid2bus($d){// Bug #13
 	$id=$d->{"UUID"};
 	$d=$d->{"DEVICE"};
-	$data=exe("lsusb -d $id # See Bug #13",true);
+	$data=exe("lsusb -d ".shell($id)." # See Bug #13",true);
 	if(strlen($data)==0)
 		return $d;// Scanner must not be connected
 	$bus=substr($data,strpos($data,"Bus ")+4,3);
@@ -189,7 +199,7 @@ function uuid2bus($d){// Bug #13
 }
 
 function quit(){
-	echo '<script type="text/javascript">Debug("'.rawurlencode(html($GLOBALS['debug'])).html($GLOBALS['here']."$ ").'",'.(isset($_COOKIE["debug"])?$_COOKIE["debug"]:'false').');</script>';
+	echo '<script type="text/javascript">Debug("'.js(html($GLOBALS['debug'])).js(html($GLOBALS['here']."$ ")).'",'.(isset($_COOKIE["debug"])?$_COOKIE["debug"]:'false').');</script>';
 	die('</body></html>');
 }
 
@@ -197,7 +207,7 @@ function quit(){
 # Generate that Fortune
 # ****************
 
-$dir="/usr/games";// This is where fortune and cowsay are installed to
+$dir="/usr/games";// This is where fortune, cowsay, and cowthink are installed to
 if(file_exists("$dir/fortune") && $Fortune===true){
 	if(!isset($_COOKIE["fortune"])){
 		$_COOKIE["fortune"]=$Fortune;
@@ -209,10 +219,10 @@ if(file_exists("$dir/fortune") && $Fortune===true){
 		if(file_exists("$dir/cowsay")&&file_exists("$dir/cowthink")){
 			$cows=scandir("/usr/share/cowsay/cows/");// This is where cowsay's ACSII art is stored
 			$type=Array('say','think');
-			exe("$dir/fortune | $dir/cow".$type[rand(0,1)]." -f ".$cows[rand(2,count($cows)-1)],true);
+			exe(escapeshellcmd("$dir/fortune")." | ".escapeshellcmd("$dir/cow".$type[rand(0,1)])." -f ".shell($cows[rand(2,count($cows)-1)]),true);
 		}
 		else{
-			exe("$dir/fortune",true);
+			exe(escapeshellcmd("$dir/fortune"),true);
 		}
 	}
 }
@@ -285,7 +295,7 @@ else if($PAGE=="Scans"){
 			}
 		}
 		else{
-			$FILE2=addslashes(substr($FILE,0,strrpos($FILE,".")+1));
+			$FILE2=substr($FILE,0,strrpos($FILE,".")+1);
 			@unlink("scans/Preview_".$FILE2."jpg");
 			@unlink("scans/Scan_$FILE");
 			Print_Message("File Deleted","The file <code>".html($FILE)."</code> has been removed.",'center');
@@ -294,7 +304,7 @@ else if($PAGE=="Scans"){
 
 	# Display Thumbnails of scanned images, if any
 	echo '<script type="text/javascript" src="inc/imgur-box.js" id="imgur-box-setup"></script>';
-	if(count(scandir("scans"))==2){ // Wonder if I should rewrite this section without using the exe function, but I think that will make the code much longer
+	if(count(scandir("scans"))==2){
 		Print_Message("No Images","All files have been removed. There are no scanned images to display.",'center');
 	}
 	else{
@@ -311,13 +321,14 @@ else if($PAGE=="Scans"){
 			'<br/>Double Click a file name to select/deselect it<br/>'.
 			'The order they are selected determines the page order<br/>'.
 			'<a href="#" onclick="return selectScans(false);"><button>Select All</button></a> '.
+			'<a href="#" onclick="return selectScans(null);"><button>Invert Selection</button></a> '.
 			'<a href="#" onclick="return selectScans(true);"><button>Select None</button></a>'.
 			'</p></div>';
-		$FILES=explode("\n",substr(exe('cd "scans"; ls "Preview"*',true),0,-1));
+		$FILES=explode("\n",substr(exe("cd 'scans'; ls 'Preview'*",true),0,-1));
 		echo '<div id="scans">';
 		for($i=0,$max=count($FILES);$i<$max;$i++){
-			$FILE=addslashes(substr($FILES[$i],7,-3));
-			$FILE=substr(exe('cd "scans"; ls "Scan'.$FILE.'"*',true),5,-1);//Should only have one file listed
+			$FILE=substr($FILES[$i],7,-3);
+			$FILE=substr(exe("cd 'scans'; ls ".shell("Scan$FILE").'*',true),5,-1);//Should only have one file listed
 			$IMAGE=$FILES[$i];
 			include "inc/scans.php";
 		}
@@ -353,7 +364,7 @@ else if($PAGE=="Config"){
 		}
 	}
 	else if($ACTION=="Detect-Paper"){
-		$paper=explode("\n",exe("paperconf -a -N -h -w -m",true));
+		$paper=explode("\n",exe("paperconf -aNhwm",true));
 		unset($paper[count($paper)-1]);// Delete empty value
 		sort($paper);// Lets sort this while we have the chance
 		$PAPER=json_decode('{}');
@@ -423,7 +434,7 @@ else if($PAGE=="Config"){
 		}
 		for($i=0,$max=count($OP);$i<$max;$i++){// Get scanner specific data
 			if($i<$max-$FakeCt)
-				$help=exe("scanimage --help -d \"".addslashes($OP[$i]->{"DEVICE"})."\"",true);
+				$help=exe("scanimage --help -d ".shell($OP[$i]->{"DEVICE"}),true);
 			else
 				$help=file_get_contents('inc/scanhelp/'.$OP[$i]->{"NAME"});
 			// Get Source
@@ -438,10 +449,10 @@ else if($PAGE=="Config"){
 					$help2=$help;
 				else{
 					if($i<$max-$FakeCt)
-						$help2=exe("scanimage --help -d \"".addslashes($OP[$i]->{"DEVICE"})."\" --source \"$val\"",true);
+						$help2=exe("scanimage --help -d ".shell($OP[$i]->{"DEVICE"})." --source ".shell($val),true);
 					else{
 						$help2=file_get_contents('inc/scanhelp/'.$OP[$i]->{"NAME"});
-						exe("echo 'scanimage --help -d \"SIMULATED_$i-$key\" --source \"$val\"'",true);
+						exe("echo ".shell("scanimage --help -d 'SIMULATED_$i-$key' --source '$val'"),true);
 					}
 				}
 				// Get DPI
@@ -465,7 +476,7 @@ else if($PAGE=="Config"){
 				if(!is_bool($duplex)){
 					$duplex=substr($help2,$duplex+21);
 					$duplex=substr($duplex,0,strpos($duplex,']'));
-					$duplex=strtolower($duplex)!='inactive';
+					$duplex=strtolower($duplex)!=='inactive';
 				}
 				$OP[$i]->{"DUPLEX-$val"}=$duplex;
 				// Get color modes
@@ -492,7 +503,7 @@ else if($PAGE=="Config"){
 				$OP[$i]->{"UUID"}=NULL;
 			else{
 				$dev=substr($OP[$i]->{"DEVICE"},$dev+7,7);
-				$dev=exe("lsusb -s '$dev'",true);
+				$dev=exe("lsusb -s ".shell($dev),true);
 				$OP[$i]->{"UUID"}=substr($dev,strpos($dev,"ID ")+3,9);
 			}
 			// Lamp on/off
@@ -514,7 +525,7 @@ else if($PAGE=="Config"){
 			Print_Message("No Scanners Found","There were no scanners found on this server. Make sure the scanners are plugged in and turned on. The scanner must also be supported by SANE.<br/>".
 				"<a href=\"index.php?page=Parallel-Form\">[Click here for parallel-port scanners]</a><br/>".
 				"If it is supported by sane and still does not showup (usb) or does not work (parallel) you may need to use the <a href=\"index.php?page=Access%20Enabler\">Access Enabler</a>".
-				(in_array('lp',explode(' ',str_replace("\n",' ',exe("groups $user",true))))?'':"<br/>It appears $user is not in the lp group did you read the <a href=\"index.php?page=About\">Installation Notes</a>?"),'center');
+				(in_array('lp',explode(' ',str_replace("\n",' ',exe("groups ".shell($user),true))))?'':"<br/>It appears $user is not in the lp group did you read the <a href=\"index.php?page=About\">Installation Notes</a>?"),'center');
 		else
 			Print_Message("Scanners Found:",$CANNERS,'center');
 	}
@@ -528,7 +539,6 @@ else if($PAGE=="Parallel-Form"){
 	$name=Get_Values('name');
 	$device=Get_Values('device');
 	if($file!=null){
-		$file=addslashes($file);
 		unlink("config/parallel/$file");
 	}
 	else if($name!=null&&$device!=null){
@@ -537,7 +547,7 @@ else if($PAGE=="Parallel-Form"){
 		while(in_array($int.'.json',$can)){
 			$int++;
 		}
-		$save=SaveFile('config/parallel/'.$int.'.json','{"NAME":"'.addslashes($name).'","DEVICE":"'.addslashes($device).'"}');
+		$save=SaveFile('config/parallel/'.$int.'.json',json_encode(array("NAME"=>$name,"DEVICE"=>$device)));
 	}
 	$scan=scandir('config/parallel');
 	include "inc/parallel.php";
@@ -617,8 +627,8 @@ else if($PAGE=="Device Notes"){
 		if(is_null($SOURCE))
 			$SOURCE='';
 		else
-			$SOURCE=' --source "'.addslashes($SOURCE).'"';
-		$help=exe("scanimage --help -d \"".addslashes($ACTION)."\"$SOURCE",true);
+			$SOURCE=' --source '.shell($SOURCE);
+		$help=exe("scanimage --help -d ".shell($ACTION).$SOURCE,true);
 		echo "<div class=\"box box-full\"><h2>$ACTION</h2><pre>".$help."</pre></div>";
 	}
 	else{// List Scanners
@@ -714,47 +724,48 @@ else if($PAGE=="Edit"){
 				if(file_exists("scans/Scan_$file")){
 					$langs=findLangs();
 					if(!validNum(Array($WIDTH,$HEIGHT,$X_1,$Y_1,$BRIGHT,$CONTRAST,$SCALE,$ROTATE))||
-					  ($FILETYPE!="txt"&&$FILETYPE!="png"&&$FILETYPE!="tiff"&&$FILETYPE!="jpg")||
+					  ($FILETYPE!=="txt"&&$FILETYPE!=="png"&&$FILETYPE!=="tiff"&&$FILETYPE!=="jpg")||
 					  !in_array($LANG,$langs)){
-						echo "<h1>No, you can not do that</h1>Input data is invalid and most likely an attempt to run malicious code on the server <i>denied</i>";
+						Print_Message("No, you can not do that","Input data is invalid and most likely an attempt to run malicious code on the server <i>denied</i>",'center');
 						Footer();
 						quit();
 					}
-					$tmpFile="/tmp/Scan_".addslashes($file);
-					$file='scans/Scan_'.addslashes($file);
-					if(!@copy($file,$tmpFile)){
-						Print_Message("Permission Error","Unable to create <code>$tmpFile</code>",'center');
+					$tmpFileRaw="/tmp/Scan_$file";
+					$fileRaw="scans/Scan_$file";
+					if(!@copy($fileRaw,$tmpFileRaw)){
+						Print_Message("Permission Error","Unable to create <code>$tmpFileRaw</code>",'center');
 						quit();
 					}
+					$tmpFile=shell($tmpFileRaw);
+					$file=shell($fileRaw);
 					if($MODE!='color'&&$MODE!=null){
 						if($MODE=='gray')
-							exe("convert \"$tmpFile\" -colorspace Gray \"$tmpFile\"",true);
+							exe("convert $tmpFile -colorspace Gray $tmpFile",true);
 						else
-							exe("convert \"$tmpFile\" -monochrome \"$tmpFile\"",true);
+							exe("convert $tmpFile -monochrome $tmpFile",true);
 					}
 					if($BRIGHT!="0"||$CONTRAST!="0"){
-						exe("convert \"$tmpFile\" -brightness-contrast $BRIGHT".'x'."$CONTRAST \"$tmpFile\"",true);
+						exe("convert $tmpFile -brightness-contrast $BRIGHT".'x'."$CONTRAST $tmpFile",true);
 					}
 					if($WIDTH!="0"&&$HEIGHT!="0"&&$WIDTH!=null&&$HEIGHT!=null){
-						$TRUE=explode("x",exe("identify -format '%wx%h' \"$file\"",true));
+						$TRUE=explode("x",exe("identify -format '%wx%h' $file",true));
 						$TRUE_W=$TRUE[0];
 						$TRUE_H=$TRUE[1];
 						$WIDTH=round($WIDTH/$M_WIDTH*$TRUE_W);
 						$HEIGHT=round($HEIGHT/$M_HEIGHT*$TRUE_H);
 						$X_1=round($X_1/$M_WIDTH*$TRUE_W);
 						$Y_1=round($Y_1/$M_HEIGHT*$TRUE_H);
-						exe("convert \"$tmpFile\" +repage -crop \"$WIDTH x $HEIGHT + $X_1 + $Y_1\" \"$tmpFile\"",true);
+						exe("convert $tmpFile +repage -crop '$WIDTH x $HEIGHT + $X_1 + $Y_1' $tmpFile",true);
 					}
 
 					if($SCALE!="100"){
-						exe("convert \"$tmpFile\" -scale \"".addslashes($SCALE)."%\" \"$tmpFile\"",true);
+						exe("convert $tmpFile -scale '$SCALE%' $tmpFile",true);
 					}
 					if($ROTATE!="0"){
-						$ROTATE=addslashes($ROTATE);
-						exe("convert \"$tmpFile\" -rotate \"$ROTATE\" \"$tmpFile\"",true);
+						exe("convert $tmpFile -rotate $ROTATE $tmpFile",true);
 					}
-					exe("convert \"$tmpFile\" -alpha off \"$tmpFile\"",true);
-					$file=substr($file,11);
+					exe("convert $tmpFile -alpha off $tmpFile",true);
+					$file=substr($fileRaw,11);
 					$edit=strpos($file,'-edit-');
 					$name=(is_bool($edit)?substr($file,0,-4):substr($file,0,$edit));
 					$ext=substr($file,strrpos($file,'.')+1);
@@ -765,33 +776,33 @@ else if($PAGE=="Edit"){
 					$file="scans/Scan_$name-edit-$int.$ext";//scan
 					$name=str_replace("scans/Scan_","scans/Preview_",$file);//preview
 					if($FILETYPE==substr($file,strrpos($file,'.')+1)){
-						@rename($tmpFile,$file);// Incorrect access denied message is generated
-						if(file_exists($tmpFile)&&!file_exists($file)){// Just in-case it becomes accurate
-							copy($tmpFile,$file);
-							unlink($tmpFile);
+						@rename($tmpFileRaw,$file);// Incorrect access denied message is generated
+						if(file_exists($tmpFileRaw)&&!file_exists($file)){// Just in-case it becomes accurate
+							copy($tmpFileRaw,$file);
+							unlink($tmpFileRaw);
 						}
 					}
 					else if($FILETYPE!='txt'){
-						$file=substr($file,0,strrpos($file,'.')+1).addslashes($FILETYPE);
-						exe("convert \"$tmpFile\" \"$file\"",true);
+						$file=substr($file,0,strrpos($file,'.')+1).$FILETYPE;
+						exe("convert $tmpFile ".shell($file),true);
 					}
 					else{
 						$t=time();
 						$S_FILENAMET=substr($file,0,strrpos($file,'.'));
-						exe("convert \"$tmpFile\" -fx '(r+g+b)/3' \"/tmp/edit_scan_file$t.tif\"",true);
-						exe("tesseract \"/tmp/edit_scan_file$t.tif\" \"$S_FILENAMET\" -l \"$LANG\"",true);
+						exe("convert $tmpFile -fx '(r+g+b)/3' ".shell("/tmp/edit_scan_file$t.tif"),true);
+						exe("tesseract ".shell("/tmp/edit_scan_file$t.tif").' '.shell($S_FILENAMET)." -l ".shell($LANG),true);
 						unlink("/tmp/edit_scan_file$t.tif");
 						if(!file_exists("$S_FILENAMET.txt"))//In case tesseract fails
 							SaveFile("$S_FILENAMET.txt","");
 					}
 					$FILE=substr($name,0,strrpos($name,'.')+1).'jpg';//Preview
 					if($FILETYPE!='txt'){
-						exe("convert \"$file\" -scale 450x471 \"$FILE\"",true);
+						exe("convert ".shell($file)." -scale '450x471' ".shell($FILE),true);
 						$file=substr($file,11);
 					}
 					else{
-						exe("convert \"$tmpFile\" -scale 450x471 \"$FILE\"",true);
-						unlink($tmpFile);
+						exe("convert $tmpFile -scale '450x471' ".shell($FILE),true);
+						unlink($tmpFileRaw);
 						$file=substr($file,11,strrpos($file,'.')-10).'txt';
 					}
 				}
@@ -809,10 +820,10 @@ else if($PAGE=="Edit"){
 		}
 		else{
 			Print_Message("No File Specified","Please select a file to edit",'center');
-			$FILES=explode("\n",substr(exe('cd "scans"; ls Preview*',true),0,-1));
+			$FILES=explode("\n",substr(exe("cd 'scans'; ls 'Preview'*",true),0,-1));
 			for($i=0,$max=count($FILES);$i<$max;$i++){
-				$FILE=addslashes(substr($FILES[$i],7,-3));
-				$FILE=substr(exe('cd "scans"; ls Scan'.$FILE.'*',true),5);//Should only have one file listed
+				$FILE=substr($FILES[$i],7,-3);
+				$FILE=substr(exe("cd 'scans'; ls ".shell("Scan$FILE").'*',true),5);//Should only have one file listed
 				$IMAGE=$FILES[$i];
 				include "inc/editscans.php";
 			}
@@ -835,7 +846,7 @@ else{
 	if(strlen($SAVEAS)>0||$ACTION=="Scan Image"){
 		$langs=findLangs();
 		if(!validNum(Array($SCANNER,$BRIGHT,$CONTRAST,$SCALE,$ROTATE))||!in_array($LANG,$langs)||!in_array($QUALITY,explode("|",$CANNERS[$SCANNER]->{"DPI-$SOURCE"}))){//security check
-			echo "<h1>No, you can not do that</h1>Input data is invalid and most likely an attempt to run malicious code on the server <i>denied</i>";
+			Print_Message("No, you can not do that","Input data is invalid and most likely an attempt to run malicious code on the server <i>denied</i>",'center');
 			Footer();
 			quit();
 		}
@@ -909,14 +920,14 @@ else{
 
 		$sizes=explode('-',$SIZE);
 		if((!validNum(Array($SCANNER,$WIDTH,$HEIGHT,$X_1,$Y_1,$BRIGHT,$CONTRAST,$SCALE,$ROTATE)))||
-		   (count($sizes)!=2&&$SIZE!='full')||
+		   (count($sizes)!=2&&$SIZE!=='full')||
 		   (!in_array($MODE,explode('|',$CANNERS[$SCANNER]->{"MODE-$SOURCE"})))||
 		   (!in_array($SOURCE,explode('|',$CANNERS[$SCANNER]->{"SOURCE"})))||
-		   ($FILETYPE!="txt"&&$FILETYPE!="png"&&$FILETYPE!="tiff"&&$FILETYPE!="jpg")){
+		   ($FILETYPE!=="txt"&&$FILETYPE!=="png"&&$FILETYPE!=="tiff"&&$FILETYPE!=="jpg")){
 			Print_Message("No, you can not do that","Input data is invalid and most likely an attempt to run malicious code on the server. <i>Denied</i>",'center');
 			quit();
 		}
-		else if((!is_numeric($sizes[0])||!is_numeric($sizes[1]))&&$SIZE!='full'){
+		else if((!is_numeric($sizes[0])||!is_numeric($sizes[1]))&&$SIZE!=='full'){
 			Print_Message("No, you can not do that","Input data is invalid and most likely an attempt to run malicious code on the server. <i>Denied</i>",'center');
 			quit();
 		}
@@ -930,7 +941,7 @@ else{
 		$X=0;
 		$Y=0;
 		# Get Device
-		$DEVICE=addslashes($CANNERS[$SCANNER]->{"DEVICE"});
+		$DEVICE=shell($CANNERS[$SCANNER]->{"DEVICE"});
 
 		$scanner_w=$CANNERS[$SCANNER]->{"WIDTH-$SOURCE"};
 		$scanner_h=$CANNERS[$SCANNER]->{"HEIGHT-$SOURCE"};
@@ -1006,75 +1017,76 @@ else{
 		}
 		else
 			$DUPLEX='';
-		$OURCE=($SOURCE=='Inactive')?'':"--source \"$SOURCE\" ";
+		$OURCE=($SOURCE=='Inactive')?'':"--source ".shell($SOURCE)." ";
 		if(!is_null($CANNERS[$SCANNER]->{"UUID"})){// Bug #13
-			$DEVICE=uuid2bus($CANNERS[$SCANNER]);
-			$CANNERS[$SCANNER]->{"DEVICE"}=$DEVICE;
+			$DEVICE2=uuid2bus($CANNERS[$SCANNER]);
+			$CANNERS[$SCANNER]->{"DEVICE"}=$DEVICE2;
+			$DEVICE=shell($DEVICE2);
 		}
-		$cmd="scanimage -d \"$DEVICE\" -l $X -t $Y -x $SIZE_X -y $SIZE_Y $DUPLEX--resolution $QUALITY $OURCE--mode \"$MODE\" $LAMP--format=pnm";
+		$cmd="scanimage -d $DEVICE -l $X -t $Y -x $SIZE_X -y $SIZE_Y $DUPLEX--resolution $QUALITY $OURCE--mode ".shell($MODE)." $LAMP--format=pnm";
 		if($SOURCE=='ADF'||$SOURCE=='Automatic Document Feeder') # Multi-page scan
 			exe("cd $CANDIR;$cmd --batch",true);// Be careful with this, doing this without a ADF feeder will result in scanning the flatbed over and over, include --batch-count=3 for testing
 		else # Single page scan
-			exe("$cmd > \"$CANDIR/scan_file$SCANNER.pnm\"",false);
+			exe("$cmd > ".shell("$CANDIR/scan_file$SCANNER.pnm"),false);
 
 		if(file_exists("$CANDIR/scan_file$SCANNER.pnm")){
 			if(Get_Values('size')=='full'&&filesize("$CANDIR/scan_file$SCANNER.pnm")==0){
-				exe("echo \"Scan Failed...\"",true);
-				exe("echo \"Maybe this scanner does not report it size correctly, maybe the default scan size will work it may or may not be a full scan.\"",true);
-				exe("echo \"If it is not a full scan you are welcome to manually edit your $here/config/scanners.json file with the correct size.\"",true);
+				exe("echo 'Scan Failed...'",true);
+				exe("echo 'Maybe this scanner does not report it size correctly, maybe the default scan size will work it may or may not be a full scan.'",true);
+				exe("echo 'If it is not a full scan you are welcome to manually edit your $here/config/scanners.json file with the correct size.'",true);
 				@unlink("$CANDIR/scan_file$SCANNER.pnm");
-				exe("echo \"Attempting to scan without forcing full scan\"");
-				exe("scanimage -d \"$DEVICE\" --resolution $QUALITY --mode $MODE $LAMP--format=ppm > \"$CANDIR/scan_file$SCANNER.pnm\"",false);
+				exe("echo 'Attempting to scan without forcing full scan'");
+				exe("scanimage -d $DEVICE --resolution $QUALITY --mode ".shell($MODE)." $LAMP--format=ppm > ".shell("$CANDIR/scan_file$SCANNER.pnm"),false);
 			}
 		}
 
-		if(count($CANNERS)>1){
+		if(count($CANNERS)>1&&isset($DEVICE2)){
 			$CANNERS=json_decode(file_get_contents("config/scanners.json"));
-			$CANNERS[$SCANNER]->{"DEVICE"}=$DEVICE;// See bug 13
+			$CANNERS[$SCANNER]->{"DEVICE"}=$DEVICE2;// See bug 13
 		}
 		$CANNERS[$SCANNER]->{"INUSE"}=0;
 		SaveFile("config/scanners.json",json_encode($CANNERS));
 
 		$files=scandir($CANDIR);
 		for($i=2,$ct=count($files);$i<$ct;$i++){
-			$SCAN="$CANDIR/".$files[$i];
+			$SCAN=shell("$CANDIR/".$files[$i]);
 
 			# Dated Filename for scan image & preview image
-			$FILENAME=date("M_j_Y~G-i-s",filemtime($SCAN));
+			$FILENAME=date("M_j_Y~G-i-s",filemtime("$CANDIR/".$files[$i]));
 			$S_FILENAME="Scan_$SCANNER"."_"."$FILENAME.$FILETYPE";
 			$P_FILENAME="Preview_$SCANNER"."_"."$FILENAME.jpg";
 
 			# Adjust Brightness
 			if($BRIGHT!="0"||$CONTRAST!="0"){
-				exe("convert \"$SCAN\" -brightness-contrast $BRIGHT".'x'."$CONTRAST \"$SCAN\"",true);
+				exe("convert $SCAN -brightness-contrast '$BRIGHT".'x'."$CONTRAST' $SCAN",true);
 			}
 
 			# Rotate Image
 			if($ROTATE!="0"){
-				exe("convert \"$SCAN\" -rotate \"$ROTATE\" \"$SCAN\"",true);
+				exe("convert $SCAN -rotate '$ROTATE' $SCAN",true);
 			}
 
 			# Scale Image
 			if($SCALE!="100"){
-				exe("convert \"$SCAN\" -scale $SCALE% \"$SCAN\"",true);
+				exe("convert $SCAN -scale '$SCALE%' $SCAN",true);
 			}
 
 			# Generate Preview Image
-			exe("convert \"$SCAN\" -scale 450x471 \"scans/$P_FILENAME\"",true);
+			exe("convert $SCAN -scale '450x471' ".shell("scans/$P_FILENAME"),true);
 
 			# Convert scan to file type
 			if($FILETYPE=="txt"){
 				$S_FILENAMET=substr($S_FILENAME,0,strrpos($S_FILENAME,'.'));
-				exe("convert \"$SCAN\" -fx '(r+g+b)/3' \"/tmp/_scan_file$SCANNER.tif\"",true);
-				exe("tesseract \"/tmp/_scan_file$SCANNER.tif\" \"scans/$S_FILENAMET\" -l \"$LANG\"",true);
+				exe("convert $SCAN -fx '(r+g+b)/3' ".shell("/tmp/_scan_file$SCANNER.tif"),true);
+				exe("tesseract ".shell("/tmp/_scan_file$SCANNER.tif").' '.shell("scans/$S_FILENAMET")." -l ".shell($LANG),true);
 				unlink("/tmp/_scan_file$SCANNER.tif");
 				if(!file_exists("scans/$S_FILENAMET.txt"))//in case tesseract fails
 					SaveFile("scans/$S_FILENAMET.txt","");
 			}
 			else{
-				exe("convert \"$SCAN\" -alpha off \"scans/$S_FILENAME\"",true);
+				exe("convert $SCAN -alpha off ".shell("scans/$S_FILENAME"),true);
 			}
-			@unlink("$SCAN");
+			@unlink("$CANDIR/".$files[$i]);
 		}
 		@rmdir($CANDIR);
 
@@ -1111,7 +1123,7 @@ else{
 	echo '<script type="text/javascript">if(document.scanning)document.scanning.action.disabled=false;</script>';
 	checkFreeSpace($FreeSpaceWarn);
 }
-echo '<script type="text/javascript">Debug("'.rawurlencode(html($debug)).html($here."$ ").'",'.(isset($_COOKIE["debug"])?$_COOKIE["debug"]:'false').');';
+echo '<script type="text/javascript">Debug("'.js(html($debug)).js(html($here."$ ")).'",'.(isset($_COOKIE["debug"])?$_COOKIE["debug"]:'false').');';
 if($CheckForUpdates){
 	$file="config/gitVersion.txt";
 	$time=is_file($file)?filemtime($file):time()/2;

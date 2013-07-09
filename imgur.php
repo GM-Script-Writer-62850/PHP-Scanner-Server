@@ -28,7 +28,7 @@ foreach($files as $file => $trash){
 	if(file_exists("scans/$file"))
 		array_push($Files,$file);
 }
-if(isset($_GET['album'])&&count($Files)>1){//$_GET['album'] will become $title
+if(isset($_GET['album'])&&count($Files)>1){
 	$album=json_curl($_GET['album']==0?array():array('title' => $_GET['album']),'album',true); // album: https://api.imgur.com/endpoints/album#album-upload
 	if(is_bool($album)||is_null($album))
 		die('{"album":false,"images":[],"success":false}');
@@ -40,13 +40,12 @@ if(isset($_GET['album'])&&count($Files)>1){//$_GET['album'] will become $title
 }
 $images=array();
 foreach($Files as $file){
-	$image = array( 
-		'type' => 'base64', 'name' => $file, 'title' => substr($file,5,strrpos($file,'.')-5), 
+	$image = array(
+		'type' => 'base64', 'name' => $file, 'title' => substr($file,5,strrpos($file,'.')-5),
 		'description' => 'Uploaded from PHP Scanner Server');// image: https://api.imgur.com/endpoints/image#image-upload
 	if(substr($file,-4)=='.txt'){
 		$file2='/tmp/'.md5(time().rand()).'.png';
-		$file=addslashes($file);
-		shell_exec("convert \"scans/$file\" \"$file2\"");
+		shell_exec("convert ".escapeshellarg("scans/$file")." '$file2'");
 		$image=array_merge($image,array('image' => base64_encode(file_get_contents($file2))));
 		@unlink($file2);
 	}
@@ -55,8 +54,9 @@ foreach($Files as $file){
 	if(isset($destination))
 		$image=array_merge($image,array('album' => $destination));
 	$json=json_curl($image,'image',true);
-	if(!is_bool($json))
+	if(!is_bool($json)){
 		$json->{"data"}->{'file'}=$file;
+	}
 	array_push($images,$json);
 	if(is_bool($json)){//no reply
 		$success=false;

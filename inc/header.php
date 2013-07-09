@@ -2,10 +2,10 @@
 <head>
 <meta http-equiv="Content-type" content="text/html; charset=UTF-8"/>
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="chrome=1"><![endif]-->
-<title><?php echo $GLOBALS['NAME']; ?> ~ <?php echo $GLOBALS['PAGE']; ?> - <?php echo $page; ?></title>
+<title><?php echo html($GLOBALS['NAME'].' ~ '.$GLOBALS['PAGE'].' - '.$page); ?></title>
 <link id="style" rel="stylesheet" href="<?php echo $path; ?>inc/style.php<?php
 if(isset($_COOKIE["colors"])){
-	echo "?colors=".rawurlencode($_COOKIE["colors"]);
+	echo "?colors=".url($_COOKIE["colors"]);
 }
 ?>" type="text/css"/>
 <?php

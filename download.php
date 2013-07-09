@@ -30,7 +30,7 @@ if(isset($_GET['file'])){
 }
 if(isset($_GET['downloadServer'])){
 	$file="/tmp/scanner-".md5(time().rand()).".tar.bz2";
-	shell_exec("tar cjf $file --exclude=\"scans/*\" --exclude=\"config/*.*\" ./");// '--exclude=\"password.md5\"' What was this in there for?
+	shell_exec("tar cjf '$file' --exclude=\"scans/*\" --exclude=\"config/*.*\" ./");// '--exclude=\"password.md5\"' What was this in there for?
 	returnFile($file,'PHP-Scanner-Server-'.$_GET['ver'].'.tar.bz2','bz2');
 	@unlink($file);
 }
@@ -69,7 +69,7 @@ else if((isset($_GET['type'])?$_GET['type']:'')=='pdf'&&!isset($_GET['raw'])){
 				$pdf->MultiCell(0,5,file_get_contents("scans/$file"),0,"L",false);
 			}
 			else{
-				$image=explode("x",shell_exec("identify -format '%wx%h' \"scans/".addslashes($file)."\""));
+				$image=explode("x",shell_exec("identify -format '%wx%h' ".escapeshellarg("scans/$file")));
 				if($height/$width<=$image[1]/$image[0])
 					$width=0;
 				else
@@ -85,7 +85,7 @@ else if((isset($_GET['type'])?$_GET['type']:'')=='pdf'&&!isset($_GET['raw'])){
 				$pdf->MultiCell(0,5,file_get_contents("scans/$file"),0,"L",false);
 			}
 			else{
-				$image=explode("x",shell_exec("identify -format '%wx%h' \"scans/".addslashes($file)."\""));
+				$image=explode("x",shell_exec("identify -format '%wx%h' ".escapeshellarg("scans/$file")));
 				$width=$width-($marginLeft*2);
 				$height=$height-$marginTop*2-$fontSize*0.75;
 				if($height/$width<=$image[1]/$image[0])
@@ -122,7 +122,7 @@ else if(isset($_GET['json'])){
 			$file=substr($file,strrpos($file,"/")+1);
 		$file="Scan_$file";
 		if(is_file("scans/$file")){
-			$FILES.='scans/"'.addslashes($file).'" ';
+			$FILES.=escapeshellarg("scans/$file").' ';
 			$ct+=1;
 		}
 	}
@@ -132,13 +132,13 @@ else if(isset($_GET['json'])){
 			$name=$ct==1?$file:'Compilation.pdf';
 			$file='/tmp/'.md5(time().rand()).'.pdf';
 			$type='pdf';
-			shell_exec("convert $FILES+repage $file");// -page Letter -gravity center
+			shell_exec("convert $FILES+repage '$file'");// -page Letter -gravity center
 		}
 		else if($type=='zip'){
 			$file='/tmp/'.md5(time().rand()).'.zip';
 			$type='zip';
 			$name='Compilation.zip';
-			shell_exec("zip \"$file\" $FILES");
+			shell_exec("zip '$file' $FILES");
 		}
 		else{
 			$type='txt';
@@ -156,7 +156,7 @@ else if(isset($_GET['file'])){
 	if(file_exists("scans/".$_GET['file'])){
 		if(isset($_GET['compress'])){
 			$file='/tmp/download-'.md5(time().rand()).'.zip';
-			shell_exec("cd 'scans' && zip \"$file\" \"".addslashes($_GET['file'])."\"");
+			shell_exec("cd 'scans' && zip '$file' ".escapeshellarg($_GET['file']));
 			returnFile($file,$_GET['file'],'zip');
 			@unlink($file);
 		}

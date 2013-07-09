@@ -6,20 +6,19 @@ if(isset($_POST['file'])||isset($_POST['json'])){
 	}*/
 
 	if(isset($_POST['file'])){
-		$scans='{"'.addslashes($_POST['file']).'":1}';
+		$scans=array($_POST['file'] => 1);
 		$prefix='';
 	}
 	else{
-		$scans=$_POST['json'];
+		$scans=json_decode($_POST['json']);
 		$prefix='Scan_';
 	}
-	$scans=json_decode($scans);
 
 	foreach($scans as $scan => $val){
 		if(strrpos($scan, "/")>-1)
 			$scan=substr($scan,strrpos($scan,"/")+1);
 		if(!file_exists("scans/$prefix$scan"))
-			die('{"title":"404 Not Found","message":"That scan ('.htmlspecialchars($scan).') no longer exists"}');
+			die(json_encode(array("title"=>"404 Not Found","message"=>"That scan <code>".htmlspecialchars($scan)."</code> no longer exists")));
 	}
 
 	require_once("phpmailer/class.phpmailer.php");

@@ -45,7 +45,7 @@ echo '<ul>';
 $ct=0;
 foreach($paper as $key=>$val){
 	$ct++;
-	echo '<li><a onclick="return confirm(\'Delete the paper size '.html($key).'\')" class="tool icon del" href="index.php?page=Paper%20Manager&delete='.urlencode($key).'"><span class="tip">Delete</span></a> '.html($key).' <div class="code tool">'.number_format(round($val->{"width"}/25.4,2),2,'.',',').'x'.str_pad(number_format(round($val->{"height"}/25.4,2),2,'.',','),5,' ',STR_PAD_LEFT).'<span class="tip">'.$val->{"width"}.'x'.$val->{"height"}.' millimeters</span></div></li>';
+	echo '<li><a onclick="return confirm(\'Delete the paper size '.html(js($key)).'\')" class="tool icon del" href="index.php?page=Paper%20Manager&delete='.url($key).'"><span class="tip">Delete</span></a> '.html($key).' <div class="code tool">'.number_format(round($val->{"width"}/25.4,2),2,'.',',').'x'.str_pad(number_format(round($val->{"height"}/25.4,2),2,'.',','),5,' ',STR_PAD_LEFT).'<span class="tip">'.$val->{"width"}.'x'.$val->{"height"}.' millimeters</span></div></li>';
 }
 echo "</ul>";
 if($ct==0)

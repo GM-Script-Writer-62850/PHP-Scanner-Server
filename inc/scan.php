@@ -61,7 +61,7 @@
 <div class="control tool">
 <div class="ie_276228"><select <?php //echo ((($WIDTH=="0"||$WIDTH==NULL)&&($HEIGHT=="0"||$HEIGHT==NULL))===false?'disabled="disabled" ':''); ?>name="size" onchange="paperChange(this);"></select>
 </div><span class="tip"><?php echo $CANNERS[$SEL]->{"WIDTH-$defSource"}.' mm x '.$CANNERS[$SEL]->{"HEIGHT-$defSource"}.' mm'; ?></span>
-<script type="text/javascript">paper=<?php 
+<script type="text/javascript">paper=<?php
 echo file_exists("config/paper.json")?file_get_contents("config/paper.json"):'{"Picture":{"height":152.4,"width":101.6},"Paper":{"height":279.4,"width":215.9}}'; ?></script>
 </div>
 
@@ -71,7 +71,7 @@ echo file_exists("config/paper.json")?file_get_contents("config/paper.json"):'{"
 		'Last Cords:'.
 		'</div>'.
 		'<div class="control">'.
-		'<input type="checkbox" checked="checked" value="'.htmlspecialchars("{\"width\":$M_WIDTH,\"height\":$M_HEIGHT,\"x1\":$X_1,\"y1\":$Y_1}").'" onchange="lastCordsChange(this.value,this.checked)">'.
+		'<input type="checkbox" checked="checked" value="'.html("{\"width\":$M_WIDTH,\"height\":$M_HEIGHT,\"x1\":$X_1,\"y1\":$Y_1}").'" onchange="lastCordsChange(this.value,this.checked)">'.
 		'</div>';
 	}*/
 ?>
@@ -116,7 +116,7 @@ echo file_exists("config/paper.json")?file_get_contents("config/paper.json"):'{"
 <div class="control">
 <select name="bright" onchange="changeBrightContrast()">
 <script type="text/JavaScript">
-for(var i=-100;i<=100;i+=10){
+for(var i=-100;i<=100;i++){
 	document.write('<option '+(i==0?'selected="selected" ':'')+'value="'+i+'">'+i+' %</option>');
 }
 </script>
@@ -129,7 +129,7 @@ for(var i=-100;i<=100;i+=10){
 <div class="control">
 <select name="contrast" onchange="changeBrightContrast()">
 <script type="text/JavaScript">
-for(var i=-100;i<=100;i+=10){
+for(var i=-100;i<=100;i++){
 	document.write('<option '+(i==0?'selected="selected" ':'')+'value="'+i+'">'+i+' %</option>');
 }
 </script>
@@ -170,7 +170,7 @@ for(var i=-1;i>-180;i--){
 <div class="control">
 <select name="scale">
 <script type="text/JavaScript">
-for(var i=0;i<=200;i+=10){
+for(var i=0;i<=200;i++){
 	document.write('<option value="'+i+'"'+(i==100?' selected="selected"':'')+'>'+(i-100)+' %</option>');
 }
 </script>
@@ -284,7 +284,7 @@ Scan Image
 $ls='<span class="tool icon recent-off"><span class="tip">Last Scan (Disabled)</span></span>';
 if(isset($_COOKIE["scan"])&&isset($_COOKIE["preview"])){
 	if(file_exists("scans/".$_COOKIE["scan"])&&file_exists("scans/".$_COOKIE["preview"]))
-		echo "<a class=\"tool icon recent\" onclick=\"lastScan('".html($_COOKIE["scan"])."','".html($_COOKIE["preview"])."','".html($_COOKIE["scanner"])."',this');\" href=\"javascript:void(null)\"><span class=\"tip\">Last Scan</span></a>";
+		echo "<a class=\"tool icon recent\" onclick=\"lastScan('".html(js($_COOKIE["scan"]))."','".html(js($_COOKIE["preview"]))."','".html(js($_COOKIE["scanner"]))."',this');\" href=\"javascript:void(null)\"><span class=\"tip\">Last Scan</span></a>";
 	else
 		echo $ls;
 }

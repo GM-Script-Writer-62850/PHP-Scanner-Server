@@ -1,7 +1,7 @@
 <?php
 $maxAge=86400;// max age in seconds, scans older that this will be deleted
 if(isset($_GET['file'])){
-	if(strrpos($_GET['file'], "/")>-1)
+	if(!is_null(strrpos($_GET['file'], "/")))
 		$_GET['file']=substr($_GET['file'],strrpos($_GET['file'],"/")+1);
 	$file=$_GET['file'];
 	$file0=substr($file,0,strrpos($file,"."));

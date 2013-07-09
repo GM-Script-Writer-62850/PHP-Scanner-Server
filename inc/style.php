@@ -251,6 +251,8 @@ a:hover {
 	-webkit-transition-duration: <?php echo $transitionTime; ?>;
 	transition-property: height;
 	transition-duration: <?php echo $transitionTime; ?>;
+	width: 720px;
+	margin: 0px 0px 0.5em 0.5em;
 }
 
 .message.ie {
@@ -573,6 +575,8 @@ img[src="inc/images/blank.gif"] {
 
 .box-full {
 	width: 720px;
+	float: none;
+	display: inline-block;
 }
 
 .box-full img {
@@ -686,6 +690,25 @@ code {
 	height: 160px;
 	margin: 3px 3px 0;
 	cursor: pointer;
+}
+
+#imgur-codes,#imgur-scroller{
+	width: 100%;
+}
+
+#imgur-codes{
+	overflow: hidden;
+	white-space: nowrap;
+}
+
+#imgur-scroller{
+	height: 15px;
+	overflow-x: scroll;
+	overflow-y: hidden;
+}
+
+#imgur-scroller div{
+	display: inline-block
 }
 
 .dualForm form {
