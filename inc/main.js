@@ -509,12 +509,12 @@ function PDF_popup(files){
 	getID("blanket").childNodes[0].innerHTML='How would you prefer for your PDF download?<br/>\
 		A scan placed on the page with a title or<br/>\
 		a would you prefer the scan as the page.<br/>\
-		<a href="download.php?json='+files+'&amp;type=pdf" onclick="setTimeout(\'toggle(\\\'blanket\\\')\',100);">\
-		<button><img src="inc/images/pdf-scaled.png" width="106" height="128"/></button></a>\
-		<a href="download.php?json='+files+'&amp;type=pdf&amp;full" onclick="setTimeout(\'toggle(\\\'blanket\\\')\',100);">\
-			<button><img src="inc/images/pdf-full.png" width="106" height="128"/></button></a>\
-		<br/><a style="text-decoration:none;" href="download.php?json='+files+'&amp;type=pdf&amp;raw" onclick="setTimeout(\'toggle(\\\'blanket\\\')\',100);">\
-		<input type="button" value="I don\'t care just give me a PDF" style="width:261px"/></a>\
+		<button onclick="window.open(\'download.php?json='+files+'&amp;type=pdf\');setTimeout(\'toggle(\\\'blanket\\\')\',100);">\
+			<img src="inc/images/pdf-scaled.png" width="106" height="128"/></button>\
+		<button onclick="window.open(\'download.php?json='+files+'&amp;type=pdf&amp;full\');setTimeout(\'toggle(\\\'blanket\\\')\',100);">\
+			<img src="inc/images/pdf-full.png" width="106" height="128"/></button>\
+		<br/><input type="button" onclick="window.open(\'download.php?json='+files+'&amp;type=pdf&amp;raw\');setTimeout(\'toggle(\\\'blanket\\\')\',100);" \
+			value="I don\'t care just give me a PDF" style="width:261px"/>\
 		<br/><input type="button" value="Cancel" style="width:261px;" onclick="toggle(\'blanket\')"/>';
 	popup('blanket',290);
 	return false;
@@ -522,11 +522,11 @@ function PDF_popup(files){
 function toggleFile(file){
 	if(!filesLst[file[TC]]){
 		filesLst[file[TC]]=1;
-		file.setAttribute('selected',true);
+		file.className="included";
 	}
 	else{
 		delete(filesLst[file[TC]]);
-		file.setAttribute('selected',false);
+		file.className="excluded";
 	}
 }
 function bulkDownload(link,type){
@@ -697,17 +697,17 @@ function bulkUpload(){
 }
 function selectScans(b){
 	try{
-		var scans=document.evaluate("//div[@id='scans']/div/h2"+(b==null?'':"[@selected='"+b+"']"),document,null,6,null);
+		var scans=document.evaluate("//div[@id='scans']/div/h2"+(b?"[@class='"+b+"']":''),document,null,6,null);
 		for(var i=0;i<scans.snapshotLength;i++)
 			toggleFile(scans.snapshotItem(i));
 	}
 	catch(e){// Screw you IE, screw you
 		var list=getID('scans').getElementsByTagName('h2'),stat;
 		for(var i=0,ct=list.length;i<ct;i++){
-			stat=list[i].getAttribute('selected');
-			if(b==null)
+			stat=list[i].className;
+			if(!b)
 				toggleFile(list[i])
-			else if(stat==b.toString())
+			else if(stat==b)
 				toggleFile(list[i]);
 		}
 	}
@@ -915,7 +915,7 @@ function emailManager(file){
 	html+='<input type="submit" value="'+(file?'Send':'Save')+'"/><input style="float:right;" type="button" value="Cancel" onclick="toggle(\'blanket\')"/>'+
 	'</form>'+
 	'<div class="help"><h2>Help Links</h2><p><a target="_blank" href="http://www.google.com">Google</a><br/>eg: What are Yahoo\'s smtp settings</p></div>'+
-	(file?'<div class="help"><h2>Tips</h2><p>Send to multiple people by separating addresses with a comma.</p></div>':'')+
+	'<div class="help"><h2>Tips</h2><p>'+(file?'Send to multiple people by separating addresses with a comma.<br/>':'')+'Host, prefix, and port are auto detected when you change the email address.</p></div>'+
 	'</div>';
 	getID("blanket").childNodes[0].innerHTML=html
 	if(data){

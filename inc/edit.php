@@ -37,26 +37,14 @@
 <span class="tool">Brightness<span class="tip">Lighting</span></span>:
 </div>
 <div class="control">
-<select name="bright" onchange="changeBrightContrast()">
-<script type="text/JavaScript">
-for(var i=-100;i<=100;i++){
-	document.write('<option '+(i==0?'selected="selected" ':'')+'value="'+i+'">'+i+' %</option>');
-}
-</script>
-</select>
+<script type="text/JavaScript"><?php include('./inc/writescripts/bright.js'); ?></script>
 </div>
 
 <div class="label">
 <span class="tool">Contrast<span class="tip">Vividness</span></span>:
 </div>
 <div class="control">
-<select name="contrast" onchange="changeBrightContrast()">
-<script type="text/JavaScript">
-for(var i=-100;i<=100;i++){
-	document.write('<option '+(i==0?'selected="selected" ':'')+'value="'+i+'">'+i+' %</option>');
-}
-</script>
-</select>
+<script type="text/JavaScript"><?php include('./inc/writescripts/contrast.js'); ?></script>
 </div>
 
 <div class="label">
@@ -74,41 +62,14 @@ for(var i=-100;i<=100;i++){
 <span class="tool">Rotate<span class="tip">Turn</span></span>:
 </div>
 <div class="control tool">
-<select name="rotate" onchange="rotateChange(this)">
-<option value="0">0&deg;</option>
-<option value="90">90&deg; Clockwise</option>
-<option value="-90">90&deg; Counterclockwise</option>
-<option value="180">180&deg;</option>
-<optgroup label="Clockwise">
-<script type="text/JavaScript">
-for(var i=1;i<180;i++){
-	if(i!=90)
-		document.write('<option value="'+i+'">'+i+'&deg;</option>');
-}
-</script>
-</optgroup>
-<optgroup label="Counterclockwise">
-<script type="text/JavaScript">
-for(var i=-1;i>-180;i--){
-	if(i!=-90)
-		document.write('<option value="'+i+'">'+Math.abs(i)+'&deg;</option>');
-}
-</script>
-</optgroup>
-</select><span class="tip">Clockwise</span>
+<script type="text/JavaScript"><?php include('./inc/writescripts/rotate.js'); ?></script>
 </div>
 
 <div class="label">
 <span class="tool">Scale<span class="tip">Size/Dimensions</span></span>:
 </div>
 <div class="control">
-<select name="scale">
-<script type="text/JavaScript">
-for(var i=-100;i<=100;i++){
-	document.write('<option'+(i==0?' selected="selected"':'')+' value="'+(i+100)+'">'+i+' %</option>');
-}
-</script>
-</select>
+<script type="text/JavaScript"><?php include('./inc/writescripts/scale.js'); ?></script>
 </div>
 
 </div>
@@ -163,8 +124,8 @@ else
 	echo '<span class="tool icon edit-off"><span class="tip">Edit (Disabled)</span></span> ';
 ?>
 <a class="tool icon view" href="index.php?page=View&amp;file=Scan_<?php echo url($file); ?>"><span class="tip">View</span></a>
-<a class="tool icon upload" href="#" onclick="return upload('Scan_'<?php echo html(js($file,5)); ?>')"><span class="tip">Upload to Imgur</span></a>
+<a class="tool icon upload" href="#" onclick="return upload('Scan_<?php echo html(js($file,5)); ?>')"><span class="tip">Upload to Imgur</span></a>
 <a href="#" onclick="return emailManager('Scan_<?php echo html(js($file)); ?>');" class="tool icon email"><span class="tip">Email</span></a>
 </p></div><!-- There are no line breaks on the next line to make the javascript ever so slightly faster -->
-<div id="preview_img"><p><img src="scans/Preview_<?php echo url(substr($file,0,strrpos($file,'.'))); ?>.jpg" title="Preview"/><img style="z-index:-1;" src="inc/images/blank.gif" title="Processing"/></p></div>
+<div id="preview_img"><p><img alt="Preview" src="scans/Preview_<?php echo url(substr($file,0,strrpos($file,'.'))); ?>.jpg" title="Preview"/><img style="z-index:-1;" src="inc/images/blank.gif" title="Processing" alt=""/></p></div>
 </div>

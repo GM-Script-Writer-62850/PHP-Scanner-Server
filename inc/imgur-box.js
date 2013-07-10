@@ -11,7 +11,7 @@
 		id=data[i]['imgur_page'].substr(data[i]['imgur_page'].lastIndexOf('/')+1);
 		document.write('<div class="box" id="imgur-'+id+'"><h2><span>'+i.slice(5,i.lastIndexOf('.'))+
 			'</span><a href="#" onclick="return imgurDel(\'imgur-'+id+'\',\''+i+'\')" class="tool icon del"><span class="tip">Hide</span></a></h2>'+
-			'<span class="tool"><img src="'+data[i]['big_square']+'" onclick="imgurPopup(\''+i+'\',null)"/><span class="tip">View Codes</span></span></div>');
+			'<span class="tool"><img alt="'+i+'" src="'+data[i]['big_square']+'" onclick="imgurPopup(\''+i+'\',null)"/><span class="tip">View Codes</span></span></div>');
 	}
 	document.write('</div>');
 }());

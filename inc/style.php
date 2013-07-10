@@ -21,7 +21,7 @@ $BG_COLOR=$COLORS[0];
 $LK_COLOR=$COLORS[1];
 $transitionTime='0.8s'; // The rotateChange function in main.js needs to be adjust based on this value
 ?>
-@-moz-keyframes fadein { /* Firefox */
+@-webkit-keyframes fadein { /* Chrome, Safari, and Opera */
 	from {
 		opacity: 0;
 	}
@@ -29,31 +29,7 @@ $transitionTime='0.8s'; // The rotateChange function in main.js needs to be adju
 		opacity: 1;
 	}
 }
-@-webkit-keyframes fadein { /* Chrome and Safari */
-	from {
-		opacity: 0;
-	}
-	to {
-		opacity: 1;
-	}
-}
-@-o-keyframes fadein { /* Opera (if they ever add this) */
-	from {
-		opacity: 0;
-	}
-	to {
-		opacity: 1;
-	}
-}
-@-ms-keyframes fadein { /* IE 10 */
-	from {
-		opacity: 0;
-	}
-	to {
-		opacity: 1;
-	}
-}
-@keyframes fadein { /* Standard */
+@keyframes fadein { /* Standard: Firefox and IE10 */
 	from {
 		opacity: 0;
 	}
@@ -78,6 +54,10 @@ body {
 	font: 12px verdana, arial, helvetica, sans-serif;
 	font-size: 12px;
 	background: url("images/powered_by_linux.png") bottom right no-repeat fixed #<?php echo $BG_COLOR; ?>;
+}
+
+button, input[type="button"], input[type="submit"], input[type="reset"], select, a, #scans .box h2 {
+	cursor: pointer;
 }
 
 a {
@@ -473,6 +453,7 @@ select.upper, select.upper option {
 	width: 145px;
 	float: left;
 	margin: 2px;
+	min-height: 19px;
 }
 
 #preview {
@@ -546,7 +527,14 @@ img[src="inc/images/blank.gif"] {
 	width: 100%;
 }
 
-#scans .box h2[selected=true] {
+#scans .box h2 { /* Doubleclick tends to highlight text and it does not look right */
+	user-select: none;
+	-ms-user-select: none;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+}
+
+#scans .box h2.included {
 	background-color: #<?php echo $LK_COLOR; ?>;
 	border-color: #<?php echo $LK_COLOR; ?>;
 }

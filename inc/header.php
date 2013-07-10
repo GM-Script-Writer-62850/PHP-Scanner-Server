@@ -1,3 +1,4 @@
+<!DOCTYPE html><html>
 <?php $path=is_numeric($GLOBALS['PAGE'])?'/':''; ?>
 <head>
 <meta http-equiv="Content-type" content="text/html; charset=UTF-8"/>

@@ -14,7 +14,7 @@ function ext2mime($ext){
 function returnFile($in,$out,$ext){
 	header("Pragma: public");
 	header("Content-type: ".ext2mime($ext));
-	header('Content-Disposition: attachment; filename="'.addslashes($out).'"');
+	header('Content-Disposition: '.($ext=='pdf'?'inline':'attachment').'; filename="'.addslashes($out).'"');
 	if(is_file($in)){
 		header('Content-Length: '.filesize($in));
 		readfile($in);
@@ -30,12 +30,11 @@ if(isset($_GET['file'])){
 }
 if(isset($_GET['downloadServer'])){
 	$file="/tmp/scanner-".md5(time().rand()).".tar.bz2";
-	shell_exec("tar cjf '$file' --exclude=\"scans/*\" --exclude=\"config/*.*\" ./");// '--exclude=\"password.md5\"' What was this in there for?
+	shell_exec("tar cjf '$file' --exclude=\"scans/*\" --exclude=\"config/*.*\" ./");
 	returnFile($file,'PHP-Scanner-Server-'.$_GET['ver'].'.tar.bz2','bz2');
 	@unlink($file);
 }
 else if((isset($_GET['type'])?$_GET['type']:'')=='pdf'&&!isset($_GET['raw'])){
-	header("Content-type: ".ext2mime("pdf"));
 	$Pwidth=215.9;
 	$Pheight=279.4;
 	$fontSize=16;
@@ -98,15 +97,13 @@ else if((isset($_GET['type'])?$_GET['type']:'')=='pdf'&&!isset($_GET['raw'])){
 	}
 	if($pages>0){
 		$file=$pages>1?"Compilation.pdf":substr($file,0,strlen($ext)*-1)."pdf";
-		header('Content-Disposition: attchment; filename="'.$file.'"');
-		$pdf->Output($file,'D');
+		$pdf->Output($file,'I');
 	}
 	else{
 		$pdf->AddPage();
 		$pdf->SetFont('Arial','B',$fontSize);
 		$pdf->MultiCell(0,$fontSize,'None of thoes files exist :/',0,"C",false);
-		header('Content-Disposition: attchment; filename="Error.pdf"');
-		$pdf->Output("Error.pdf",'D');
+		$pdf->Output("Error.pdf",'I');
 	}
 }
 else if(isset($_GET['json'])){

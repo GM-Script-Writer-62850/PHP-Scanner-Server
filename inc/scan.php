@@ -2,8 +2,7 @@
 <div id="select"></div>
 
 <div id="sidebar">
-<form name="scanning" action="index.php" onsubmit="return pre_scan(this,ias);" method="POST">
-<input type="hidden" name="page" value="Scan">
+<form name="scanning" action="index.php" onsubmit="return pre_scan(this,ias);" method="post">
 
 <div class="side_box">
 <h2>Scanners</h2>
@@ -59,7 +58,7 @@
 <span class="tool">Size<span class="tip">How big the paper is</span></span>:
 </div>
 <div class="control tool">
-<div class="ie_276228"><select <?php //echo ((($WIDTH=="0"||$WIDTH==NULL)&&($HEIGHT=="0"||$HEIGHT==NULL))===false?'disabled="disabled" ':''); ?>name="size" onchange="paperChange(this);"></select>
+<div class="ie_276228"><select name="size" onchange="paperChange(this);"></select>
 </div><span class="tip"><?php echo $CANNERS[$SEL]->{"WIDTH-$defSource"}.' mm x '.$CANNERS[$SEL]->{"HEIGHT-$defSource"}.' mm'; ?></span>
 <script type="text/javascript">paper=<?php
 echo file_exists("config/paper.json")?file_get_contents("config/paper.json"):'{"Picture":{"height":152.4,"width":101.6},"Paper":{"height":279.4,"width":215.9}}'; ?></script>
@@ -114,67 +113,27 @@ echo file_exists("config/paper.json")?file_get_contents("config/paper.json"):'{"
 <span class="tool">Brightness<span class="tip">Lighting</span></span>:
 </div>
 <div class="control">
-<select name="bright" onchange="changeBrightContrast()">
-<script type="text/JavaScript">
-for(var i=-100;i<=100;i++){
-	document.write('<option '+(i==0?'selected="selected" ':'')+'value="'+i+'">'+i+' %</option>');
-}
-</script>
-</select>
+<script type="text/JavaScript"><?php include('./inc/writescripts/bright.js'); ?></script>
 </div>
 
 <div class="label">
 <span class="tool">Contrast<span class="tip">Vividness</span></span>:
 </div>
 <div class="control">
-<select name="contrast" onchange="changeBrightContrast()">
-<script type="text/JavaScript">
-for(var i=-100;i<=100;i++){
-	document.write('<option '+(i==0?'selected="selected" ':'')+'value="'+i+'">'+i+' %</option>');
-}
-</script>
-</select>
+<script type="text/JavaScript"><?php include('./inc/writescripts/contrast.js'); ?></script>
 </div>
 
 <div class="label">
 <span class="tool">Rotate<span class="tip">Turn</span></span>:
 </div>
-<div class="control tool">
-<select name="rotate" onchange="rotateChange(this)">
-<option value="0">0&deg;</option>
-<option value="90">90&deg; Clockwise</option>
-<option value="-90">90&deg; Counterclockwise</option>
-<option value="180">180&deg;</option>
-<optgroup label="Clockwise">
-<script type="text/JavaScript">
-for(var i=1;i<180;i++){
-	if(i!=90)
-		document.write('<option value="'+i+'">'+i+'&deg;</option>');
-}
-</script>
-</optgroup>
-<optgroup label="Counterclockwise">
-<script type="text/JavaScript">
-for(var i=-1;i>-180;i--){
-	if(i!=-90)
-		document.write('<option value="'+i+'">'+Math.abs(i)+'&deg;</option>');
-}
-</script>
-</optgroup>
-</select><span class="tip">Clockwise</span>
+<div class="control tool"><script type="text/javascript"><?php include('./inc/writescripts/rotate.js'); ?></script>
 </div>
 
 <div class="label">
 <span class="tool">Scale<span class="tip">Size/Dimensions</span></span>:
 </div>
 <div class="control">
-<select name="scale">
-<script type="text/JavaScript">
-for(var i=0;i<=200;i++){
-	document.write('<option value="'+i+'"'+(i==100?' selected="selected"':'')+'>'+(i-100)+' %</option>');
-}
-</script>
-</select>
+<script type="text/JavaScript"><?php echo include('./inc/writescripts/scale.js'); ?></script>
 </div>
 
 <div class="label">
@@ -228,7 +187,8 @@ Select Region
 <h2>
 Scan Image
 </h2>
-<p class="center"><input type="submit" value="Scan Image" name="action"> <input name="reset" type="reset" value="Reset Options" onclick="clearRegion(ias,false);setTimeout(scanReset,1);"/></p>
+<p class="center"><input type="hidden" name="page" value="Scan"/>
+<input type="submit" value="Scan Image" name="action"> <input name="reset" type="reset" value="Reset Options" onclick="clearRegion(ias,false);setTimeout(scanReset,1);"/></p>
 </div>
 
 <!-- Save Settings -->
@@ -290,5 +250,5 @@ else
 	echo $ls;
 ?>
 </p></div><!-- there are no line breaks on the next line to make the javascript ever so slightly faster -->
-<div id="preview_img"><p><img src="inc/images/blank.gif" title="Preview"/><img src="inc/images/blank.gif" title="Scanning" style="z-index:-1;"/></p></div>
+<div id="preview_img"><p><img src="inc/images/blank.gif" title="Preview" alt="Preview"/><img alt="" src="inc/images/blank.gif" title="Scanning" style="z-index:-1;"/></p></div>
 </div>

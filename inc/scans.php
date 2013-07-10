@@ -1,7 +1,7 @@
 <div class="box" id="<?php
 echo html($FILE);
 ?>">
-<h2 ondblclick="toggleFile(this);" selected="false"><?php echo html($FILE); ?></h2>
+<h2 ondblclick="toggleFile(this);" class="excluded"><?php echo html($FILE); ?></h2>
 <p>
 <a class="tool icon download" href="download.php?file=Scan_<?php echo url($FILE); ?>"><span class="tip">Download</span></a>
 <a class="tool icon zip" href="download.php?file=Scan_<?php echo url($FILE); ?>&amp;compress"><span class="tip">Download Zip</span></a>
@@ -13,6 +13,6 @@ echo html($FILE);
 <a class="tool icon upload" href="#" onclick="return upload('Scan_<?php echo html(js($FILE)); ?>');"><span class="tip">Upload to Imgur</span></a>
 <a href="#" onclick="return emailManager('Scan_<?php echo html(js($FILE)); ?>');" class="tool icon email"><span class="tip">Email</span></a>
 <br/>
-<a class="tool" target="_blank" href="scans/Scan_<?php echo url($FILE); ?>" style="width:100%;"><img src="scans/<?php echo url($IMAGE); ?>" style="width:100%"/><span class="tip">View raw file</span></a>
+<a class="tool" target="_blank" href="scans/Scan_<?php echo url($FILE); ?>" style="width:100%;"><img src="scans/<?php echo url($IMAGE); ?>" alt="<?php echo html($FILE); ?>" style="width:100%"/><span class="tip">View raw file</span></a>
 </p>
 </div>

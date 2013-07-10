@@ -1,4 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd"><html><?php
+<?php
 // Warning is displayed if there is less then the amount specified
 $FreeSpaceWarn=2048;// In Megabytes
 $Fortune=true;// Enable/disable fortunes in the debug console
@@ -199,8 +199,20 @@ function uuid2bus($d){// Bug #13
 }
 
 function quit(){
-	echo '<script type="text/javascript">Debug("'.js(html($GLOBALS['debug'])).js(html($GLOBALS['here']."$ ")).'",'.(isset($_COOKIE["debug"])?$_COOKIE["debug"]:'false').');</script>';
-	die('</body></html>');
+	echo '<script type="text/javascript">Debug("'.js(html($GLOBALS['debug'])).js(html($GLOBALS['here']."$ ")).'",'.(isset($_COOKIE["debug"])?$_COOKIE["debug"]:'false').');';
+	if($GLOBALS['CheckForUpdates']){
+		$VER=$GLOBALS['VER'];
+		$file="config/gitVersion.txt";
+	 	$time=is_file($file)?filemtime($file):time()/2;
+	 	if($time+3600*24<time())
+			echo "updateCheck('$VER',null);";
+		else{
+			$file=file_get_contents($file);
+			if(version_compare($file,$VER)==1)
+				echo "updateCheck('$file',true);";
+		}
+	}
+	die('</script></body></html>');
 }
 
 # ****************
@@ -320,9 +332,9 @@ else if($PAGE=="Scans"){
 			'<a onclick="return emailManager(\'Scan_Compilation\')" class="tool icon email" href="#"><span class="tip">Email</span></a>'.
 			'<br/>Double Click a file name to select/deselect it<br/>'.
 			'The order they are selected determines the page order<br/>'.
-			'<a href="#" onclick="return selectScans(false);"><button>Select All</button></a> '.
-			'<a href="#" onclick="return selectScans(null);"><button>Invert Selection</button></a> '.
-			'<a href="#" onclick="return selectScans(true);"><button>Select None</button></a>'.
+			'<button onclick="return selectScans(\'excluded\');">Select All</button> '.
+			'<button onclick="return selectScans(false);">Invert Selection</button> '.
+			'<button onclick="return selectScans(\'included\');">Select None</button>'.
 			'</p></div>';
 		$FILES=explode("\n",substr(exe("cd 'scans'; ls 'Preview'*",true),0,-1));
 		echo '<div id="scans">';
@@ -571,7 +583,9 @@ else if($PAGE=="About"){
 # ***************
 else if($PAGE=="PHP Information"){
         InsertHeader($PAGE);
-        echo '<div class="box box-full"><h2>'.$PAGE.'</h2><iframe src="inc/phpinfo.php" style="border:none;width:100%;height:500px;margin:0;"></iframe></div>';
+        echo '<div class="box box-full"><h2>'.$PAGE.'</h2><iframe id="phpinfo" src="inc/phpinfo.php" style="border:none;width:100%;height:500px;margin:0;"></iframe><script type="text/javascript">';
+	include('inc/writescripts/phpinfo.js');
+	echo '</script></div>';
         Footer();
 }
 # ***************
@@ -1124,17 +1138,5 @@ else{
 	echo '<script type="text/javascript">if(document.scanning)document.scanning.action.disabled=false;</script>';
 	checkFreeSpace($FreeSpaceWarn);
 }
-echo '<script type="text/javascript">Debug("'.js(html($debug)).js(html($here."$ ")).'",'.(isset($_COOKIE["debug"])?$_COOKIE["debug"]:'false').');';
-if($CheckForUpdates){
-	$file="config/gitVersion.txt";
-	$time=is_file($file)?filemtime($file):time()/2;
-	if($time+3600*24<time())
-		echo "updateCheck('$VER',null);";
-	else{
-		$file=file_get_contents($file);
-		if(version_compare($file,$VER)==1)
-			echo "updateCheck('$file',true);";
-	}
-}
-echo '</script>';
-?></body></html>
+quit();
+?>
