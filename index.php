@@ -10,7 +10,7 @@ $SessionDuration=86400;// Max time (in seconds) signed in is 24hrs (irrelevant w
 
 // The next 2 lines are also in ./inc/index.php
 $NAME="PHP Scanner Server";
-$VER="1.3-7";
+$VER="1.3-8_dev";
 $SAE_VER="1.4"; // Scanner access enabler version
 
 # ****************
@@ -642,21 +642,22 @@ else if($PAGE=="Device Notes"){
 		else{
 			Print_Message("New Default Scanner:",$CANNERS[$id]->{"DEVICE"},'center');
 		}
-		echo "<div class=\"box box-full\"><h2>Installed Device List</h2>".'<a style="margin-left:5px;" href="index.php?page=Config&action=Search-For-Scanners" onclick="printMsg(\'Searching For Scanners\',\'Please Wait...\',\'center\',0);">Scan for Devices</a>'."<ul>";
+		echo "<div class=\"box box-full\"><h2>Installed Device List</h2>".'<a style="margin-left:5px;" href="index.php?page=Config&amp;action=Search-For-Scanners" onclick="printMsg(\'Searching For Scanners\',\'Please Wait...\',\'center\',0);">Scan for Devices</a>'."<ul>";
 		for($i=0,$max=count($CANNERS);$i<$max;$i++){
 			$name=html($CANNERS[$i]->{"NAME"});
 			$DEVICE=html($CANNERS[$i]->{"DEVICE"});
+			$device=url($CANNERS[$i]->{"DEVICE"});
 			$res='';
 			$sources=explode('|',$CANNERS[$i]->{"SOURCE"});
-			echo "<li>$name ".(isset($CANNERS[$i]->{"SELECTED"})?'':"[<a href=\"index.php?page=Device%20Notes&id=$i\">Set as default scanner</a>]").
-				"<ul><li><a onclick=\"printMsg('Loading','Please Wait...','center',0);\" href=\"index.php?page=Device%20Notes&action=$DEVICE\"><code>$DEVICE</code></a></li>";
+			echo "<li>$name ".(isset($CANNERS[$i]->{"SELECTED"})?'':"[<a href=\"index.php?page=Device%20Notes&amp;id=$i\">Set as default scanner</a>]").
+				"<ul><li><a onclick=\"printMsg('Loading','Please Wait...','center',0);\" href=\"index.php?page=Device%20Notes&amp;action=$device\"><code>$DEVICE</code></a></li>";
 			for($x=0,$ct=count($sources);$x<$ct;$x++){
 				$val=html($sources[$x]);
 				$WIDTH=round($CANNERS[$i]->{"WIDTH-$val"}/25.4,2);
 				$HEIGHT=round($CANNERS[$i]->{"HEIGHT-$val"}/25.4,2);
 				$MODES=count(explode('|',$CANNERS[$i]->{"MODE-$val"}));
 				$DPI=explode('|',$CANNERS[$i]->{"DPI-$val"});
-				echo ($val=='Inactive'?'<li>This scanner supports<ul>':"<li>The '<a onclick=\"printMsg('Loading','Please Wait...','center',0);\" href=\"index.php?page=Device%20Notes&action=$DEVICE&source=$val\">$val</a>' source supports<ul>").
+				echo ($val=='Inactive'?'<li>This scanner supports<ul>':"<li>The '<a onclick=\"printMsg('Loading','Please Wait...','center',0);\" href=\"index.php?page=Device%20Notes&amp;action=$device&amp;source=$val\">$val</a>' source supports<ul>").
 					"<li>A bay width of <span class=\"tool\">$WIDTH\"<span class=\"tip\">".$CANNERS[$i]->{"WIDTH-$val"}." mm</span></span></li>".
 					"<li>A bay height of <span class=\"tool\">$HEIGHT\"<span class=\"tip\">".$CANNERS[$i]->{"HEIGHT-$val"}." mm</span></span></li>".
 					'<li>A scanner resolution of '.$DPI[$DPI[0]=='auto'?1:0].' DPI to '.number_format($DPI[count($DPI)-1]).' DPI</li>'.

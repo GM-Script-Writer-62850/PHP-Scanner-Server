@@ -119,7 +119,7 @@ Crop Image
 </h2>
 <p>
 <input type="hidden" name="loc_maxW"/><input type="hidden" name="loc_maxH"/>
-<small>Hint: +/- can increase/decrease numbers.</small>
+<small>Hint: +/- can increase/decrease numbers.</small></p>
 <div class="label">Width: </div>
 	<div class="control"><input onkeypress="return false" type="text" readonly="readonly" name="loc_width" value="0" size="3"/> pixle(s)</div>
 <div class="label">Height: </div>
@@ -132,15 +132,15 @@ Crop Image
 	<div class="control"><input onkeypress="return validateKey(this,event,ias);" type="text" name="loc_x2" value="0" size="3"/> pixle(s)</div>
 <div class="label">Y<sub>2</sub> (Bottom): </div>
 	<div class="control"><input onkeypress="return validateKey(this,event,ias);" type="text" name="loc_y2" value="0" size="3"/> pixle(s)</div>
-<div align="center"><input type="button" value="Update" onclick="setRegion(ias);"/> <input type="button" onclick="clearRegion(ias,true)" value="Clear"/></div>
-</p>
+<p class="center i"><input type="button" value="Update" onclick="setRegion(ias);"/> <input type="button" onclick="clearRegion(ias,true)" value="Clear"/><br/>
+<small>Crop is applied before rotate</small></p>
 </div>
 
 <div class="side_box">
 <h2>
 Save Image
 </h2>
-<p align="center"><input type="submit" value="Save Changes" name="action"/> <input type="reset" value="Reset Options" onclick="clearRegion(ias,false)"/></p>
+<p class="center"><input type="submit" value="Save Changes" name="action"/> <input type="reset" value="Reset Options" onclick="clearRegion(ias,false)"/></p>
 </div>
 </form>
 <?php echo $FILETYPE=='txt'?'<script type="text/javascript">document.scanning.action.disabled=true;</script>':''; ?>
@@ -152,17 +152,17 @@ Save Image
 <h2><?php echo html($file); ?></h2>
 <p>
 <a class="tool icon download" href="download.php?file=Scan_<?php echo url($file); ?>"><span class="tip">Download</span></a>
-<a class="tool icon zip" href="download.php?file=Scan_<?php echo url($file); ?>&compress"><span class="tip">Download Zip</span></a>
+<a class="tool icon zip" href="download.php?file=Scan_<?php echo url($file); ?>&amp;compress"><span class="tip">Download Zip</span></a>
 <a class="tool icon pdf" href="#" onclick="PDF_popup('<?php echo html(js($file)); ?>');"><span class="tip">Download PDF</span></a>
 <a class="tool icon print" href="print.php?file=Scan_<?php echo url($file); ?>" target="_blank"><span class="tip">Print</span></a>
-<a class="tool icon del" href="index.php?page=Scans&delete=Remove&file=<?php echo url($file); ?>" onclick="return confirm('Delete this scan, This is NOT a do not save button')"><span class="tip">Delete</span></a>
+<a class="tool icon del" href="index.php?page=Scans&amp;delete=Remove&amp;file=<?php echo url($file); ?>" onclick="return confirm('Delete this scan, This is NOT a do not save button')"><span class="tip">Delete</span></a>
 <?php
 if(substr($file,-3)=='txt')
-	echo '<a class="tool icon edit" href="index.php?page=Edit&file='.url($file).'"><span class="tip">Edit</span></a> ';
+	echo '<a class="tool icon edit" href="index.php?page=Edit&smp;file='.url($file).'"><span class="tip">Edit</span></a> ';
 else
 	echo '<span class="tool icon edit-off"><span class="tip">Edit (Disabled)</span></span> ';
 ?>
-<a class="tool icon view" href="index.php?page=View&file=Scan_<?php echo url($file); ?>"><span class="tip">View</span></a>
+<a class="tool icon view" href="index.php?page=View&amp;file=Scan_<?php echo url($file); ?>"><span class="tip">View</span></a>
 <a class="tool icon upload" href="#" onclick="return upload('Scan_'<?php echo html(js($file,5)); ?>')"><span class="tip">Upload to Imgur</span></a>
 <a href="#" onclick="return emailManager('Scan_<?php echo html(js($file)); ?>');" class="tool icon email"><span class="tip">Email</span></a>
 </p></div><!-- There are no line breaks on the next line to make the javascript ever so slightly faster -->

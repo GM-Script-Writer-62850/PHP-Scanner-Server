@@ -167,7 +167,7 @@ function lastScan(scan,preview,scanner,ele){
 	document.scanning.scanner.disabled='disabled';
 	sendE(document.scanning.size,'change');
 	ele.parentNode.parentNode.innerHTML='<h2>'+generic+'</h2><p><a class="tool icon download" href="download.php?file='+scan+'"><span class="tip">Download</span></a> '+
-		'<a class="tool icon zip" href="download.php?file='+scan+'&compress"><span class="tip">Download Zip</span></a> '+
+		'<a class="tool icon zip" href="download.php?file='+scan+'&amp;compress"><span class="tip">Download Zip</span></a> '+
 		'<a class="tool icon pdf" href="#" onclick="PDF_popup(\''+generic+'\');"><span class="tip">Download PDF</span></a> '+
 		'<a class="tool icon print" href="print.php?file='+scan+'" target="_blank"><span class="tip">Print</span></a> '+
 		'<a class="tool icon del" href="index.php?page=Scans&amp;delete=Remove&amp;file='+generic+'" onclick="return confirm(\'Delete this scan\')"><span class="tip">Delete</span></a> '+
@@ -509,11 +509,11 @@ function PDF_popup(files){
 	getID("blanket").childNodes[0].innerHTML='How would you prefer for your PDF download?<br/>\
 		A scan placed on the page with a title or<br/>\
 		a would you prefer the scan as the page.<br/>\
-		<a href="download.php?json='+files+'&type=pdf" onclick="setTimeout(\'toggle(\\\'blanket\\\')\',100);">\
+		<a href="download.php?json='+files+'&amp;type=pdf" onclick="setTimeout(\'toggle(\\\'blanket\\\')\',100);">\
 		<button><img src="inc/images/pdf-scaled.png" width="106" height="128"/></button></a>\
-		<a href="download.php?json='+files+'&type=pdf&full" onclick="setTimeout(\'toggle(\\\'blanket\\\')\',100);">\
+		<a href="download.php?json='+files+'&amp;type=pdf&amp;full" onclick="setTimeout(\'toggle(\\\'blanket\\\')\',100);">\
 			<button><img src="inc/images/pdf-full.png" width="106" height="128"/></button></a>\
-		<br/><a style="text-decoration:none;" href="download.php?json='+files+'&type=pdf&raw" onclick="setTimeout(\'toggle(\\\'blanket\\\')\',100);">\
+		<br/><a style="text-decoration:none;" href="download.php?json='+files+'&amp;type=pdf&amp;raw" onclick="setTimeout(\'toggle(\\\'blanket\\\')\',100);">\
 		<input type="button" value="I don\'t care just give me a PDF" style="width:261px"/></a>\
 		<br/><input type="button" value="Cancel" style="width:261px;" onclick="toggle(\'blanket\')"/>';
 	popup('blanket',290);
@@ -634,11 +634,10 @@ function storeImgurUploads(img){
 		div.id='imgur-'+id;
 		div.innerHTML='<h2><span>'+f.slice(5,f.lastIndexOf('.'))+'</span><a href="#" onclick="return '+
 			'imgurDel(\'imgur-'+id+'\',\''+f+'\')" class="tool icon del"><span class="tip">Hide</span></a></h2>'+
-			'<img src="'+data[f]['big_square']+'" onclick="imgurPopup(\''+f+'\',null)"/>';
+			'<span class="tool"><img src="'+data[f]['big_square']+'" onclick="imgurPopup(\''+f+'\',null)"/><span class="tip">View Codes</span></span>';
 		ele.appendChild(div);
 	}
 	localStorage.setItem('imgur',JSON.stringify(data));
-	
 }
 function bulkUpload(){
 	var ct=0;
@@ -665,7 +664,7 @@ function bulkUpload(){
 				var json=parseJSON(httpRequest.responseText);
 				if(json['success']){
 					printMsg('Success','All '+json['images'].length+' image(s) were uploaded to your new <a href="http://imgur.com/a/'+
-						json['album']['data']['id']+'" target="_blank">album</a><br>You delete hash is <i>'+json['album']['data']['deletehash']+
+						json['album']['data']['id']+'" target="_blank">album</a><br/>You delete hash is <i>'+json['album']['data']['deletehash']+
 						'</i>. Sorry, I do not know the URL to delete albums. XP','center',0);
 					storeImgurUploads(json['images']);
 				}
@@ -678,7 +677,7 @@ function bulkUpload(){
 					}
 					else{
 						printMsg('Image Upload Error',(json['images'].length-1)+' image(s) were uploaded to your <a href="http://imgur.com/a/'+
-							json['album']['data']['id']+'" target="_blank">album</a> before a error occurred<br>You delete hash is <i>'+
+							json['album']['data']['id']+'" target="_blank">album</a> before a error occurred<br/>You delete hash is <i>'+
 							json['album']['data']['deletehash']+'</i>. Sorry, I do not know the URL to delete albums. XP','center',0);
 						if(json['images'].length-1>0)
 							storeImgurUploads(json['images']);
@@ -784,7 +783,7 @@ function imgurPopup(file,links){
 		'<li>View on Imgur:<ul><li><a href="'+links['imgur_page']+'" target="_blank">'+links['imgur_page'].substr(7)+'</a></li></ul></li>'+
 		'<li>Direct Link:<ul><li><a href="'+links['original']+'" target="_blank">'+links['original'].substr(7)+'</a></li></ul></li>'+
 		'<li>Delete Link:<ul><li><a href="'+links['delete_page']+'" target="_blank">'+links['delete_page'].substr(7)+'</a></li></ul></li></ul></div>'+
-		'<h2 style="font-size:12px;text-align:center;">Embed Codes</h2><div id="imgur-scroller"><div></div></div><div id="imgur-codes">'+
+		'<h2 style="font-size:12px;" class="center">Embed Codes</h2><div id="imgur-scroller"><div></div></div><div id="imgur-codes">'+
 		'<div class="codes"><h2>Original</h2><ul>'+
 		'<li>Direct Link (email & IM)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="'+links['original']+'"/></li></ul></li>'+
 		'<li>HTML Image (websites & blogs)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['original']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot; /&gt;&lt;/a&gt;"/></li></ul></li>'+
@@ -994,7 +993,7 @@ function configEmail(addr){
 						t.setAttribute('style',s);
 					}
 					else{
-						t.innerHTML='The autoconfigure<br/>database said<br>something about<br/>"'+data["prefix"]+'"';
+						t.innerHTML='The autoconfigure<br/>database said<br/>something about<br/>"'+data["prefix"]+'"';
 						t.removeAttribute('style');
 					}
 					if(data['type']!='smtp')

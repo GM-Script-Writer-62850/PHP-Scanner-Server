@@ -207,9 +207,8 @@ for(var i=0;i<=200;i++){
 <h2>
 Select Region
 </h2>
-<p>
-<input type="hidden" name="loc_maxW"/><input type="hidden" name="loc_maxH"/>
-<small>Hint: +/- can increase/decrease numbers.</small>
+<p><input type="hidden" name="loc_maxW"/><input type="hidden" name="loc_maxH"/>
+<small>Hint: +/- can increase/decrease numbers.</small></p>
 <div class="label">Width: </div>
 	<div class="control"><input onkeypress="return false" type="text" readonly="readonly" name="loc_width" value="0<?php //echo (isset($M_WIDTH)?$M_WIDTH:0); ?>" size="3"/> pixle(s)</div>
 <div class="label">Height: </div>
@@ -222,15 +221,14 @@ Select Region
 	<div class="control"><input onkeypress="return validateKey(this,event,ias);" type="text" name="loc_x2" value="0" size="3"/> pixle(s)</div>
 <div class="label">Y<sub>2</sub> (Bottom): </div>
 	<div class="control"><input onkeypress="return validateKey(this,event,ias);" type="text" name="loc_y2" value="0" size="3"/> pixle(s)</div>
-<div align="center"><input type="button" value="Update" onclick="setRegion(ias);"/> <input type="button" onclick="clearRegion(ias,true)" value="Clear"/></div>
-</p>
+<p class="center"><input type="button" value="Update" onclick="setRegion(ias);"/> <input type="button" onclick="clearRegion(ias,true)" value="Clear"/></p>
 </div>
 
 <div class="side_box">
 <h2>
 Scan Image
 </h2>
-<p align="center"><input type="submit" value="Scan Image" name="action"> <input name="reset" type="reset" value="Reset Options" onclick="clearRegion(ias,false);setTimeout(scanReset,1);"/></p>
+<p class="center"><input type="submit" value="Scan Image" name="action"> <input name="reset" type="reset" value="Reset Options" onclick="clearRegion(ias,false);setTimeout(scanReset,1);"/></p>
 </div>
 
 <!-- Save Settings -->
@@ -239,7 +237,7 @@ Scan Image
 <p>
 <input name="set_save" type="text" size="15" onkeypress="if(event.which==13||event.keyCode==13){this.nextSibling.click();return false;}"/><input onclick="if(this.previousSibling.value==''){return false;}else{document.scanning.removeAttribute('onsubmit');}" type="submit" name="saveas" value="Save" style="margin-left:5px;"/>
 </p>
-<p align="center">
+<p class="center">
 <?php
 	$set=json_decode($file);
 	$i=0;

@@ -1,10 +1,10 @@
 <?php
 $icons='<a class="tool icon download" href="download.php?file='.url($file).'"><span class="tip">Download</span></a> '.
-	'<a class="tool icon zip" href="download.php?file='.url($file).'&compress"><span class="tip">Download Zip</span></a> '.
+	'<a class="tool icon zip" href="download.php?file='.url($file).'&amp;compress"><span class="tip">Download Zip</span></a> '.
 	'<a class="tool icon pdf" href="#" onclick="PDF_popup(\''.html(js(substr($file,5))).'\');"><span class="tip">Download PDF</span></a> '.
 	'<a class="tool icon print" href="print.php?file='.url($file).'" target="_blank"><span class="tip">Print</span></a> '.
-	'<a class="tool icon del" href="index.php?page=Scans&delete=Remove&file='.url(substr($file,5)).'" onclick="return confirm(\'Delete this scan\')"><span class="tip">Delete</span></a> '.
-	'<a class="tool icon edit" href="index.php?page=Edit&file='.url(substr($file,5)).'"><span class="tip">Edit</span></a> '.
+	'<a class="tool icon del" href="index.php?page=Scans&amp;delete=Remove&amp;file='.url(substr($file,5)).'" onclick="return confirm(\'Delete this scan\')"><span class="tip">Delete</span></a> '.
+	'<a class="tool icon edit" href="index.php?page=Edit&amp;file='.url(substr($file,5)).'"><span class="tip">Edit</span></a> '.
 	'<span class="tool icon view-off"><span class="tip">View (Disabled)</span></span> '.
 	'<a class="tool icon upload" href="#" onclick="return upload(\''.html(js($file,5)).'\')"><span class="tip">Upload to Imgur</span></a> '.
 	'<a href="#" onclick="return emailManager(\''.html(js($file)).'\');" class="tool icon email"><span class="tip">Email</span></a>';

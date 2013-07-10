@@ -22,7 +22,7 @@ Make sure all scanners are plugged in and turned on.
 <div class="box">
 <h2>Trouble Shooting</h2>
 <p>
-If you are having issues loading the Scanned Files page due to over population you can <a href="index.php?page=Scans&delete=Remove" onclick="return confirm('Delete all scanned files?')">
+If you are having issues loading the Scanned Files page due to over population you can <a href="index.php?page=Scans&amp;delete=Remove" onclick="return confirm('Delete all scanned files?')">
 Remove All the Scans</a> with that link. If you are having another issue you may want to read the <a href="index.php?page=About">Release Notes</a> or
  take a look at the <a href="index.php?page=PHP%20Information">PHP Configuration</a>.
 </p>
@@ -35,11 +35,11 @@ Remove All the Scans</a> with that link. If you are having another issue you may
 <div class="box">
 <h2>Paper Configuration</h2>
 <p>
-<a href="index.php?page=Config&action=Detect-Paper">Detect paper</a><br/>
+<a href="index.php?page=Config&amp;action=Detect-Paper">Detect paper</a><br/>
 <a href="index.php?page=Paper%20Manager">Paper size manager</a><br/>
 <?php
 if(file_exists("config/paper.json"))
-	echo '<a href="index.php?page=Config&action=Delete-Paper" onclick="return confirm(\'Delete all known paper sizes\')">Delete paper settings</a>';
+	echo '<a href="index.php?page=Config&amp;action=Delete-Paper" onclick="return confirm(\'Delete all known paper sizes\')">Delete paper settings</a>';
 else
 	echo 'Paper sizes need to be detected.';
 ?></p>
@@ -48,12 +48,12 @@ else
 <div class="box">
 <h2>Server Scanner Settings</h2>
 <p>
-<a href="index.php?page=Config&action=Delete-Setting" onclick="return confirm('Delete all settings?')">Remove All Of These Settings</a></p><ul class="simplelist">
+<a href="index.php?page=Config&amp;action=Delete-Setting" onclick="return confirm('Delete all settings?')">Remove All Of These Settings</a></p><ul class="simplelist">
 <?php
 	foreach($file as $id => $opt){
-		echo '<li class="boxlist"><a class="tool icon del" href="index.php?page=Config&action=Delete-Setting&value='.url($id).'" onclick="return confirm(\'Delete this setting: &#92;n'.html(js($id)).'\')"><span class="tip">Delete</span></a> <a target="_blank" href="index.php?page=Scan&action=restore';
+		echo '<li class="boxlist"><a class="tool icon del" href="index.php?page=Config&amp;action=Delete-Setting&amp;value='.url($id).'" onclick="return confirm(\'Delete this setting: &#92;n'.html(js($id)).'\')"><span class="tip">Delete</span></a> <a target="_blank" href="index.php?page=Scan&amp;action=restore';
 		foreach($opt as $key => $val){
-			echo '&'.url($key).'='.url($val);
+			echo '&amp;'.url($key).'='.url($val);
 		}
 		echo '">'.html($id).'</a></li>';
 	}
@@ -117,7 +117,7 @@ Select a Color:
 
 <div class="box">
 <h2>Update Checker</h2>
-<p style="text-align:center;">
+<p class="center">
 <input type="button" onclick="updateCheck('<?php echo html(js($VER)); ?>',this)" value="Check for Updates"/>
 </p>
 </div>

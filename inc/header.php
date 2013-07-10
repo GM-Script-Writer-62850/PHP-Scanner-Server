@@ -72,7 +72,7 @@ if($GLOBALS['PAGE']=='Config')
 </noscript>
 
 <!--[if lt IE 9]>
-<div style="height:auto;text-align:center;" class="message ie">
+<div style="height:auto;" class="message ie center">
 <h2>Error: Legacy Browsers are NOT Supported</h2>
 <p>You can view the list of supported browsers in the <a href="index.php?page=About">release notes</a>.<br/>
 Please install <a href="http://www.mozilla.com/firefox/">Mozilla Firefox</a> (Recommended) alternatively, you may use<br/>

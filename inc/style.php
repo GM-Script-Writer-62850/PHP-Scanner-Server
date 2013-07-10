@@ -96,6 +96,14 @@ a:hover {
 	color: #<?php echo $LK_COLOR; ?>;
 }
 
+.i{
+	font-style: italic;
+}
+
+.center{
+	text-align: center;
+}
+
 .tool {
 	position: relative;
 	display: inline-block;
