@@ -1,4 +1,3 @@
-
 <!-- Content -->
 
 <div class="box">
@@ -22,7 +21,7 @@ Scanner Device URI: <input type="text" name="device"><br/>
 		$json=json_decode(file_get_contents("config/parallel/".$scan[$i]));
 		echo '<li class="boxlist"><a class="icon del tool" href="index.php?page=Parallel-Form&file='.url($scan[$i]).'"><span class="tip">Delete</span></a> <a href="index.php?page=Device%20List&action='.url($json->{"DEVICE"}.'">'.$json->{"NAME"})."</a></li>";
 	}
-?></ul><p><a onclick="printMsg('Searching For Scanners','Please Wait...','center',0);" href="index.php?page=Config&action=Search-For-Scanners"/>Re-scan for scanners</a>
+?></ul><p><a onclick="printMsg('Searching For Scanners','Please Wait...','center',0);" href="index.php?page=Config&amp;action=Search-For-Scanners"/>Re-scan for scanners</a>
 </p>
 </div>
 
