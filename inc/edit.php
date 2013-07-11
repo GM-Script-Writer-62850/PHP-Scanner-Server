@@ -119,7 +119,7 @@ Save Image
 <a class="tool icon del" href="index.php?page=Scans&amp;delete=Remove&amp;file=<?php echo url($file); ?>" onclick="return confirm('Delete this scan, This is NOT a do not save button')"><span class="tip">Delete</span></a>
 <?php
 if(substr($file,-3)=='txt')
-	echo '<a class="tool icon edit" href="index.php?page=Edit&smp;file='.url($file).'"><span class="tip">Edit</span></a> ';
+	echo '<a class="tool icon edit" href="index.php?page=Edit&amp;file='.url($file).'"><span class="tip">Edit</span></a> ';
 else
 	echo '<span class="tool icon edit-off"><span class="tip">Edit (Disabled)</span></span> ';
 ?>
