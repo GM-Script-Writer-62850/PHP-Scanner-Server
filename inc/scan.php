@@ -2,7 +2,7 @@
 <div id="select"></div>
 
 <div id="sidebar">
-<form name="scanning" action="index.php" onsubmit="return pre_scan(this,ias);" method="post">
+<form name="scanning" action="index.php" onsubmit="return pre_scan(this,ias);" method="POST">
 
 <div class="side_box">
 <h2>Scanners</h2>

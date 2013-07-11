@@ -320,7 +320,7 @@ else if($PAGE=="Scans"){
 		Print_Message("No Images","All files have been removed. There are no scanned images to display.",'center');
 	}
 	else{
-		echo '<div class="box box-full"><h2>Bulk Operations</h2><p style="text-align:center;">'.
+		echo '<div class="box box-full"><h2>Bulk Operations</h2><p style="text-align:center;"><span>'.
 			'<a onclick="return false" class="tool icon download-off" href="#"><span class="tip">Download (Disabled)</span></a> '.
 			'<a onclick="return bulkDownload(this,\'zip\')" class="tool icon zip" href="#"><span class="tip">Download Zip</span></a> '.
 			'<a onclick="return PDF_popup(filesLst)" class="tool icon pdf" href="#"><span class="tip">Download PDF</span></a> '.
@@ -330,7 +330,7 @@ else if($PAGE=="Scans"){
 			'<a onclick="return bulkView(this)" class="tool icon view" href="#"><span class="tip">View</span></a> '.
 			'<a onclick="return bulkUpload()" class="tool icon upload" href="#"><span class="tip">Upload to Imgur</span></a> '.
 			'<a onclick="return emailManager(\'Scan_Compilation\')" class="tool icon email" href="#"><span class="tip">Email</span></a>'.
-			'<br/>Double Click a file name to select/deselect it<br/>'.
+			'</span><br/>Double Click a file name to select/deselect it<br/>'.
 			'The order they are selected determines the page order<br/>'.
 			'<button onclick="return selectScans(\'excluded\');">Select All</button> '.
 			'<button onclick="return selectScans(false);">Invert Selection</button> '.

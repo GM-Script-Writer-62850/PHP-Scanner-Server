@@ -224,6 +224,14 @@ a:hover {
 	text-align: center;
 }
 
+h2 > .del {
+	float: right;
+	border: 1px #ffffff solid;
+	border-radius: 3px;
+	text-indent: 0;
+}
+
+
 .message {
 	border: 1px solid #aa0000;
 	padding: 0;
@@ -258,13 +266,6 @@ a:hover {
 	margin: 0;
 	padding: 0.5em;
 	background: #ff0000;
-}
-
-.message h2 .close {
-	float: right;
-	border: 1px #ffffff solid;
-	border-radius: 3px;
-	text-indent: 0;
 }
 
 .message div {
@@ -311,6 +312,10 @@ a:hover {
 	background-repeat: no-repeat;
 	background-image: url("images/buttons.png");
 	border: 1px solid #<?php echo $BG_COLOR; ?>;
+}
+
+p .icon:not(:last-child){
+	margin-right: 3px;
 }
 
 .zip-off {
@@ -675,10 +680,6 @@ code {
 	width: calc(100% - 20px);
 	display: inline-block;
 	word-wrap: break-word;
-}
-
-#imgur-uploads h2 a {
-	float: right;
 }
 
 #imgur-uploads .box img {
