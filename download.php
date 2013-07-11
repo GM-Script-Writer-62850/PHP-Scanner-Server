@@ -175,7 +175,7 @@ else if(isset($_GET['file'])){
 			$cmd="cd 'scans' && zip '$file' ".escapeshellarg($_GET['file']);
 			$output=shell_exec("$cmd 2>&1");
 			if(is_file($file)){
-				returnFile($file,$_GET['file'],'zip');
+				returnFile($file,substr($_GET['file'],0,strrpos($_GET['file'],'.')).'.zip','zip');
 				@unlink($file);
 			}
 			else

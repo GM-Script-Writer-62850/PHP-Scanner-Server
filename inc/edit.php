@@ -104,7 +104,6 @@ Save Image
 <p class="center"><input type="submit" value="Save Changes" name="action"/> <input type="reset" value="Reset Options" onclick="clearRegion(ias,false)"/></p>
 </div>
 </form>
-<?php echo $FILETYPE=='txt'?'<script type="text/javascript">document.scanning.action.disabled=true;</script>':''; ?>
 </div>
 
 <!-- Preview Pane -->
@@ -117,12 +116,7 @@ Save Image
 <a class="tool icon pdf" href="#" onclick="PDF_popup('<?php echo html(js($file)); ?>');"><span class="tip">Download PDF</span></a>
 <a class="tool icon print" href="print.php?file=Scan_<?php echo url($file); ?>" target="_blank"><span class="tip">Print</span></a>
 <a class="tool icon del" href="index.php?page=Scans&amp;delete=Remove&amp;file=<?php echo url($file); ?>" onclick="return confirm('Delete this scan, This is NOT a do not save button')"><span class="tip">Delete</span></a>
-<?php
-if(substr($file,-3)=='txt')
-	echo '<a class="tool icon edit" href="index.php?page=Edit&amp;file='.url($file).'"><span class="tip">Edit</span></a> ';
-else
-	echo '<span class="tool icon edit-off"><span class="tip">Edit (Disabled)</span></span> ';
-?>
+<span class="tool icon edit-off"><span class="tip">Edit (Disabled)</span></span>
 <a class="tool icon view" href="index.php?page=View&amp;file=Scan_<?php echo url($file); ?>"><span class="tip">View</span></a>
 <a class="tool icon upload" href="#" onclick="return upload('Scan_<?php echo html(js($file,5)); ?>')"><span class="tip">Upload to Imgur</span></a>
 <a href="#" onclick="return emailManager('Scan_<?php echo html(js($file)); ?>');" class="tool icon email"><span class="tip">Email</span></a>
