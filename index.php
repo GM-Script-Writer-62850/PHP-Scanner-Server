@@ -315,7 +315,7 @@ else if($PAGE=="Scans"){
 	}
 
 	# Display Thumbnails of scanned images, if any
-	echo '<script type="text/javascript" src="inc/imgur-box.js" id="imgur-box-setup"></script>';
+	echo '<script type="text/javascript" src="inc/writescripts/imgur-box.js" id="imgur-box-setup"></script>';
 	if(count(scandir("scans"))==2){
 		Print_Message("No Images","All files have been removed. There are no scanned images to display.",'center');
 	}
@@ -410,7 +410,7 @@ else if($PAGE=="Config"){
 		$file=json_decode(file_get_contents("config/settings.json"));
 	else
 		$file=json_decode('[]');
-	include("inc/config.php");
+	include "inc/config.php";
 
 	Footer();
 
@@ -584,7 +584,7 @@ else if($PAGE=="About"){
 else if($PAGE=="PHP Information"){
         InsertHeader($PAGE);
         echo '<div class="box box-full"><h2>'.$PAGE.'</h2><iframe id="phpinfo" src="inc/phpinfo.php" style="border:none;width:100%;height:500px;margin:0;"></iframe><script type="text/javascript">';
-	include('inc/writescripts/phpinfo.js');
+	include "inc/writescripts/phpinfo.js";
 	echo '</script></div>';
         Footer();
 }
@@ -823,7 +823,7 @@ else if($PAGE=="Edit"){
 				}
 			}
 			if(file_exists("scans/Scan_$file"))
-				include("inc/edit.php");
+				include "inc/edit.php";
 			else{
 				Print_Message("404 Not Found","It appears that <code>$file</code> has been deleted.",'center');
 			}

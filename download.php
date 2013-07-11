@@ -1,9 +1,8 @@
 <?php
-$Fpdf_loc="/usr/share/php/fpdf/fpdf.php";
+$Fpdf_loc="/usr/share/php/fpdf.php";
 function debug($cmd,$output){
-	$user=posix_getpwuid(posix_geteuid());
-	$user=$user['name'];
-	$here=$user.'@'.$_SERVER['SERVER_NAME'].':'.getcwd();
+	$here=posix_getpwuid(posix_geteuid());
+	$here=$here['name'].'@'.$_SERVER['SERVER_NAME'].':'.getcwd();
 	return "$here\$ $cmd\n$output";
 }
 function ext2mime($ext){
@@ -46,6 +45,9 @@ if(isset($_GET['downloadServer'])){
 		returnFile(debug($cmd,$output),'Error.txt','txt');
 }
 else if((isset($_GET['type'])?$_GET['type']:'')=='pdf'&&!isset($_GET['raw'])){
+	if(!is_file($Fpdf_loc))
+		die(returnFile("I have no idea where fpdf is installed to, I just know it is not at '$Fpdf_loc'\nEdit Line 2 of '".$_SERVER["SCRIPT_FILENAME"].
+			"' with the correct info\nTry running this command to find it:\nlocate fpdf.php",'Error.txt','txt'));
 	$Pwidth=215.9;// Paper Width in millimeters
 	$Pheight=279.4;// Paper Height in millimeters
 	$fontSize=16;

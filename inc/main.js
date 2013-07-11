@@ -1,5 +1,6 @@
-var ias, previewIMG, scanners, paper, filesLst={},TC='textContent';// TC can be changed to 'innerText' see header.php
-$(document).ready(function () {
+var supportErrorA="Your browser does not support the ", supportErrorB="<br/>You have 3 choices: Ignore This, update your browser, and switch browsers.",
+	ias, previewIMG, scanners, paper, filesLst={}, TC='textContent';// TC can be changed to 'innerText' see header.php
+$(document).ready(function (){
 	e=$('img[title="Preview"]');
 	previewIMG=e[0];
 	if(!previewIMG)
@@ -189,8 +190,8 @@ function encodeHTML(string){// http://stackoverflow.com/questions/24816/escaping
 	return String(string).replace(/[&<>"'\/]/g,function(s){return entityMap[s];});
 }
 function checkScanners(){
-	if(typeof XMLHttpRequest!='function'||typeof JSON=='undefined'){
-		return printMsg('Sorry',"Your browser does not support the XMLHttpRequest function and the JSON object so this page can not check if the scanner is in-use or not in real time.<br/>You have 3 choices: Ignore This, update your browser, and switch browsers",'center',0);
+	if(typeof(XMLHttpRequest=='undefined')||typeof(JSON)!='object'){
+		return printMsg('Sorry',supportErrorA+"XMLHttpRequest and the JSON object so this page can not check if the scanner is in-use or not in real time."+supportErrorB,'center',0);
 	}
 	var httpRequest = new XMLHttpRequest();
 	httpRequest.onreadystatechange = function(){
@@ -246,12 +247,14 @@ function printMsg(t,m,a,r){
 	var div=document.createElement('div');
 	var ele=getID('new_mes');
 	div.className="message";
-	div.innerHTML="<h2>"+t+'<a class="icon tool del" onclick="this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode);return false;" href="#"><span class="tip">Close</span></a>'+"</h2><div"+(a!='center'?' style="text-align:'+a+';"':'')+">"+m+"</div>";
-	if(r!=-1&& typeof ele.insertBefore=='function')
+	div.innerHTML="<h2>"+t+'<a class="icon tool del" onclick="this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode);return false;" href="#"><span class="tip">Close</span></a>'+"</h2>"+
+		"<div"+(a!='center'?' style="text-align:'+a+';"':'')+">"+m+"</div>";
+	if(r!=-1&& typeof(ele.insertBefore)=='function')
 		ele.insertBefore(div,ele.childNodes[0]);
 	else
 		ele.appendChild(div);
-	div.style.height='auto';
+	div.style.height=(TC=='textContent'?(div.scrollHeight+'px'):'auto');
+	setTimeout(function(){div.style.overflow='visible';},800);// 800ms is the animation duration in the css
 	return false;
 }
 function roundNumber(num,dec){// http://forums.devarticles.com/javascript-development-22/javascript-to-round-to-2-decimal-places-36190.html#post71368
@@ -260,7 +263,7 @@ function roundNumber(num,dec){// http://forums.devarticles.com/javascript-develo
 }
 function parseJSON(jsonTXT){
 	try{
-		if(typeof(JSON)=='object')
+		if(typeof(JSON)==='object')
 			return JSON.parse(jsonTXT);
 		else
 			return eval('('+jsonTXT+')');
@@ -365,12 +368,12 @@ function rotateChange(ele){
 	ele.nextSibling[TC]=(val==180?'Upside-down':(val<0?'Counterclockwise':'Clockwise'));
 	var prefixes = 't WebkitT MozT OT msT'.split(' ');
 	for(var prefix in prefixes){
-		if(typeof document.body.style[prefixes[prefix]+'ransform']!="undefined"){
+		if(typeof(document.body.style[prefixes[prefix]+'ransform'])!="undefined"){
 			prefix=prefixes[prefix]+'ransform';
 			break;
 		}
 	}
-	if(typeof prefix=="number"||val==0)
+	if(typeof(prefix)=="number"||val==0)
 		return;
 	ele=previewIMG;
 	if(ele.src.indexOf('inc/images/blank.gif')>-1)
@@ -388,7 +391,7 @@ function rotateChange(ele){
 }
 function changeBrightContrast(){// Webkit based only :(
 	// Does not work properly so lets disable it: brightness/contrast have a screwed up/illogical max %
-	//if(typeof document.body.style.webkitFilter!='string') 
+	//if(typeof(document.body.style.webkitFilter)!='string') 
 		return;
 	if(previewIMG.src.indexOf('inc/images/blank.gif')>-1)
 		return;
@@ -467,7 +470,7 @@ function disableIcons(){// Converts disabled icons to act like disabled icons
 		}
 	}
 	catch(e){
-		if(typeof document.getElementsByClassName=='function')//second most efficent
+		if(typeof(document.getElementsByClassName)=='function')//second most efficent
 			var icons=document.getElementsByClassName('tool icon');
 		else{// very inefficient 
 			var a=document.getElementsByTagName('a'),icons=Array();
@@ -490,12 +493,12 @@ function disableIcons(){// Converts disabled icons to act like disabled icons
 	}
 }
 function PDF_popup(files){
-	if(typeof files=='string'){
+	if(typeof(files)=='string'){
 		files='{"'+files.replace(/"/g,'\"')+'":1}';
 	}
 	else{
-		if(typeof JSON=='undefined')
-			return printMsg('Sorry',"Your browser does not support the JSON object so you can not download scans with that button.<br/>You have 3 choices: ignore, update your browser, and switch browsers",'center',0);
+		if(typeof(JSON)!='object')
+			return printMsg('Sorry',supportErrorA+"JSON object so you can not download PDFs with that button."+supportErrorB,'center',0);
 		var ct=0;
 		for(var i in files){
 			ct++;
@@ -530,8 +533,8 @@ function toggleFile(file){
 	}
 }
 function bulkDownload(link,type){
-	if(typeof JSON=='undefined')
-		return printMsg('Sorry',"Your browser does not support the JSON object so you can not download scans with that button.<br/>You have 3 choices: ignore, update your browser, and switch browsers",'center',0);
+	if(typeof(JSON)!='object')
+		return printMsg('Sorry',supportErrorA+"JSON object so you can not download scans with that button."+supportErrorB,'center',0);
 	var ct=0;
 	for(var i in filesLst){
 		ct++;
@@ -545,8 +548,8 @@ function bulkDownload(link,type){
 		return printMsg('Error','No files selected','center',-1);
 }
 function bulkPrint(link){
-	if(typeof JSON=='undefined')
-		return printMsg('Sorry',"Your browser does not support the JSON object so you can not print scans with that button.<br/>You have 3 choices: ignore, update your browser, and switch browsers",'center',0);
+	if(typeof(JSON)!='object')
+		return printMsg('Sorry',supportErrorA+"JSON object so you can not print scans with that button."+supportErrorB,'center',0);
 	var ct=0;
 	for(var i in filesLst){
 		ct++;
@@ -576,8 +579,8 @@ function bulkDel(){
 	return false;
 }
 function bulkView(link){
-	if(typeof JSON=='undefined')
-		return printMsg('Sorry',"Your browser does not support the JSON object so you can not view scans with that button.<br/>You have 3 choices: ignore, update your browser, and switch browsers",'center',0);
+	if(typeof(JSON)!='object')
+		return printMsg('Sorry',supportErrorA+"JSON object so you can not view scans with that button."+supportErrorB,'center',0);
 	var ct=0;
 	for(var i in filesLst){
 		ct++;
@@ -591,7 +594,7 @@ function bulkView(link){
 		return printMsg('Error','No files selected','center',-1);
 }
 function storeImgurUploads(img){
-	if(typeof localStorage!="object")
+	if(typeof(localStorage)!="object")
 		return false;
 	var data=localStorage.getItem('imgur'),id,b,a,ele,ele2,div,f;
 	data=parseJSON(data==null?'{}':localStorage.getItem('imgur'));
@@ -608,7 +611,7 @@ function storeImgurUploads(img){
 		}
 	}
 	for(var i in img){
-		if(typeof img[i] == 'boolean')
+		if(typeof(img[i])=='boolean')
 			continue;
 		if(!img[i]['success'])
 			continue;
@@ -650,8 +653,8 @@ function bulkUpload(){
 		return upload("Scan_"+i);
 	else if(ct==0)
 		return printMsg('Error','No files selected','center',-1);
-	if(typeof JSON=='undefined'||typeof XMLHttpRequest!='function')
-		return printMsg('Sorry',"Your browser does not support the JSON object and the XMLHttpRequest function so you can not upload scans with that button.<br/>You have 3 choices: ignore, update your browser, and switch browsers",'center',0);
+	if(typeof(JSON)!='object'||typeof(XMLHttpRequest)=='undefined')
+		return printMsg('Sorry',supportErrorA+"JSON object and XMLHttpRequest so you can not upload scans with that button."+supportErrorB,'center',0);
 	var title=prompt("Upload New Album to imgur.com\nYou can give it a title (optional):",'Scan Compilation');
 	if(title==null)
 		return false;
@@ -660,7 +663,7 @@ function bulkUpload(){
 	var httpRequest = new XMLHttpRequest();
 	httpRequest.onreadystatechange = function(){
 		if(httpRequest.readyState==4){
-			if(httpRequest.status==200){
+			if(httpRequest.status==200){//printMsg('Debug',encodeHTML(httpRequest.responseText),'center',0);			
 				var json=parseJSON(httpRequest.responseText);
 				if(json['success']){
 					printMsg('Success','All '+json['images'].length+' image(s) were uploaded to your new <a href="http://imgur.com/a/'+
@@ -669,16 +672,17 @@ function bulkUpload(){
 					storeImgurUploads(json['images']);
 				}
 				else{
-					if(!json['images']){
+					if(json['images'].length==0){
 						if(!json['album'])
-							printMsg('Failed to create Album','Unknown connection error','center',0);
+							printMsg('Failed to create Album',json['error'],'center',0);
 						else
 							printMsg('Failed to create Album',json['album']['data']['error']+(json['album']['status']==200?'':'<br/>'+json['album']['status']+' Error detected'),'center',0);
 					}
 					else{
 						printMsg('Image Upload Error',(json['images'].length-1)+' image(s) were uploaded to your <a href="http://imgur.com/a/'+
 							json['album']['data']['id']+'" target="_blank">album</a> before a error occurred<br/>You delete hash is <i>'+
-							json['album']['data']['deletehash']+'</i>. Sorry, I do not know the URL to delete albums. XP','center',0);
+							json['album']['data']['deletehash']+'</i>. Sorry, I do not know the URL to delete albums.<br/>The error message was: '+
+							(json['images'][json['images'].length-1]?json['images'][json['images'].length-1]["data"]["error"]:'Connection failure'),'center',0);
 						if(json['images'].length-1>0)
 							storeImgurUploads(json['images']);
 					}
@@ -714,14 +718,14 @@ function selectScans(b){
 	return false;
 }
 function upload(file){
-	if(typeof XMLHttpRequest!='function')
-		return printMsg('Sorry',"Your browser does not support the XMLHttpRequest function so you can not upload scans with that button.<br/>You have 3 choices: ignore, update your browser, and switch browsers",'center',0);
+	if(typeof(XMLHttpRequest)=='undefined')
+		return printMsg('Sorry',supportErrorA+"XMLHttpRequest so you can not upload scans with that button."+supportErrorB,'center',0);
 	if(getID(file)){
 		popup('blanket',365);
 		return false;
 	}
 	var test=true;
-	if(typeof localStorage=='object'){
+	if(typeof(localStorage)=='object'){
 		json=localStorage.getItem('imgur');
 		json=parseJSON(json==null?'{}':json);
 		if(json[file]){
@@ -739,12 +743,12 @@ function upload(file){
 	var httpRequest = new XMLHttpRequest();
 	httpRequest.onreadystatechange = function(){
 		if(httpRequest.readyState==4){
-			if(httpRequest.status==200){
+			if(httpRequest.status==200){//printMsg('Debug',encodeHTML(httpRequest.responseText),'center',0);
 				var json=parseJSON(httpRequest.responseText);
 				if(!json['images'][0])
-					printMsg('Upload Error','Failed to connect to imgur','center',0);
+					printMsg('Upload Error','Failed to connect to imgur'+(json["error"]?'<br/>'+json["error"]:''),'center',0);
 				else if(json['images'][0]['data']['error'])
-					printMsg('Upload Error: '+json['images'][0]['status'],json['images'][0]['data']['error'],'center',0);
+					printMsg('Upload Error: '+json['images'][0]['status'],'Imgur said: '+json['images'][0]['data']['error'],'center',0);
 				else{
 					var id=json['images'][0]["data"]["id"],b="http://i.imgur.com/"+id,a='.jpg';
 					var links={"original": json['images'][0]["data"]["link"],
@@ -777,7 +781,7 @@ function imgurPopup(file,links){
 		links=parseJSON(localStorage.getItem('imgur'));
 		links=links[file];
 	}
-	var attrs='onclick="void(setClipboard(this)?null:this.select());" readonly="readonly" type="text"';//Only select if not copied
+	var attrs='onclick="void(setClipboard(this)?null:this.select());" readonly="readonly" type="text"';
 	getID("blanket").childNodes[0].innerHTML='<h2 style="font-size:12px;">'+file.substr(5)+' is on Imgur</h2>'+
 		'<div id="imgur-data"><div><img id="'+encodeHTML(file)+'" style="float:left;margin-right:5px;" src="'+links['small_square']+'" width="90" height="90"/>'+
 		'<ul style="list-style:none;">'+
@@ -790,7 +794,7 @@ function imgurPopup(file,links){
 		'<li>HTML Image (websites & blogs)<ul><li><input '+attrs+' value="&lt;img src=&quot;'+links['original']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;"/></li></ul></li>'+
 		'<li>Linked HTML Image (websites & blogs)<ul><li><input '+attrs+' value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['original']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;&lt;/a&gt;"/></li></ul></li>'+
 		'<li>BBCode (message boards & forums)<ul><li><input '+attrs+' value="[IMG]'+links['original']+'[/IMG]"/></li></ul></li>'+
-		'<li>Linked BBCode (message boards)<ul><li><input '+attrs+' value="[URL='+links['imgur_page']+'][IMG]'+links['original']+'[/IMG][/URL]"/></li></ul></li>'+
+		'<li>Linked BBCode (message boards & blogs)<ul><li><input '+attrs+' value="[URL='+links['imgur_page']+'][IMG]'+links['original']+'[/IMG][/URL]"/></li></ul></li>'+
 		'<li>Markdown Link (reddit comment)<ul><li><input '+attrs+' value="[Imgur]('+links['original']+')"/></li></ul></li>'+
 		'</ul></div>'+
 		'<div class="codes"><h2>Huge Thumbnail</h2><ul>'+
@@ -798,7 +802,7 @@ function imgurPopup(file,links){
 		'<li>HTML Image (websites & blogs)<ul><li><input '+attrs+' value="&lt;img src=&quot;'+links['huge_thumbnail']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;"/></li></ul></li>'+
 		'<li>Linked HTML Image (websites & blogs)<ul><li><input '+attrs+' value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['huge_thumbnail']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;&lt;/a&gt;"/></li></ul></li>'+
 		'<li>BBCode (message boards & forums)<ul><li><input '+attrs+' value="[IMG]'+links['huge_thumbnail']+'[/IMG]"/></li></ul></li>'+
-		'<li>Linked BBCode (message boards)<ul><li><input '+attrs+' value="[URL='+links['imgur_page']+'][IMG]'+links['huge_thumbnail']+'[/IMG][/URL]"/></li></ul></li>'+
+		'<li>Linked BBCode (message boards & blogs)<ul><li><input '+attrs+' value="[URL='+links['imgur_page']+'][IMG]'+links['huge_thumbnail']+'[/IMG][/URL]"/></li></ul></li>'+
 		'<li>Markdown Link (reddit comment)<ul><li><input '+attrs+' type="text" value="[Imgur]('+links['huge_thumbnail']+')"/></li></ul></li>'+
 		'</ul></div>'+
 		'<div class="codes"><h2>Large Thumbnail</h2><ul>'+
@@ -806,7 +810,7 @@ function imgurPopup(file,links){
 		'<li>HTML Image (websites & blogs)<ul><li><input '+attrs+' value="&lt;img src=&quot;'+links['large_thumbnail']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;"/></li></ul></li>'+
 		'<li>Linked HTML Image (websites & blogs)<ul><li><input '+attrs+' value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['large_thumbnail']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;&lt;/a&gt;"/></li></ul></li>'+
 		'<li>BBCode (message boards & forums)<ul><li><input '+attrs+' value="[IMG]'+links['large_thumbnail']+'[/IMG]"/></li></ul></li>'+
-		'<li>Linked BBCode (message boards)<ul><li><input '+attrs+' value="[URL='+links['imgur_page']+'][IMG]'+links['large_thumbnail']+'[/IMG][/URL]"/></li></ul></li>'+
+		'<li>Linked BBCode (message boards & blogs)<ul><li><input '+attrs+' value="[URL='+links['imgur_page']+'][IMG]'+links['large_thumbnail']+'[/IMG][/URL]"/></li></ul></li>'+
 		'<li>Markdown Link (reddit comment)<ul><li><input '+attrs+' value="[Imgur]('+links['large_thumbnail']+')"/></li></ul></li>'+
 		'</ul></div>'+
 		'<div class="codes"><h2>Medium Thumbnail</h2><ul>'+
@@ -814,7 +818,7 @@ function imgurPopup(file,links){
 		'<li>HTML Image (websites & blogs)<ul><li><input '+attrs+' value="&lt;img src=&quot;'+links['medium_thumbnail']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;"/></li></ul></li>'+
 		'<li>Linked HTML Image (websites & blogs)<ul><li><input '+attrs+' value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['medium_thumbnail']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;&lt;/a&gt;"/></li></ul></li>'+
 		'<li>BBCode (message boards & forums)<ul><li><input '+attrs+' value="[IMG]'+links['medium_thumbnail']+'[/IMG]"/></li></ul></li>'+
-		'<li>Linked BBCode (message boards)<ul><li><input '+attrs+' value="[URL='+links['imgur_page']+'][IMG]'+links['medium_thumbnail']+'[/IMG][/URL]"/></li></ul></li>'+
+		'<li>Linked BBCode (message boards & blogs)<ul><li><input '+attrs+' value="[URL='+links['imgur_page']+'][IMG]'+links['medium_thumbnail']+'[/IMG][/URL]"/></li></ul></li>'+
 		'<li>Markdown Link (reddit comment)<ul><li><input '+attrs+' value="[Imgur]('+links['medium_thumbnail']+')"/></li></ul></li>'+
 		'</ul></div>'+
 		'<div class="codes"><h2>Small Thumbnail</h2><ul>'+
@@ -822,7 +826,7 @@ function imgurPopup(file,links){
 		'<li>HTML Image (websites & blogs)<ul><li><input '+attrs+' value="&lt;img src=&quot;'+links['small_thumbnail']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;"/></li></ul></li>'+
 		'<li>Linked HTML Image (websites & blogs)<ul><li><input '+attrs+' value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['small_thumbnail']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;&lt;/a&gt;"/></li></ul></li>'+
 		'<li>BBCode (message boards & forums)<ul><li><input '+attrs+' value="[IMG]'+links['small_thumbnail']+'[/IMG]"/></li></ul></li>'+
-		'<li>Linked BBCode (message boards)<ul><li><input '+attrs+' value="[URL='+links['imgur_page']+'][IMG]'+links['small_thumbnail']+'[/IMG][/URL]"/></li></ul></li>'+
+		'<li>Linked BBCode (message boards & blogs)<ul><li><input '+attrs+' value="[URL='+links['imgur_page']+'][IMG]'+links['small_thumbnail']+'[/IMG][/URL]"/></li></ul></li>'+
 		'<li>Markdown Link (reddit comment)<ul><li><input '+attrs+' value="[Imgur]('+links['small_thumbnail']+')"/></li></ul></li>'+
 		'</ul></div>'+
 		'<div class="codes"><h2>Big Square</h2><ul>'+
@@ -830,7 +834,7 @@ function imgurPopup(file,links){
 		'<li>HTML Image (websites & blogs)<ul><li><input '+attrs+' value="&lt;img src=&quot;'+links['big_square']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;"/></li></ul></li>'+
 		'<li>Linked HTML Image (websites & blogs)<ul><li><input '+attrs+' value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['big_square']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;&lt;/a&gt;"/></li></ul></li>'+
 		'<li>BBCode (message boards & forums)<ul><li><input '+attrs+' value="[IMG]'+links['big_square']+'[/IMG]"/></li></ul></li>'+
-		'<li>Linked BBCode (message boards)<ul><li><input '+attrs+' value="[URL='+links['imgur_page']+'][IMG]'+links['big_square']+'[/IMG][/URL]"/></li></ul></li>'+
+		'<li>Linked BBCode (message boards & blogs)<ul><li><input '+attrs+' value="[URL='+links['imgur_page']+'][IMG]'+links['big_square']+'[/IMG][/URL]"/></li></ul></li>'+
 		'<li>Markdown Link (reddit comment)<ul><li><input '+attrs+' value="[Imgur]('+links['big_square']+')"/></li></ul></li>'+
 		'</ul></div>'+
 		'<div class="codes" style="border: none;"><h2>Small Square</h2><ul>'+
@@ -838,7 +842,7 @@ function imgurPopup(file,links){
 		'<li>HTML Image (websites & blogs)<ul><li><input '+attrs+' value="&lt;img src=&quot;'+links['small_square']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;"/></li></ul></li>'+
 		'<li>Linekd HTML Image (websites & blogs)<ul><li><input '+attrs+' value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['small_square']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;&lt;/a&gt;"/></li></ul></li>'+
 		'<li>BBCode (message boards & forums)<ul><li><input '+attrs+' value="[IMG]'+links['small_square']+'[/IMG]"/></li></ul></li>'+
-		'<li>Linked BBCode (message boards)<ul><li><input '+attrs+' value="[URL='+links['imgur_page']+'][IMG]'+links['small_square']+'[/IMG][/URL]"/></li></ul></li>'+
+		'<li>Linked BBCode (message boards & blogs)<ul><li><input '+attrs+' value="[URL='+links['imgur_page']+'][IMG]'+links['small_square']+'[/IMG][/URL]"/></li></ul></li>'+
 		'<li>Markdown Link (reddit comment)<ul><li><input '+attrs+' value="[Imgur]('+links['small_square']+')"/></li></ul></li>'+
 		'</ul></div>'+
 		'</div></div><input type="button" value="Close" style="width:100%;" onclick="toggle(\'blanket\')"/>';
@@ -900,14 +904,14 @@ function setClipboard(e){// Everyone except MS considers this a security hole, t
 	return false;
 }
 function emailManager(file){
-	var storeSupport=(typeof localStorage=="object"&&typeof JSON=="object"?true:false),data=false;
+	var storeSupport=(typeof(localStorage)=="object"&&typeof(JSON)==="object"?true:false),data=false;
 	if(file==null&&!storeSupport)
-		return printMsg('Sorry',"Your browser does not support saving email settings<br/>You have 3 choices: ignore, update your browser, and switch browsers",'center',0);
-	if(typeof XMLHttpRequest!='function')
-		return printMsg('Sorry',"Your browser does not support the XMLHttpRequest function so you can not email scans with that button.<br/>You have 3 choices: ignore, update your browser, and switch browsers",'center',0);
+		return printMsg('Sorry',supportErrorA+"localStorge object so you can not save email settings"+supportErrorB,'center',0);
+	if(typeof(XMLHttpRequest)=='undefined')
+		return printMsg('Sorry',supportErrorA+"XMLHttpRequest so you can not email scans with that button."+supportErrorB,'center',0);
 	if(file=='Scan_Compilation'){
-		if(typeof JSON=='undefined')
-			return printMsg('Sorry',"Your browser does not support the JSON object so you can not upload scans with that button.<br/>You have 3 choices: ignore, update your browser, and switch browsers",'center',0);
+		if(typeof(JSON)!='object')
+			return printMsg('Sorry',supportErrorA+"JSON object so you can not upload scans with that button."+supportErrorB,'center',0);
 		var files_ct=0;
 		for(var i in filesLst)
 			files_ct++;
@@ -992,7 +996,7 @@ function validateEmail(ele){
 	return false;
 }
 function configEmail(addr){
-	if(addr.indexOf('@')==-1||typeof XMLHttpRequest!='function')
+	if(addr.indexOf('@')==-1||typeof(XMLHttpRequest)=='undefined')
 		return;
 	else
 		addr=addr.substr(addr.indexOf('@')+1);
@@ -1032,8 +1036,8 @@ function configEmail(addr){
 	httpRequest.send(null);
 }
 function sendEmail(ele){
-	if(typeof XMLHttpRequest!='function')
-		return printMsg('Error','Your browser does not support <a href="http://www.w3schools.com/xml/xml_http.asp" target="_blank">XMLHttpRequest</a>, so you can not use this feature','center',0);
+	if(typeof(XMLHttpRequest)=='undefined')
+		return printMsg('Error',supportErrorA+'<a href="http://www.w3schools.com/xml/xml_http.asp" target="_blank">XMLHttpRequest</a>, so you can not send emails with that button'+supportErrorB,'center',0);
 	var now=new Date().getTime();
 	printMsg('Sending Email<span id="email-'+now+'"></span>','Please Wait...<br/>This could take a while depending on the file size of the scan and the upload speed at '+document.domain,'center',0);
 	var httpRequest = new XMLHttpRequest();
@@ -1065,7 +1069,7 @@ function sendEmail(ele){
 	return true;
 }
 function deleteEmail(){
-	if(typeof localStorage=="object"&&typeof JSON=="object"){
+	if(typeof(localStorage)=="object"&&typeof(JSON)==="object"){
 		if(confirm("Delete Saved Email settings")){
 			localStorage.removeItem("email");
 			printMsg('Success',"Your Email login data has been delted!",'center',0);
@@ -1079,7 +1083,7 @@ function delScan(file,prompt){
 		if(!confirm("Are you sure you want to delete:\n"+file))
 			return false;
 	}
-	if(typeof XMLHttpRequest!='function'){
+	if(typeof(XMLHttpRequest)=='undefined'){
 		return true;
 	}
 	var httpRequest = new XMLHttpRequest();
@@ -1108,10 +1112,10 @@ function delScan(file,prompt){
 	return false;
 }
 function updateCheck(vs,e){
-	if(typeof XMLHttpRequest!='function')
-		printMsg('Error','Your browser does not support <a href="http://www.w3schools.com/xml/xml_http.asp" target="_blank">XMLHttpRequest</a>, so you can not use this feature','center',0);
+	if(typeof(XMLHttpRequest)=='undefined')
+		return printMsg('Error',supportErrorA+'XMLHttpRequest, so you can not check for updates.'+supportErrorB,'center',0);
 	if(e===true)
-		printMsg('Update Available','Version '+vs+' is available for <a target="_blank" href="https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server/wiki/Change-Log">download</a>','center',-1);
+		return printMsg('Update Available','Version '+vs+' is available for <a target="_blank" href="https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server/wiki/Change-Log">download</a>','center',-1);
 	if(e)
 		e.setAttribute('disabled','disabled');
 	var httpRequest = new XMLHttpRequest();
@@ -1174,7 +1178,7 @@ function enableColumns(ele,e,b){ // They work flawlessly in Firefox so it does n
 		}
 		return false;
 	}
-	else if(typeof document.body.style.WebkitColumnGap=="string"||typeof document.body.style.columnGap=="string"){
+	else if(typeof(document.body.style.WebkitColumnGap)=="string"||typeof(document.body.style.columnGap)=="string"){
 		printMsg('CSS3 Columns','Your browser supports them, but they do not work as expected.<br/>'+
 			'You can try them out by clicking <span class="tool"><a href="#" onclick="return enableColumns(\''+ele+'\',this,null);">here</a><span class="tip">'+(b?'Disable':'Enable')+'</span></span>.<br/>'+
 			'Oh, and by the way they work in <a href="http://www.mozilla.org/en-US/firefox/all.html" target="_blank">Firefox</a> flawlessly.','center',-1);
@@ -1183,8 +1187,8 @@ function enableColumns(ele,e,b){ // They work flawlessly in Firefox so it does n
 	}
 }
 function login(form){
-	if(typeof XMLHttpRequest!='function')
-		return printMsg('Error','Your browser does not support <a href="http://www.w3schools.com/xml/xml_http.asp" target="_blank">XMLHttpRequest</a>, so you can not use this feature','center',0);
+	if(typeof(XMLHttpRequest)=='undefined')
+		return printMsg('Error',supportErrorA+'XMLHttpRequest, so you can not login.'+supportErrorB,'center',0);
 	var httpRequest = new XMLHttpRequest();
 	httpRequest.onreadystatechange = function(){
 		if(httpRequest.readyState==4){
@@ -1195,7 +1199,6 @@ function login(form){
 			else{
 				printMsg('Sending Error','Got a '+httpRequest.status+' error<br/>If you don\'t know what that means and want to know click <a target="_blank" href="http://www.w3.org/Protocols/HTTP/HTRESP.html">here</a>.','center',0);
 			}
-			sendE(getID('email-'+now).nextSibling,'click');
 		}
 	};
 	httpRequest.open('POST', "inc/login.php");
@@ -1214,6 +1217,8 @@ function login(form){
 	return false;
 }
 document.onkeyup=function(event){
+	if(!event)
+		event=window.event;// Stoupid IE
 	if(event.ctrlKey&&(event.which==68||event.keyCode==68))// [Ctrl]+[Shift]+[D]
 		toggleDebug(true);
 }

@@ -2,9 +2,9 @@
 	header("Content-Type: text/javascript");
 	$file=substr($_GET['file'],5);
 ?>
-var fileJS="<?php echo js($file); ?>";
-var fileURL="<?php echo url($file); ?>";
-getID("preview_links").innerHTML="<h2>"+file+"</h2>\
+var fileJS="<?php echo str_replace("\n",'\\n',addslashes($file)); ?>";
+var fileURL="<?php echo rawurlencode($file); ?>";
+getID("preview_links").innerHTML="<h2><?php echo htmlspecialchars($file); ?></h2>\
 <p>\
 	<a href=\"download.php?file=Scan_"+fileURL+"\" class=\"tool icon download\"><span class=\"tip\">Download</span></a> \
 	<a href=\"download.php?file=Scan_"+fileURL+"&amp;compress\" class=\"tool icon zip\"><span class=\"tip\">Download Zip</span></a> \

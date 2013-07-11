@@ -1,7 +1,8 @@
 <?php
-// Album Sample: {"album":{"data":{"id":"nmoNU","deletehash":"OVTHAA9q54go9qN"},"success":true,"status":200},"images":[{"data":{"id":"9miCuT2","deletehash":"hUZMx7pkHFncK4A","link":"http:\/\/i.imgur.com\/9miCuT2.png"},"success":true,"status":200},{"data":{"id":"FReOqEz","deletehash":"vlbGDmxQ38rzXcz","link":"http:\/\/i.imgur.com\/FReOqEz.png"},"success":true,"status":200}],"success":true}
+if(!function_exists('curl_version'))
+	die('{"album":false,"images":[],"success":false,"error":"<code>php5-curl</code>/<code>php-curl</code> is not installed on the server"}');
 function json_curl($data,$type,$anon){// type = upload/image||album ; anon = true|false
-	$clientID='65bfadb95e040a0';
+	$clientID='65bfadb95e040a0';// Get these here: https://api.imgur.com/oauth2/addclient
 	$curl = curl_init();
 	curl_setopt($curl, CURLOPT_URL, "https://api.imgur.com/3/$type.json");
 	curl_setopt($curl, CURLOPT_TIMEOUT, 30);
@@ -16,6 +17,8 @@ function json_curl($data,$type,$anon){// type = upload/image||album ; anon = tru
 	else
 		return json_decode($data);
 }
+if(!isset($_GET['file'])&&!isset($_GET['files']))
+	die('{"album":false,"images":[],"success":false,"error":"What exactly am I suposed to do with no user input?"}');
 $anon=isset($_GET['anon'])?true:false;// Non-anon is not yet supported, that stuff gets complicated
 $success=true;
 $files=isset($_GET['file'])?array($_GET['file'] => 1):json_decode($_GET['files']);
@@ -31,11 +34,11 @@ foreach($files as $file => $trash){
 if(isset($_GET['album'])&&count($Files)>1){
 	$album=json_curl($_GET['album']==0?array():array('title' => $_GET['album']),'album',true); // album: https://api.imgur.com/endpoints/album#album-upload
 	if(is_bool($album)||is_null($album))
-		die('{"album":false,"images":[],"success":false}');
+		die('{"album":false,"images":[],"success":false,"error":"Failed to connect to imgur"}');
 	if(!$album->{"success"})
-		die(json_encode(array('album' => $album, 'images' => false, 'success' => false)));
+		die(json_encode(array('album' => $album, 'images' => array(), 'success' => false, "error" => false)));
 	if($anon&&!$album->{"data"}->{"deletehash"})
-		die('{"album":false,"images":[],"success":false}');
+		die('{"album":$album,"images":[],"success":false,"error":"Missing delete hash"}');
 	$destination=$anon?$album->{"data"}->{"deletehash"}:$album->{"data"}->{"id"};
 }
 $images=array();
@@ -54,6 +57,8 @@ foreach($Files as $file){
 	if(isset($destination))
 		$image=array_merge($image,array('album' => $destination));
 	$json=json_curl($image,'image',true);
+	if(is_null($json))
+		$json=false;
 	if(!is_bool($json)){
 		$json->{"data"}->{'file'}=$file;
 	}
@@ -70,5 +75,5 @@ foreach($Files as $file){
 if(count($Files)==0)
 	echo '{"album":false,"images":[],"success":false,"message":"Invalid File(s)"}';
 else
-	echo json_encode(array('album' => (isset($destination)?$album:false), 'images' => $images, 'success' => $success));
+	echo json_encode(array('album' => (isset($destination)?$album:false), 'images' => $images, 'success' => $success, "error" => false));
 ?>

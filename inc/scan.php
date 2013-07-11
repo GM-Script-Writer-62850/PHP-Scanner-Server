@@ -31,7 +31,7 @@
 	}
 	$defSource=explode('|',$CANNERS[$SEL]->{"SOURCE"})[0];
 ?></select></p></div><!-- AJAX in scanner data -->
-<script type="text/javascript">scanners=JSON.parse('<?php echo json_encode($CANNERS); ?>');setTimeout("checkScanners()",5000);</script>
+<script type="text/javascript">scanners=parseJSON('<?php echo json_encode($CANNERS); ?>');setTimeout("checkScanners()",5000);</script>
 
 </div>
 
@@ -113,27 +113,27 @@ echo file_exists("config/paper.json")?file_get_contents("config/paper.json"):'{"
 <span class="tool">Brightness<span class="tip">Lighting</span></span>:
 </div>
 <div class="control">
-<script type="text/JavaScript"><?php include('./inc/writescripts/bright.js'); ?></script>
+<script type="text/JavaScript"><?php include "inc/writescripts/bright.js"; ?></script>
 </div>
 
 <div class="label">
 <span class="tool">Contrast<span class="tip">Vividness</span></span>:
 </div>
 <div class="control">
-<script type="text/JavaScript"><?php include('./inc/writescripts/contrast.js'); ?></script>
+<script type="text/JavaScript"><?php include "inc/writescripts/contrast.js"; ?></script>
 </div>
 
 <div class="label">
 <span class="tool">Rotate<span class="tip">Turn</span></span>:
 </div>
-<div class="control tool"><script type="text/javascript"><?php include('./inc/writescripts/rotate.js'); ?></script>
+<div class="control tool"><script type="text/javascript"><?php include "inc/writescripts/rotate.js"; ?></script>
 </div>
 
 <div class="label">
 <span class="tool">Scale<span class="tip">Size/Dimensions</span></span>:
 </div>
 <div class="control">
-<script type="text/JavaScript"><?php echo include('./inc/writescripts/scale.js'); ?></script>
+<script type="text/JavaScript"><?php include "inc/writescripts/scale.js"; ?></script>
 </div>
 
 <div class="label">

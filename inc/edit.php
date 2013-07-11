@@ -37,14 +37,14 @@
 <span class="tool">Brightness<span class="tip">Lighting</span></span>:
 </div>
 <div class="control">
-<script type="text/JavaScript"><?php include('./inc/writescripts/bright.js'); ?></script>
+<script type="text/JavaScript"><?php include "inc/writescripts/bright.js"; ?></script>
 </div>
 
 <div class="label">
 <span class="tool">Contrast<span class="tip">Vividness</span></span>:
 </div>
 <div class="control">
-<script type="text/JavaScript"><?php include('./inc/writescripts/contrast.js'); ?></script>
+<script type="text/JavaScript"><?php include "inc/writescripts/contrast.js"; ?></script>
 </div>
 
 <div class="label">
@@ -62,14 +62,14 @@
 <span class="tool">Rotate<span class="tip">Turn</span></span>:
 </div>
 <div class="control tool">
-<script type="text/JavaScript"><?php include('./inc/writescripts/rotate.js'); ?></script>
+<script type="text/JavaScript"><?php include "inc/writescripts/rotate.js"; ?></script>
 </div>
 
 <div class="label">
 <span class="tool">Scale<span class="tip">Size/Dimensions</span></span>:
 </div>
 <div class="control">
-<script type="text/JavaScript"><?php include('./inc/writescripts/scale.js'); ?></script>
+<script type="text/JavaScript"><?php include "inc/writescripts/scale.js"; ?></script>
 </div>
 
 </div>

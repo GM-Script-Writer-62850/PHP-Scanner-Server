@@ -1,5 +1,4 @@
-<!DOCTYPE html><html>
-<?php $path=is_numeric($GLOBALS['PAGE'])?'/':''; ?>
+<!DOCTYPE html><html><?php $path=is_numeric($GLOBALS['PAGE'])?'/':''; ?>
 <head>
 <meta http-equiv="Content-type" content="text/html; charset=UTF-8"/>
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="chrome=1"><![endif]-->
@@ -20,8 +19,7 @@ if($GLOBALS['PAGE']=='Config')
 <script type="text/javascript" src="<?php echo $path; ?>inc/model-dialog.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>inc/cookie.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>inc/main.js"></script>
-<!--[if lt IE 9]><script type="text/javascript">TC='innerText';</script>
-<style type="text/css">.imgareaselect-handle,.imgareaselect-outer{filter:alpha(opacity=50);}</style><![endif]-->
+<!--[if lt IE 9]><script type="text/javascript">TC='innerText';var ie8=false;</script><link rel="stylesheet" type="text/css" href="<?php echo $path; ?>inc/ie8.css"/><![endif]-->
 </head>
 <body>
 <div id="blanket" style="display:none;background-color:transparent;"><div id="popUpDiv" style="opacity:0;"></div></div>
@@ -68,18 +66,14 @@ if($GLOBALS['PAGE']=='Config')
 <noscript id="nojs">
 <div style="height:auto;" class="message">
 <h2>JavaScript Disabled</h2>
-<p>This application requires JavaScript to function. Please enable JavaScript, then reload this page.<?php echo $GLOBALS['PAGE']=='Login'?'<br/><b>LOGIN REQUIRES JAVASCRIPT</b>':''; ?></p>
+<p class="center">This application requires JavaScript to function. Please enable JavaScript, then reload this page.<?php echo $GLOBALS['PAGE']=='Login'?'<br/><b>LOGIN REQUIRES JAVASCRIPT</b>':''; ?></p>
 </div>
 </noscript>
-
-<!--[if lt IE 9]>
-<div style="height:auto;" class="message ie center">
-<h2>Error: Legacy Browsers are NOT Supported</h2>
-<p>You can view the list of supported browsers in the <a href="index.php?page=About">release notes</a>.<br/>
+<!--[if IE 8]><script type="text/javascript">ie8=true</script><![endif]-->
+<!--[if lt IE 9]><div style="height:auto;" class="message ie center"><h2><noscript>Unsupported Browser</noscript><script type="text/javascript">document.write(ie8?'Warning: It is Recommended That you Upgrade Your Browser':'Error: Legacy Browsers are NOT Supported');</script></h2>
+<p><noscript>This browser is unusable!</noscript><script type="text/javascript">document.write(ie8?'While you browser will technically works, everything is displays looks horrible.':'You can view the list of supported browsers in the <a href="index.php?page=About">release notes</a>.');</script><br/>
 Please install <a href="http://www.mozilla.com/firefox/">Mozilla Firefox</a> (Recommended) alternatively, you may use<br/>
 <a href="http://lmgtfy.com/?q=Internet+Explorer+10+Download">Internet Explorer 10</a> (Windows 7 and 8 only) or
  <a href="http://code.google.com/chrome/chromeframe/">Google Chrome Frame</a> <sup><i>EOL January 2014</i></sup> for Internet Explorer.<br/>
 <a href="http://lmgtfy.com/?q=Internet+Explorer+9+Download">Internet Explorer 9</a> will function, but you don't get all the fancy eye candy.
-</p>
-</div>
-<![endif]-->
+</p></div><![endif]-->

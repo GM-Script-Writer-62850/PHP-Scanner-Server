@@ -19,7 +19,7 @@ else{
 }
 $BG_COLOR=$COLORS[0];
 $LK_COLOR=$COLORS[1];
-$transitionTime='0.8s'; // The rotateChange function in main.js needs to be adjust based on this value
+$transitionTime='0.8s'; // The rotateChange and printMsg functions in main.js needs to be adjust based on this value
 ?>
 @-webkit-keyframes fadein { /* Chrome, Safari, and Opera */
 	from {
@@ -39,10 +39,6 @@ $transitionTime='0.8s'; // The rotateChange function in main.js needs to be adju
 }
 
 body, #header, #message table, .side_box, .side_box h2, #preview, #preview_links img, #preview_img p, #preview h2, .box, .box img, .box pre.border, .box h2, #footer, #debug pre, .tab.active > div.top, .dualForm .footer {
-	-moz-transition-property: background, border, color;
-	-moz-transition-duration: <?php echo $transitionTime; ?>;
-	-o-transition-property: background, border, color;
-	-o-transition-duration: <?php echo $transitionTime; ?>;
 	-webkit-transition-property: background, border, color;
 	-webkit-transition-duration: <?php echo $transitionTime; ?>;
 	transition-property: background, border, color;
@@ -62,10 +58,6 @@ button, input[type="button"], input[type="submit"], input[type="reset"], select,
 
 a {
 	color: #<?php echo $BG_COLOR; ?>;
-	-moz-transition-property: color;
-	-moz-transition-duration: <?php echo $transitionTime; ?>;
-	-o-transition-property: color;
-	-o-transition-duration: <?php echo $transitionTime; ?>;
 	-webkit-transition-property: color;
 	-webkit-transition-duration: <?php echo $transitionTime; ?>;
 	transition-property: color;
@@ -94,11 +86,8 @@ a:hover {
 	text-decoration: none !important;
 	font-variant: normal;
 	font-weight: normal;
-	-moz-animation-name: fadein; /* Firefox */
-	-webkit-animation-name: fadein; /* Chrome and Safari */
-	-o-animation-name: fadein; /* Opera (if they ever add this) */
-	-ms-animation-name: fadein; /* IE 10 */
-	animation-name: fadein; /* Standard */
+	-webkit-animation-name: fadein;
+	animation-name: fadein;
 }
 
 .tool .tip:hover {
@@ -119,14 +108,11 @@ a:hover {
 	left: calc(100% + 1px);
 	bottom: 101%;
 	bottom: calc(100% + 1px);
-	z-index: 1;
+	z-index: 3;
 	white-space: nowrap;
 	text-decoration: none;
-	-moz-animation-duration: <?php echo $transitionTime; ?>; /* Firefox */
-	-webkit-animation-duration: <?php echo $transitionTime; ?>; /* Chrome and Safari */
-	-o-animation-duration: <?php echo $transitionTime; ?>; /* Opera (if they ever add this) */
-	-ms-animation-duration: <?php echo $transitionTime; ?>; /* IE 10 */
-	animation-duration: <?php echo $transitionTime; ?>; /* Standard */
+	-webkit-animation-duration: <?php echo $transitionTime; ?>;
+	animation-duration: <?php echo $transitionTime; ?>;
 }
 
 #container {
@@ -236,18 +222,14 @@ h2 > .del {
 	padding: 0;
 	margin-bottom: 0.5em;
 	border-radius: 5px 5px 0 0;
-	height: 0;
-	/*overflow: hidden; what was this even her for?*/
-	-moz-transition-property: height;
-	-moz-transition-duration: <?php echo $transitionTime; ?>;
-	-o-transition-property: height;
-	-o-transition-duration: <?php echo $transitionTime; ?>;
+	width: 720px;
+	margin: 0px 0px 0.5em 0.5em;
 	-webkit-transition-property: height;
 	-webkit-transition-duration: <?php echo $transitionTime; ?>;
 	transition-property: height;
 	transition-duration: <?php echo $transitionTime; ?>;
-	width: 720px;
-	margin: 0px 0px 0.5em 0.5em;
+	height: 0;
+	overflow: hidden;
 }
 
 .message.ie {
@@ -482,17 +464,11 @@ select.upper, select.upper option {
 	height: 471px;
 	width: 450px;
 	position: relative;
-	-moz-transition-property: transform, -moz-transform;
-	-moz-transition-duration: <?php echo $transitionTime; ?>;
-	-o-transition-property: -o-transform, transform;
-	-o-transition-duration: <?php echo $transitionTime; ?>;
 	-webkit-transition-property: -webkit-transform, -webkit-filter, transform;
 	-webkit-transition-duration: <?php echo $transitionTime; ?>;
 	transition-property: transform, -webkit-transform, -o-transform, -moz-transform, -webkit-filter;
 	transition-duration: <?php echo $transitionTime; ?>;
 	transform: rotate(0);
-	-moz-transform: rotate(0);
-	-o-transform: rotate(0);
 	-webkit-transform: rotate(0);
 	/*-webkit-filter: brightness(100%) contrast(100%);*/
 }
@@ -617,7 +593,8 @@ pre {
 }
 
 code {
-	font-family: monospace;
+	font-family: "Courier New", Courier, monospace;
+	font-size: 13px;
 }
 
 .simplelist {
@@ -676,6 +653,7 @@ code {
 }
 
 #imgur-uploads .box h2 > span {
+	width: 140px;
 	width: calc(100% - 20px);
 	display: inline-block;
 	word-wrap: break-word;
@@ -859,10 +837,6 @@ code {
 	left: 0;
 	width: 100%;
 	height: 100%;
-	-moz-transition-property: background-color;
-	-moz-transition-duration: <?php echo $transitionTime; ?>;
-	-o-transition-property: background-color;
-	-o-transition-duration: <?php echo $transitionTime; ?>;
 	-webkit-transition-property: background-color;
 	-webkit-transition-duration: <?php echo $transitionTime; ?>;
 	transition-property: background-color;
@@ -874,10 +848,6 @@ code {
 	text-align: center;
 	z-index: 9002;
 	border-radius: 5px;
-	-moz-transition-property: opacity;
-	-moz-transition-duration: <?php echo $transitionTime; ?>;
-	-o-transition-property: opacity;
-	-o-transition-duration: <?php echo $transitionTime; ?>;
 	-webkit-transition-property: opacity;
 	-webkit-transition-duration: <?php echo $transitionTime; ?>;
 	transition-property: opacity;
