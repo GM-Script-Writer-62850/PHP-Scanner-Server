@@ -777,7 +777,7 @@ function imgurPopup(file,links){
 		links=parseJSON(localStorage.getItem('imgur'));
 		links=links[file];
 	}
-	var onclick="void(setClipboard(this)?null:this.select());";//Only select if not copied
+	var attrs='onclick="void(setClipboard(this)?null:this.select());" readonly="readonly" type="text"';//Only select if not copied
 	getID("blanket").childNodes[0].innerHTML='<h2 style="font-size:12px;">'+file.substr(5)+' is on Imgur</h2>'+
 		'<div id="imgur-data"><div><img id="'+encodeHTML(file)+'" style="float:left;margin-right:5px;" src="'+links['small_square']+'" width="90" height="90"/>'+
 		'<ul style="list-style:none;">'+
@@ -786,60 +786,60 @@ function imgurPopup(file,links){
 		'<li>Delete Link:<ul><li><a href="'+links['delete_page']+'" target="_blank">'+links['delete_page'].substr(7)+'</a></li></ul></li></ul></div>'+
 		'<h2 style="font-size:12px;" class="center">Embed Codes</h2><div id="imgur-scroller"><div></div></div><div id="imgur-codes">'+
 		'<div class="codes"><h2>Original</h2><ul>'+
-		'<li>Direct Link (email & IM)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="'+links['original']+'"/></li></ul></li>'+
-		'<li>HTML Image (websites & blogs)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="&lt;img src=&quot;'+links['original']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;"/></li></ul></li>'+
-		'<li>Linked HTML Image (websites & blogs)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['original']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;&lt;/a&gt;"/></li></ul></li>'+
-		'<li>BBCode (message boards & forums)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="[IMG]'+links['original']+'[/IMG]"/></li></ul></li>'+
-		'<li>Linked BBCode (message boards)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="[URL='+links['imgur_page']+'][IMG]'+links['original']+'[/IMG][/URL]"/></li></ul></li>'+
-		'<li>Markdown Link (reddit comment)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="[Imgur]('+links['original']+')"/></li></ul></li>'+
+		'<li>Direct Link (email & IM)<ul><li><input '+attrs+' value="'+links['original']+'"/></li></ul></li>'+
+		'<li>HTML Image (websites & blogs)<ul><li><input '+attrs+' value="&lt;img src=&quot;'+links['original']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;"/></li></ul></li>'+
+		'<li>Linked HTML Image (websites & blogs)<ul><li><input '+attrs+' value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['original']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;&lt;/a&gt;"/></li></ul></li>'+
+		'<li>BBCode (message boards & forums)<ul><li><input '+attrs+' value="[IMG]'+links['original']+'[/IMG]"/></li></ul></li>'+
+		'<li>Linked BBCode (message boards)<ul><li><input '+attrs+' value="[URL='+links['imgur_page']+'][IMG]'+links['original']+'[/IMG][/URL]"/></li></ul></li>'+
+		'<li>Markdown Link (reddit comment)<ul><li><input '+attrs+' value="[Imgur]('+links['original']+')"/></li></ul></li>'+
 		'</ul></div>'+
 		'<div class="codes"><h2>Huge Thumbnail</h2><ul>'+
-		'<li>Direct Link (email & IM)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="'+links['huge_thumbnail']+'"/></li></ul></li>'+
-		'<li>HTML Image (websites & blogs)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="&lt;img src=&quot;'+links['huge_thumbnail']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;"/></li></ul></li>'+
-		'<li>Linked HTML Image (websites & blogs)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['huge_thumbnail']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;&lt;/a&gt;"/></li></ul></li>'+
-		'<li>BBCode (message boards & forums)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="[IMG]'+links['huge_thumbnail']+'[/IMG]"/></li></ul></li>'+
-		'<li>Linked BBCode (message boards)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="[URL='+links['imgur_page']+'][IMG]'+links['huge_thumbnail']+'[/IMG][/URL]"/></li></ul></li>'+
-		'<li>Markdown Link (reddit comment)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="[Imgur]('+links['huge_thumbnail']+')"/></li></ul></li>'+
+		'<li>Direct Link (email & IM)<ul><li><input '+attrs+' value="'+links['huge_thumbnail']+'"/></li></ul></li>'+
+		'<li>HTML Image (websites & blogs)<ul><li><input '+attrs+' value="&lt;img src=&quot;'+links['huge_thumbnail']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;"/></li></ul></li>'+
+		'<li>Linked HTML Image (websites & blogs)<ul><li><input '+attrs+' value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['huge_thumbnail']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;&lt;/a&gt;"/></li></ul></li>'+
+		'<li>BBCode (message boards & forums)<ul><li><input '+attrs+' value="[IMG]'+links['huge_thumbnail']+'[/IMG]"/></li></ul></li>'+
+		'<li>Linked BBCode (message boards)<ul><li><input '+attrs+' value="[URL='+links['imgur_page']+'][IMG]'+links['huge_thumbnail']+'[/IMG][/URL]"/></li></ul></li>'+
+		'<li>Markdown Link (reddit comment)<ul><li><input '+attrs+' type="text" value="[Imgur]('+links['huge_thumbnail']+')"/></li></ul></li>'+
 		'</ul></div>'+
 		'<div class="codes"><h2>Large Thumbnail</h2><ul>'+
-		'<li>Direct Link (email & IM)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="'+links['large_thumbnail']+'"/></li></ul></li>'+
-		'<li>HTML Image (websites & blogs)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="&lt;img src=&quot;'+links['large_thumbnail']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;"/></li></ul></li>'+
-		'<li>Linked HTML Image (websites & blogs)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['large_thumbnail']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;&lt;/a&gt;"/></li></ul></li>'+
-		'<li>BBCode (message boards & forums)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="[IMG]'+links['large_thumbnail']+'[/IMG]"/></li></ul></li>'+
-		'<li>Linked BBCode (message boards)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="[URL='+links['imgur_page']+'][IMG]'+links['large_thumbnail']+'[/IMG][/URL]"/></li></ul></li>'+
-		'<li>Markdown Link (reddit comment)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="[Imgur]('+links['large_thumbnail']+')"/></li></ul></li>'+
+		'<li>Direct Link (email & IM)<ul><li><input '+attrs+' value="'+links['large_thumbnail']+'"/></li></ul></li>'+
+		'<li>HTML Image (websites & blogs)<ul><li><input '+attrs+' value="&lt;img src=&quot;'+links['large_thumbnail']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;"/></li></ul></li>'+
+		'<li>Linked HTML Image (websites & blogs)<ul><li><input '+attrs+' value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['large_thumbnail']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;&lt;/a&gt;"/></li></ul></li>'+
+		'<li>BBCode (message boards & forums)<ul><li><input '+attrs+' value="[IMG]'+links['large_thumbnail']+'[/IMG]"/></li></ul></li>'+
+		'<li>Linked BBCode (message boards)<ul><li><input '+attrs+' value="[URL='+links['imgur_page']+'][IMG]'+links['large_thumbnail']+'[/IMG][/URL]"/></li></ul></li>'+
+		'<li>Markdown Link (reddit comment)<ul><li><input '+attrs+' value="[Imgur]('+links['large_thumbnail']+')"/></li></ul></li>'+
 		'</ul></div>'+
 		'<div class="codes"><h2>Medium Thumbnail</h2><ul>'+
-		'<li>Direct Link (email & IM)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="'+links['medium_thumbnail']+'"/></li></ul></li>'+
-		'<li>HTML Image (websites & blogs)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="&lt;img src=&quot;'+links['medium_thumbnail']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;"/></li></ul></li>'+
-		'<li>Linked HTML Image (websites & blogs)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['medium_thumbnail']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;&lt;/a&gt;"/></li></ul></li>'+
-		'<li>BBCode (message boards & forums)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="[IMG]'+links['medium_thumbnail']+'[/IMG]"/></li></ul></li>'+
-		'<li>Linked BBCode (message boards)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="[URL='+links['imgur_page']+'][IMG]'+links['medium_thumbnail']+'[/IMG][/URL]"/></li></ul></li>'+
-		'<li>Markdown Link (reddit comment)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="[Imgur]('+links['medium_thumbnail']+')"/></li></ul></li>'+
+		'<li>Direct Link (email & IM)<ul><li><input '+attrs+' value="'+links['medium_thumbnail']+'"/></li></ul></li>'+
+		'<li>HTML Image (websites & blogs)<ul><li><input '+attrs+' value="&lt;img src=&quot;'+links['medium_thumbnail']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;"/></li></ul></li>'+
+		'<li>Linked HTML Image (websites & blogs)<ul><li><input '+attrs+' value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['medium_thumbnail']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;&lt;/a&gt;"/></li></ul></li>'+
+		'<li>BBCode (message boards & forums)<ul><li><input '+attrs+' value="[IMG]'+links['medium_thumbnail']+'[/IMG]"/></li></ul></li>'+
+		'<li>Linked BBCode (message boards)<ul><li><input '+attrs+' value="[URL='+links['imgur_page']+'][IMG]'+links['medium_thumbnail']+'[/IMG][/URL]"/></li></ul></li>'+
+		'<li>Markdown Link (reddit comment)<ul><li><input '+attrs+' value="[Imgur]('+links['medium_thumbnail']+')"/></li></ul></li>'+
 		'</ul></div>'+
 		'<div class="codes"><h2>Small Thumbnail</h2><ul>'+
-		'<li>Direct Link (email & IM)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="'+links['small_thumbnail']+'"/></li></ul></li>'+
-		'<li>HTML Image (websites & blogs)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="&lt;img src=&quot;'+links['small_thumbnail']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;"/></li></ul></li>'+
-		'<li>Linked HTML Image (websites & blogs)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['small_thumbnail']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;&lt;/a&gt;"/></li></ul></li>'+
-		'<li>BBCode (message boards & forums)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="[IMG]'+links['small_thumbnail']+'[/IMG]"/></li></ul></li>'+
-		'<li>Linked BBCode (message boards)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="[URL='+links['imgur_page']+'][IMG]'+links['small_thumbnail']+'[/IMG][/URL]"/></li></ul></li>'+
-		'<li>Markdown Link (reddit comment)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="[Imgur]('+links['small_thumbnail']+')"/></li></ul></li>'+
+		'<li>Direct Link (email & IM)<ul><li><input '+attrs+' value="'+links['small_thumbnail']+'"/></li></ul></li>'+
+		'<li>HTML Image (websites & blogs)<ul><li><input '+attrs+' value="&lt;img src=&quot;'+links['small_thumbnail']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;"/></li></ul></li>'+
+		'<li>Linked HTML Image (websites & blogs)<ul><li><input '+attrs+' value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['small_thumbnail']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;&lt;/a&gt;"/></li></ul></li>'+
+		'<li>BBCode (message boards & forums)<ul><li><input '+attrs+' value="[IMG]'+links['small_thumbnail']+'[/IMG]"/></li></ul></li>'+
+		'<li>Linked BBCode (message boards)<ul><li><input '+attrs+' value="[URL='+links['imgur_page']+'][IMG]'+links['small_thumbnail']+'[/IMG][/URL]"/></li></ul></li>'+
+		'<li>Markdown Link (reddit comment)<ul><li><input '+attrs+' value="[Imgur]('+links['small_thumbnail']+')"/></li></ul></li>'+
 		'</ul></div>'+
 		'<div class="codes"><h2>Big Square</h2><ul>'+
-		'<li>Direct Link (email & IM)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="'+links['big_square']+'"/></li></ul></li>'+
-		'<li>HTML Image (websites & blogs)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="&lt;img src=&quot;'+links['big_square']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;"/></li></ul></li>'+
-		'<li>Linked HTML Image (websites & blogs)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['big_square']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;&lt;/a&gt;"/></li></ul></li>'+
-		'<li>BBCode (message boards & forums)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="[IMG]'+links['big_square']+'[/IMG]"/></li></ul></li>'+
-		'<li>Linked BBCode (message boards)<ul><li><input readonly="readonly" onclick="this.select();" type="text" value="[URL='+links['imgur_page']+'][IMG]'+links['big_square']+'[/IMG][/URL]"/></li></ul></li>'+
-		'<li>Markdown Link (reddit comment)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="[Imgur]('+links['big_square']+')"/></li></ul></li>'+
+		'<li>Direct Link (email & IM)<ul><li><input '+attrs+' value="'+links['big_square']+'"/></li></ul></li>'+
+		'<li>HTML Image (websites & blogs)<ul><li><input '+attrs+' value="&lt;img src=&quot;'+links['big_square']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;"/></li></ul></li>'+
+		'<li>Linked HTML Image (websites & blogs)<ul><li><input '+attrs+' value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['big_square']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;&lt;/a&gt;"/></li></ul></li>'+
+		'<li>BBCode (message boards & forums)<ul><li><input '+attrs+' value="[IMG]'+links['big_square']+'[/IMG]"/></li></ul></li>'+
+		'<li>Linked BBCode (message boards)<ul><li><input '+attrs+' value="[URL='+links['imgur_page']+'][IMG]'+links['big_square']+'[/IMG][/URL]"/></li></ul></li>'+
+		'<li>Markdown Link (reddit comment)<ul><li><input '+attrs+' value="[Imgur]('+links['big_square']+')"/></li></ul></li>'+
 		'</ul></div>'+
 		'<div class="codes" style="border: none;"><h2>Small Square</h2><ul>'+
-		'<li>Direct Link (email & IM)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="'+links['small_square']+'"/></li></ul></li>'+
-		'<li>HTML Image (websites & blogs)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="&lt;img src=&quot;'+links['small_square']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;"/></li></ul></li>'+
-		'<li>Linekd HTML Image (websites & blogs)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['small_square']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;&lt;/a&gt;"/></li></ul></li>'+
-		'<li>BBCode (message boards & forums)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="[IMG]'+links['small_square']+'[/IMG]"/></li></ul></li>'+
-		'<li>Linked BBCode (message boards)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="[URL='+links['imgur_page']+'][IMG]'+links['small_square']+'[/IMG][/URL]"/></li></ul></li>'+
-		'<li>Markdown Link (reddit comment)<ul><li><input readonly="readonly" onclick="'+onclick+'" type="text" value="[Imgur]('+links['small_square']+')"/></li></ul></li>'+
+		'<li>Direct Link (email & IM)<ul><li><input '+attrs+' value="'+links['small_square']+'"/></li></ul></li>'+
+		'<li>HTML Image (websites & blogs)<ul><li><input '+attrs+' value="&lt;img src=&quot;'+links['small_square']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;"/></li></ul></li>'+
+		'<li>Linekd HTML Image (websites & blogs)<ul><li><input '+attrs+' value="&lt;a href=&quot;'+links['imgur_page']+'&quot;&gt;&lt;img src=&quot;'+links['small_square']+'&quot; alt=&quot;'+links['imgur_page']+'&quot; title=&quot;Hosted by imgur.com&quot;/&gt;&lt;/a&gt;"/></li></ul></li>'+
+		'<li>BBCode (message boards & forums)<ul><li><input '+attrs+' value="[IMG]'+links['small_square']+'[/IMG]"/></li></ul></li>'+
+		'<li>Linked BBCode (message boards)<ul><li><input '+attrs+' value="[URL='+links['imgur_page']+'][IMG]'+links['small_square']+'[/IMG][/URL]"/></li></ul></li>'+
+		'<li>Markdown Link (reddit comment)<ul><li><input '+attrs+' value="[Imgur]('+links['small_square']+')"/></li></ul></li>'+
 		'</ul></div>'+
 		'</div></div><input type="button" value="Close" style="width:100%;" onclick="toggle(\'blanket\')"/>';
 	popup('blanket',365);

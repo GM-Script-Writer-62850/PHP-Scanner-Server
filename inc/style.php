@@ -231,7 +231,6 @@ h2 > .del {
 	text-indent: 0;
 }
 
-
 .message {
 	border: 1px solid #aa0000;
 	padding: 0;

@@ -1,5 +1,11 @@
 <?php
 $Fpdf_loc="/usr/share/php/fpdf/fpdf.php";
+function debug($cmd,$output){
+	$user=posix_getpwuid(posix_geteuid());
+	$user=$user['name'];
+	$here=$user.'@'.$_SERVER['SERVER_NAME'].':'.getcwd();
+	return "$here\$ $cmd\n$output";
+}
 function ext2mime($ext){
 	switch($ext){
 		case "png": return "image/png";
@@ -30,20 +36,24 @@ if(isset($_GET['file'])){
 }
 if(isset($_GET['downloadServer'])){
 	$file="/tmp/scanner-".md5(time().rand()).".tar.bz2";
-	shell_exec("tar cjf '$file' --exclude=\"scans/*\" --exclude=\"config/*.*\" ./");
-	returnFile($file,'PHP-Scanner-Server-'.$_GET['ver'].'.tar.bz2','bz2');
-	@unlink($file);
+	$cmd="tar cjf '$file' --exclude=\"scans/*\" --exclude=\"config/*.*\"";
+	$output=shell_exec("$cmd ./ 2>&1");
+	if(is_file($file)){
+		returnFile($file,'PHP-Scanner-Server-'.$_GET['ver'].'.tar.bz2','bz2');
+		@unlink($file);
+	}
+	else
+		returnFile(debug($cmd,$output),'Error.txt','txt');
 }
 else if((isset($_GET['type'])?$_GET['type']:'')=='pdf'&&!isset($_GET['raw'])){
-	$Pwidth=215.9;
-	$Pheight=279.4;
+	$Pwidth=215.9;// Paper Width in millimeters
+	$Pheight=279.4;// Paper Height in millimeters
 	$fontSize=16;
 	$width=$Pwidth;
 	$height=$Pheight;
 	require($Fpdf_loc);
 	$pdf=new FPDF('P','mm',array($width,$height));
 	$full=isset($_GET['full']);
-	$pdf=new FPDF('P','mm',array($width,$height));
 	$marginLeft=$full?0:10;
 	$marginTop=$full?0:20;
 	$pages=0;
@@ -129,22 +139,29 @@ else if(isset($_GET['json'])){
 			$name=$ct==1?$file:'Compilation.pdf';
 			$file='/tmp/'.md5(time().rand()).'.pdf';
 			$type='pdf';
-			shell_exec("convert $FILES+repage '$file'");// -page Letter -gravity center
+			$cmd="convert $FILES+repage '$file'";
+			$output=shell_exec("$cmd 2>&1");// -page Letter -gravity center
 		}
 		else if($type=='zip'){
 			$file='/tmp/'.md5(time().rand()).'.zip';
 			$type='zip';
 			$name='Compilation.zip';
-			shell_exec("zip '$file' $FILES");
+			$cmd="zip '$file' $FILES";
+			$output=shell_exec("$cmd 2>&1");
 		}
 		else{
 			$type='txt';
 			$name='Error.txt';
 			$file="Does not support '$type' files";
 		}
-		returnFile($file,$name,$type);
-		if(is_file($file))
+		if(is_file($file)){
+			returnFile($file,$name,$type);
 			@unlink($file);
+		}
+		else if(isset($output))
+			returnFile(debug($cmd,$output),'Error.txt','txt');
+		else
+			returnFile($file,$name,$type);
 	}
 	else
 		returnFile("No legit file names provided",'404_Error.txt','txt');
@@ -153,9 +170,14 @@ else if(isset($_GET['file'])){
 	if(file_exists("scans/".$_GET['file'])){
 		if(isset($_GET['compress'])){
 			$file='/tmp/download-'.md5(time().rand()).'.zip';
-			shell_exec("cd 'scans' && zip '$file' ".escapeshellarg($_GET['file']));
-			returnFile($file,$_GET['file'],'zip');
-			@unlink($file);
+			$cmd="cd 'scans' && zip '$file' ".escapeshellarg($_GET['file']);
+			$output=shell_exec("$cmd 2>&1");
+			if(is_file($file)){
+				returnFile($file,$_GET['file'],'zip');
+				@unlink($file);
+			}
+			else
+				returnFile(debug($cmd,$output),'Error.txt','txt');
 		}
 		else{
 			$ext=substr($_GET['file'],strrpos($_GET['file'],".")+1);
