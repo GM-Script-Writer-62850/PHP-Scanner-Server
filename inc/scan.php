@@ -31,7 +31,7 @@
 	}
 	$defSource=explode('|',$CANNERS[$SEL]->{"SOURCE"})[0];
 ?></select></p></div><!-- AJAX in scanner data -->
-<script type="text/javascript">scanners=parseJSON('<?php echo json_encode($CANNERS); ?>');setTimeout("checkScanners()",5000);</script>
+<script type="text/javascript">scanners=<?php echo json_encode($CANNERS); ?>;setTimeout("checkScanners()",5000);</script>
 
 </div>
 

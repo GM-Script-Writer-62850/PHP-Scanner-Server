@@ -190,7 +190,7 @@ function encodeHTML(string){// http://stackoverflow.com/questions/24816/escaping
 	return String(string).replace(/[&<>"'\/]/g,function(s){return entityMap[s];});
 }
 function checkScanners(){
-	if(typeof(XMLHttpRequest=='undefined')||typeof(JSON)!='object'){
+	if(typeof(XMLHttpRequest)=='undefined'||typeof(JSON)!='object'){
 		return printMsg('Sorry',supportErrorA+"XMLHttpRequest and the JSON object so this page can not check if the scanner is in-use or not in real time."+supportErrorB,'center',0);
 	}
 	var httpRequest = new XMLHttpRequest();
