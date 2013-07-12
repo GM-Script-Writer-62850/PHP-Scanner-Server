@@ -70,7 +70,7 @@ if($GLOBALS['PAGE']=='Config')
 </div>
 </noscript>
 <!--[if IE 8]><script type="text/javascript">ie8=true</script><![endif]-->
-<!--[if lt IE 9]><div style="height:auto;" class="message ie center"><h2><noscript>Unsupported Browser</noscript><script type="text/javascript">document.write(ie8?'Warning: It is Recommended That you Upgrade Your Browser':'Error: Legacy Browsers are NOT Supported');</script></h2>
+<!--[if lt IE 9]><div style="height:auto;" class="message ie center"><h2><noscript>Unsupported Browser</noscript><script type="text/javascript">document.write(ie8?'Notice: It is Recommended That you Upgrade Your Browser':'Error: Legacy Browsers are NOT Supported');</script></h2>
 <p><noscript>This browser is unusable!</noscript><script type="text/javascript">document.write(ie8?'While you browser will technically works, everything is displays looks horrible.':'You can view the list of supported browsers in the <a href="index.php?page=About">release notes</a>.');</script><br/>
 Please install <a href="http://www.mozilla.com/firefox/">Mozilla Firefox</a> (Recommended) alternatively, you may use<br/>
 <a href="http://lmgtfy.com/?q=Internet+Explorer+10+Download">Internet Explorer 10</a> (Windows 7 and 8 only) or

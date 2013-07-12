@@ -189,55 +189,57 @@ function encodeHTML(string){// http://stackoverflow.com/questions/24816/escaping
 	};
 	return String(string).replace(/[&<>"'\/]/g,function(s){return entityMap[s];});
 }
-function checkScanners(){
-	if(typeof(XMLHttpRequest)=='undefined'||typeof(JSON)!='object'){
-		return printMsg('Sorry',supportErrorA+"XMLHttpRequest and the JSON object so this page can not check if the scanner is in-use or not in real time."+supportErrorB,'center',0);
+function buildScannerOptions(json){
+	var str='',id,name,loc,sel=0;
+	for(var i=0,m=json.length;i<m;i++){
+		if(json[i]["DEVICE"].substr(0,4)=="net:"){
+			loc=json[i]["DEVICE"].split(':');
+			loc=json[1];
+		}
+		else{
+			loc=document.domain;
+		}
+		if(json[i]["SELECTED"])
+			sel=i;
+		str+='<option'+(json[i]["INUSE"]==1?' disabled="disabled"':'')+(json[i]["SELECTED"]?' selected="selected"':'')+' value="'+json[i]["ID"]+'">'+json[i]["NAME"]+' on '+loc+'</option>';
 	}
+	if(document.all)// http://support.microsoft.com/kb/276228
+		document.scanning.scanner.parentNode.innerHTML='<select onchange="scannerChange(this)" style="width:238px;" name="scanner">'+str+'</select>';
+	else
+		document.scanning.scanner.innerHTML=str;
+	return sel;
+}
+function checkScanners(){
+	if(typeof(XMLHttpRequest)=='undefined')
+		return printMsg('Sorry',supportErrorA+"XMLHttpRequest so this page can not check if the scanner is in-use or not in real time."+supportErrorB,'center',0);
 	var httpRequest = new XMLHttpRequest();
 	httpRequest.onreadystatechange = function(){
 		if(httpRequest.readyState==4){
 			if(httpRequest.status==200){
 				var scan=parseJSON(httpRequest.responseText);
-				var loc, str;
-				str='';
-				if(scanners.length!=scan.length){
-					for(var i=0,m=scan.length;i<m;i++){
-						if(scan[i]["DEVICE"].substr(0,4)=="net:"){
-							loc=scan[i]["DEVICE"].split(':');
-							loc=loc[1];
-						}
-						else{
-							loc=document.domain;
-						}
-						delete(scan[i]["INUSE"]);
-						delete(scan[i]["ID"]);
-						delete(scan[i]["DEVICE"]);
-						delete(scan[i]["NAME"]);
-						delete(scan[i]["UUID"]);
-						str+='<option'+(scan[i]["INUSE"]==1?' disabled="disabled"':'')+' class="'+encodeHTML(JSON.stringify(scan[i]))+'" value="'+scan[i]["ID"]+'">'+scan[i]["NAME"]+' on '+loc+'</option>';
-					}
-					scanners=scan;
-					loc=document.scanning.scanner.selectedIndex;
-					if(document.all)// http://support.microsoft.com/kb/276228
-						document.scanning.scanner.parentNode.innerHTML='<p><select onchange="scannerChange(this)" style="width:238px;" name="scanner">'+str+'</select></p>';
-					else
-						document.scanning.scanner.innerHTML=str;
-					document.scanning.scanner.selectedIndex=loc;
-					alert("The number of scanners connected to the server has been altered\nPlease double check the scanner you are using");
-				}
-				else{
-					for(var i=0,m=scanners.length;i<m;i++){
-						if(scan[i]['INUSE']!=scanners[i]['INUSE']){
+				if(JSON.stringify(scanners)!=JSON.stringify(scan)){// Something changed
+					var l=document.scanning.scanner.selectedIndex,oldDevice,newDevice,device,def,found=false,inUse=false;
+					oldDevice=scanners[l]['UUID']==null?scanners[l]["DEVICE"]:scanners[l]['UUID'];
+					def=buildScannerOptions(scan);// Update Scanner HTML
+					for(var i=0,m=scan.length;i<m;i++){//Find current scanner
+						newDevice=scan[i]['UUID']==null?scan[i]["DEVICE"]:scan[i]['UUID'];
+						if(newDevice==oldDevice){
+							found=true;
+							document.scanning.scanner.selectedIndex=i;
 							if(scan[i]['INUSE']==1)
-								document.scanning.scanner.childNodes[i].setAttribute("disabled","disabled");
-							else
-								document.scanning.scanner.childNodes[i].removeAttribute('disabled');
+								printMsg('Information',"The scanner currently selected is being used by someone right now",'center',0);
+							break;
 						}
 					}
-					scanners=scan;
+					scanners=scan;// Update global variable
+					if(!found){//Current scanner is no longer present
+						printMsg('Information',"The scanner you had selected is no longer available",'center',0);
+						document.scanning.scanner.selectedIndex=def;
+						sendE(document.scanning.scanner,'change');
+					}
 				}
 			}
-			setTimeout("checkScanners()",5000);
+			setTimeout(checkScanners,5000);
 		}
 	};
 	httpRequest.open('GET', 'config/scanners.json?cacheBust='+new Date().getTime(), true);
@@ -272,9 +274,17 @@ function parseJSON(jsonTXT){
 		printMsg('Invald Javascript Object Notation:','<textarea onclick="this.select()" style="width:100%;height:80px;">'+encodeHTML(jsonTXT)+'</textarea><br/>If you are reading this please report it as a bug. Please copy/paste the above, something as simple as a line break can cause errors here. If want to read this I suggest pasting it onto <a target="_blank" href="http://jsonlint.com/">jsonlint.com</a>.','center',0);
 	}
 }
+function inArray(arr,val){
+	for(var i=0;i<arr.length;i++){
+		if(arr[i]==val){
+			return true;
+		}
+	}
+	return false;
+}
 function scannerChange(ele){
-	var info=parseJSON(ele.childNodes[ele.selectedIndex].className);
-	var html='',text;
+	var info=scanners[ele.selectedIndex];
+	var html='',text,val=document.scanning.source.value;
 	sources=info['SOURCE'].split('|');
 	for(i=0,s=sources.length;i<s;i++){
 		switch(sources[i]){
@@ -288,6 +298,8 @@ function scannerChange(ele){
 		document.scanning.source.parentNode.innerHTML='<select name="source" class="title" onchange="sourceChange(this)">'+html+'</select>';
 	else
 		document.scanning.source.innerHTML=html;
+	if(inArray(sources,val))
+		document.scanning.source.value=val;
 	if(document.scanning.source.value=='Inactive')
 		document.scanning.source.setAttribute('disabled','disabled');
 	else
@@ -295,11 +307,11 @@ function scannerChange(ele){
 	sourceChange(document.scanning.source);
 }
 function sourceChange(ele){
-	var info,text,html,html2,html3,dpi;
+	var info,text,html1,html2,html3,dpi,modes,valA,valB,valC;
 	info=document.scanning.scanner;
-	info=parseJSON(info.childNodes[info.selectedIndex].className);
+	info=scanners[info.selectedIndex];
 	// Change Mode
-	html='';
+	html1='';
 	modes=info['MODE-'+ele.value].split('|');
 	for(i=modes.length-1;i>-1;i--){
 		switch(modes[i]){
@@ -310,16 +322,19 @@ function sourceChange(ele){
 			default:
 				text=modes[i];
 		}
-		html+='<option value="'+modes[i]+'">'+text+'</option>';
+		html1+='<option value="'+modes[i]+'">'+text+'</option>';
 	}
 	// Change Paper Size
+	papers=Array();
 	width=info['WIDTH-'+ele.value];
 	height=info['HEIGHT-'+ele.value];
 	html2='<option value="full" title="'+width+' mm x '+height+' mm">Full Scan: '+roundNumber(width/25.4,2)+'" x '+roundNumber(height/25.4,2)+'"</option>';
 	for(var i in paper){
-		if(width>=paper[i]['width']&&height>=paper[i]['height'])
-			html2+='<option value="'+paper[i]['width']+'-'+paper[i]['height']+'" title="'+paper[i]['width']+' mm x '+paper[i]['height']+' mm"'+(i=='Letter'?' selected':'')+'>'+i+': '+
+		if(width>=paper[i]['width']&&height>=paper[i]['height']){
+			html2+='<option value="'+paper[i]['width']+'-'+paper[i]['height']+'" title="'+paper[i]['width']+' mm x '+paper[i]['height']+' mm"'+(i=='Letter'?' selected="selected"':'')+'>'+i+': '+
 				roundNumber(paper[i]['width']/25.4,2)+'" x '+roundNumber(paper[i]['height']/25.4,2)+'"</option>';
+			papers.push(paper[i]['width']+'-'+paper[i]['height']);
+		}
 	}
 	// Change Quality
 	html3='';
@@ -327,16 +342,25 @@ function sourceChange(ele){
 	for(var i=0,max=dpi.length;i<max;i++)
 		html3+='<option value="'+dpi[i]+'">'+dpi[i]+' '+(isNaN(dpi[i])?'':'DPI')+'</option>';
 	// Apply Changes
+	valA=document.scanning.mode.value;
+	valB=document.scanning.size.value;
+	valC=document.scanning.quality.value;
 	if(document.all){// http://support.microsoft.com/kb/276228
+		document.scanning.mode.parentNode.innerHTML='<select name="mode" class="title">'+html1+'</select>';
 		document.scanning.size.parentNode.innerHTML='<select onchange="paperChange(this);" name="size">'+html2+'</select>';
-		document.scanning.mode.parentNode.innerHTML='<select name="mode" class="title">'+html+'</select>';
 		document.scanning.quality.parentNode.innerHTML='<select name="quality" class="upper">'+html3+'</select>';
 	}
 	else{
+		document.scanning.mode.innerHTML=html1;
 		document.scanning.size.innerHTML=html2;
-		document.scanning.mode.innerHTML=html;
 		document.scanning.quality.innerHTML=html3;
 	}
+	if(inArray(modes,valA))
+		document.scanning.mode.value=valA;
+	if(inArray(papers,valB))
+	document.scanning.size.value=valB;
+	if(inArray(dpi,valC))
+		document.scanning.quality.value=valC;
 	if(info['DUPLEX-'+ele.value])
 		getID('duplex').removeAttribute('style');
 	else
@@ -350,8 +374,7 @@ function paperChange(ele){
 		document.scanning.ornt.disabled='disabled';
 		return;
 	}
-	var json=document.scanning.scanner.childNodes[document.scanning.scanner.selectedIndex].className;
-	json=parseJSON(json);
+	var json=scanners[document.scanning.scanner.selectedIndex];
 	var width=json['WIDTH-'+document.scanning.source.value];
 	var height=json['HEIGHT-'+document.scanning.source.value];
 	// Set Orientation

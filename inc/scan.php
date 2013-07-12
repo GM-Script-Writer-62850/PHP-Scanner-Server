@@ -6,32 +6,8 @@
 
 <div class="side_box">
 <h2>Scanners</h2>
-<div class="ie_276228"><p><select name="scanner" style="width:238px;" onchange="scannerChange(this)"><?php
-	$SEL=0;
-	for($i=0,$max=count($CANNERS);$i<$max;$i++){
-		if(isset($CANNERS[$i]->{"SELECTED"}))
-			$SEL=$i;
-		if(substr($CANNERS[$i]->{"DEVICE"},0,4)=="net:"){
-			$loc=explode(":",$CANNERS[$i]->{"DEVICE"});
-			$loc=$loc[1];// The following is disabled for AJAX processing
-		/*	if($loc=="127.0.0.1"||$loc==$_SERVER['SERVER_ADDR']||$loc=="localhost") //will need rewrite for ipv6
-				continue;//try to filter reduntant scanners (network scanner on the localhost)*/
-		}
-		else{
-			//echo '<!-- '.$_SERVER['SERVER_NAME'].' -->';
-			$loc=$_SERVER['SERVER_NAME'];
-		}
-		$CANNER=clone $CANNERS[$i];
-		unset($CANNER->{"INUSE"});
-		unset($CANNER->{"ID"});
-		unset($CANNER->{"DEVICE"});
-		unset($CANNER->{"NAME"});
-		unset($CANNER->{"UUID"});
-		echo '<option class="'.html(json_encode($CANNER)).'"'.($CANNERS[$i]->{"INUSE"}==1?' disabled="disabled"':'').(isset($CANNERS[$i]->{"SELECTED"})&&$CANNERS[$i]->{"INUSE"}!=1?' selected="selected"':'').' value="'.$CANNERS[$i]->{"ID"}.'">'.$CANNERS[$i]->{"NAME"}.' on '.$loc.'</option>';
-	}
-	$defSource=explode('|',$CANNERS[$SEL]->{"SOURCE"})[0];
-?></select></p></div><!-- AJAX in scanner data -->
-<script type="text/javascript">scanners=<?php echo json_encode($CANNERS); ?>;setTimeout("checkScanners()",5000);</script>
+<p><select name="scanner" style="width:238px;" onchange="scannerChange(this)"></select></p>
+<script type="text/javascript">scanners=<?php echo json_encode($CANNERS); ?>;buildScannerOptions(scanners);setTimeout(checkScanners,5000);</script>
 
 </div>
 
@@ -59,7 +35,7 @@
 </div>
 <div class="control tool">
 <div class="ie_276228"><select name="size" onchange="paperChange(this);"></select>
-</div><span class="tip"><?php echo $CANNERS[$SEL]->{"WIDTH-$defSource"}.' mm x '.$CANNERS[$SEL]->{"HEIGHT-$defSource"}.' mm'; ?></span>
+</div><span class="tip"></span>
 <script type="text/javascript">paper=<?php
 echo file_exists("config/paper.json")?file_get_contents("config/paper.json"):'{"Picture":{"height":152.4,"width":101.6},"Paper":{"height":279.4,"width":215.9}}'; ?></script>
 </div>
@@ -92,7 +68,7 @@ echo file_exists("config/paper.json")?file_get_contents("config/paper.json"):'{"
 <div class="ie_276228"><select name="mode" class="title"></select></div>
 </div>
 
-<div id="duplex"<?php echo $CANNERS[$SEL]->{"DUPLEX-$defSource"}?'':' style="display:none;"'; ?>>
+<div id="duplex">
 <div class="label tool">
 <span>Duplex<span class="tip">Double Sided Scan</span></span>:
 </div>

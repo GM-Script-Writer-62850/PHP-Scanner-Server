@@ -837,12 +837,7 @@ else if($PAGE=="Edit"){
 # ****************
 else{
 	InsertHeader("Scan Image");
-	if(file_exists("config/scanners.json")){
-		$CANNERS=json_decode(file_get_contents("config/scanners.json"));
-	}
-	else{
-		$CANNERS=json_decode('[]');
-	}
+	$CANNERS=json_decode(file_exists("config/scanners.json")?file_get_contents("config/scanners.json"):'[]');
 	if(strlen($SAVEAS)>0||$ACTION=="Scan Image"){
 		$langs=findLangs();
 		if(!validNum(Array($SCANNER,$BRIGHT,$CONTRAST,$SCALE,$ROTATE))||!in_array($LANG,$langs)||!in_array($QUALITY,explode("|",$CANNERS[$SCANNER]->{"DPI-$SOURCE"}))){//security check
