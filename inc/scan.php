@@ -34,8 +34,7 @@
 <span class="tool">Size<span class="tip">How big the paper is</span></span>:
 </div>
 <div class="control tool">
-<div class="ie_276228"><select name="size" onchange="paperChange(this);"></select>
-</div><span class="tip"></span>
+<div class="ie_276228"><select name="size" onchange="paperChange(this);"></select></div><span class="tip"></span>
 <script type="text/javascript">paper=<?php
 echo file_exists("config/paper.json")?file_get_contents("config/paper.json"):'{"Picture":{"height":152.4,"width":101.6},"Paper":{"height":279.4,"width":215.9}}'; ?></script>
 </div>

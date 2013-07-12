@@ -210,33 +210,51 @@ function buildScannerOptions(json){
 	return sel;
 }
 function checkScanners(){
-	if(typeof(XMLHttpRequest)=='undefined')
-		return printMsg('Sorry',supportErrorA+"XMLHttpRequest so this page can not check if the scanner is in-use or not in real time."+supportErrorB,'center',0);
+	if(typeof(XMLHttpRequest)=='undefined'||typeof(JSON)!='object')
+		return printMsg('Sorry',supportErrorA+"XMLHttpRequest and/or the JSON object so this page can not check if the scanner is in-use or not in real time."+supportErrorB,'center',0);
 	var httpRequest = new XMLHttpRequest();
 	httpRequest.onreadystatechange = function(){
 		if(httpRequest.readyState==4){
 			if(httpRequest.status==200){
 				var scan=parseJSON(httpRequest.responseText);
 				if(JSON.stringify(scanners)!=JSON.stringify(scan)){// Something changed
-					var l=document.scanning.scanner.selectedIndex,oldDevice,newDevice,device,def,found=false,inUse=false;
+					var l=document.scanning.scanner.selectedIndex,oldDevice,newDevice,ele,index,found=false,inUse=false,update=(scanners.length==scan.length?false:true);
 					oldDevice=scanners[l]['UUID']==null?scanners[l]["DEVICE"]:scanners[l]['UUID'];
-					def=buildScannerOptions(scan);// Update Scanner HTML
-					for(var i=0,m=scan.length;i<m;i++){//Find current scanner
+					for(var i=0,m=scan.length;i<m;i++){// If update becomes true the list is rebuilt
 						newDevice=scan[i]['UUID']==null?scan[i]["DEVICE"]:scan[i]['UUID'];
-						if(newDevice==oldDevice){
-							found=true;
-							document.scanning.scanner.selectedIndex=i;
-							if(scan[i]['INUSE']==1)
-								printMsg('Information',"The scanner currently selected is being used by someone right now",'center',0);
-							break;
+						if(scanners[i]&&!update){// Does the original list even have this many entries?
+							if(newDevice==(scanners[i]['UUID']==null?scanners[i]["DEVICE"]:scanners[i]['UUID'])){// Is this scanner the same scanner as before
+								ele=document.scanning.scanner.childNodes[i];
+								l=ele.disabled;
+								if(scan[i]['INUSE']!=(l?1:0))// Do I need to disable/enable this entry
+									ele.disabled=!l;
+							}
+							else
+								update=true;
 						}
+						else
+							update=true;
+						if(newDevice==oldDevice){// Found current scanner
+							index=i;
+							found=true;
+							if(scan[i]['INUSE']==1)
+								inUse=true;
+						}
+						if(found&&update)
+							break;
 					}
 					scanners=scan;// Update global variable
-					if(!found){//Current scanner is no longer present
-						printMsg('Information',"The scanner you had selected is no longer available",'center',0);
-						document.scanning.scanner.selectedIndex=def;
-						sendE(document.scanning.scanner,'change');
+					if(!found||update){// Do I need to rebuild the list
+						buildScannerOptions(scan);
+						if(found)
+							document.scanning.scanner.selectedIndex=index;
+						else{
+							printMsg('Information',"The scanner you had selected is no longer available",'center',-1);
+							sendE(document.scanning.scanner,'change');
+						}
 					}
+					if(inUse)
+						printMsg('Information',"The scanner currently selected is being used by someone right now",'center',-1);
 				}
 			}
 			setTimeout(checkScanners,5000);
@@ -245,18 +263,18 @@ function checkScanners(){
 	httpRequest.open('GET', 'config/scanners.json?cacheBust='+new Date().getTime(), true);
 	httpRequest.send(null);
 }
-function printMsg(t,m,a,r){
+function printMsg(t,m,a,r){// if r is -1 message goes at the top of the message list
 	var div=document.createElement('div');
 	var ele=getID('new_mes');
 	div.className="message";
-	div.innerHTML="<h2>"+t+'<a class="icon tool del" onclick="this.parentNode.parentNode.parentNode.removeChild(this.parentNode.parentNode);return false;" href="#"><span class="tip">Close</span></a>'+"</h2>"+
+	div.innerHTML="<h2>"+t+'<a class="icon tool del" onclick="(function(e){e.setAttribute(\'style\',\'height:0;\');setTimeout(function(){e.parentNode.removeChild(e);},'+(TC=='textContent'?800:0)+');})(this.parentNode.parentNode);return false;" href="#"><span class="tip">Close</span></a>'+"</h2>"+
 		"<div"+(a!='center'?' style="text-align:'+a+';"':'')+">"+m+"</div>";
 	if(r!=-1&& typeof(ele.insertBefore)=='function')
 		ele.insertBefore(div,ele.childNodes[0]);
 	else
 		ele.appendChild(div);
 	div.style.height=(TC=='textContent'?(div.scrollHeight+'px'):'auto');
-	setTimeout(function(){div.style.overflow='visible';},800);// 800ms is the animation duration in the css
+	setTimeout(function(){div.style.overflow='visible';},(TC=='textContent'?800:0));// 800ms is the animation duration in the css
 	return false;
 }
 function roundNumber(num,dec){// http://forums.devarticles.com/javascript-development-22/javascript-to-round-to-2-decimal-places-36190.html#post71368
@@ -358,7 +376,7 @@ function sourceChange(ele){
 	if(inArray(modes,valA))
 		document.scanning.mode.value=valA;
 	if(inArray(papers,valB))
-	document.scanning.size.value=valB;
+		document.scanning.size.value=valB;
 	if(inArray(dpi,valC))
 		document.scanning.quality.value=valC;
 	if(info['DUPLEX-'+ele.value])
@@ -396,7 +414,7 @@ function rotateChange(ele){
 			break;
 		}
 	}
-	if(typeof(prefix)=="number"||val==0)
+	if(prefix.substr(-8)!='ransform'||val==0)
 		return;
 	ele=previewIMG;
 	if(ele.src.indexOf('inc/images/blank.gif')>-1)
@@ -409,8 +427,9 @@ function rotateChange(ele){
 			ias.setOptions({ "hide": false, "disable": false, "fadeSpeed": 850, "rotating": false });
 			if(document.scanning.loc_width.value>0&&document.scanning.loc_height.value>0)
 				setRegion(ias);
-		},800);// 800ms is the animation duration in the css
-	},2000);// Should be long enough to see how it looks, given there is a 800ms animation
+		},prefix=='msTransform'?5:805);// 800ms is the animation duration in the css
+	},prefix=='msTransform'?1200:2000);// Should be long enough to see how it looks, given there is a 800ms animation
+	// msTransform is IE9 ONLY, different values since it does not support animation
 }
 function changeBrightContrast(){// Webkit based only :(
 	// Does not work properly so lets disable it: brightness/contrast have a screwed up/illogical max %
@@ -535,11 +554,11 @@ function PDF_popup(files){
 	getID("blanket").childNodes[0].innerHTML='How would you prefer for your PDF download?<br/>\
 		A scan placed on the page with a title or<br/>\
 		a would you prefer the scan as the page.<br/>\
-		<button onclick="window.open(\'download.php?json='+files+'&amp;type=pdf\');setTimeout(\'toggle(\\\'blanket\\\')\',100);">\
+		<button onclick="window.open(\'download.php?json='+files+'&amp;type=pdf\');setTimeout(function(){toggle(\'blanket\');},100);">\
 			<img src="inc/images/pdf-scaled.png" width="106" height="128"/></button>\
-		<button onclick="window.open(\'download.php?json='+files+'&amp;type=pdf&amp;full\');setTimeout(\'toggle(\\\'blanket\\\')\',100);">\
+		<button onclick="window.open(\'download.php?json='+files+'&amp;type=pdf&amp;full\');setTimeout(function(){toggle(\'blanket\');},100);">\
 			<img src="inc/images/pdf-full.png" width="106" height="128"/></button>\
-		<br/><input type="button" onclick="window.open(\'download.php?json='+files+'&amp;type=pdf&amp;raw\');setTimeout(\'toggle(\\\'blanket\\\')\',100);" \
+		<br/><input type="button" onclick="window.open(\'download.php?json='+files+'&amp;type=pdf&amp;raw\');setTimeout(function(){toggle(\'blanket\');},100);" \
 			value="I don\'t care just give me a PDF" style="width:261px"/>\
 		<br/><input type="button" value="Cancel" style="width:261px;" onclick="toggle(\'blanket\')"/>';
 	popup('blanket',290);
@@ -909,7 +928,7 @@ function imgurDel(id,img){
 	}
 	return false;
 }
-function setClipboard(e){// Everyone except MS considers this a security hole, thus this is IE only; I refuse to use flash as a workaround for this
+function setClipboard(e){// Everyone except MS considers this a security hole, thus this is IE only; I refuse to use flash circumvent this security feature
 	if(!window.clipboardData)
 		return false;
 	if(window.clipboardData.setData('Text',e.value)){
@@ -921,7 +940,7 @@ function setClipboard(e){// Everyone except MS considers this a security hole, t
 		e.parentNode.appendChild(span);
 		setTimeout(function(){
 			e.parentNode.removeChild(span);
-		},1600);
+		},TC=='textContent'?1600:1000);// relative to transitionTime in style.php
 		return true;
 	}
 	return false;

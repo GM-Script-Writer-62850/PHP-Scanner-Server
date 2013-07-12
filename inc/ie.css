@@ -1,0 +1,36 @@
+/* This style sheet does not fix all issues, it just puts a dent in them */
+.imgareaselect-handle,.imgareaselect-outer{
+	filter:alpha(opacity=50);
+}
+#blanket,.tool .tip{
+	background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3QcLEiIwmZz/0gAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAANSURBVAjXY2BgYFgGAACrAKf/dVSlAAAAAElFTkSuQmCC");
+	background-repeat:repeat;
+	background-color:transparent;
+}
+p .icon{
+	margin-right:3px;
+}
+/* IE 6 & 7 Hacks */
+h2 .del{
+	*position:relative;
+	*top:-24px;
+	*left:-2px;
+}
+#blanket,.tool .tip{
+	*background-color:black;
+}
+/* IE 6 Hacks */
+h2 .del{
+	_float:right;
+}
+.tab div{  
+	_display:none;
+}
+.icon {
+	_height:16px;
+	_width:16px;
+	_padding:0;
+}
+.control select{
+	_width:150px;
+}

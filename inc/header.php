@@ -19,7 +19,7 @@ if($GLOBALS['PAGE']=='Config')
 <script type="text/javascript" src="<?php echo $path; ?>inc/model-dialog.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>inc/cookie.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>inc/main.js"></script>
-<!--[if lt IE 9]><script type="text/javascript">TC='innerText';var ie8=false;</script><link rel="stylesheet" type="text/css" href="<?php echo $path; ?>inc/ie8.css"/><![endif]-->
+<!--[if lt IE 9]><script type="text/javascript">TC='innerText';var ie8=false;</script><link rel="stylesheet" type="text/css" href="<?php echo $path; ?>inc/ie.css"/><![endif]-->
 </head>
 <body>
 <div id="blanket" style="display:none;background-color:transparent;"><div id="popUpDiv" style="opacity:0;"></div></div>

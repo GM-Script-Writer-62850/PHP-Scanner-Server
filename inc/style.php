@@ -19,7 +19,7 @@ else{
 }
 $BG_COLOR=$COLORS[0];
 $LK_COLOR=$COLORS[1];
-$transitionTime='0.8s'; // The rotateChange and printMsg functions in main.js needs to be adjust based on this value
+$transitionTime='0.8s'; // The rotateChange, setClipboard, and printMsg functions in main.js needs to be adjusted based on this value
 ?>
 @-webkit-keyframes fadein { /* Chrome, Safari, and Opera */
 	from {
@@ -413,7 +413,7 @@ div.ie_276228 {/* http://support.microsoft.com/kb/276228 */
 	width: 157px;
 }
 
-.side_box select[name="scanner"] option[disabled="disabled"] {
+.side_box select[name="scanner"] option[disabled] {
 	background-color: yellow;
 }
 
