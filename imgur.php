@@ -32,13 +32,14 @@ foreach($files as $file => $trash){
 		array_push($Files,$file);
 }
 if(isset($_GET['album'])&&count($Files)>1){
-	$album=json_curl($_GET['album']==0?array():array('title' => $_GET['album']),'album',true); // album: https://api.imgur.com/endpoints/album#album-upload
+	$album=json_curl(strlen($_GET['album'])==0?array():array('title' => $_GET['album']),'album',true); // album: https://api.imgur.com/endpoints/album#album-upload
 	if(is_bool($album)||is_null($album))
 		die('{"album":false,"images":[],"success":false,"error":"Failed to connect to imgur"}');
 	if(!$album->{"success"})
 		die(json_encode(array('album' => $album, 'images' => array(), 'success' => false, "error" => false)));
 	if($anon&&!$album->{"data"}->{"deletehash"})
 		die('{"album":$album,"images":[],"success":false,"error":"Missing delete hash"}');
+	$album->{"data"}->{"title"}=strlen($_GET['album'])>0?$_GET['album']:'Compilation';
 	$destination=$anon?$album->{"data"}->{"deletehash"}:$album->{"data"}->{"id"};
 }
 $images=array();

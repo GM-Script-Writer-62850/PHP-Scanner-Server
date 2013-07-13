@@ -666,6 +666,33 @@ code {
 	cursor: pointer;
 }
 
+#imgur-uploads .box .album{
+	width: 160px;
+	height: 160px;
+	margin-top: 3px;
+	border: 1px solid #<?php echo $BG_COLOR; ?>;
+	display: block;
+	overflow: hidden;
+	display: -webkit-box;
+	-webkit-box-pack: center;
+	-webkit-box-align: center;
+	display: -ms-flexbox;
+	-ms-flex-pack: center;
+	-ms-flex-align: center;
+	/*display: -moz-box; does not work in firefox as of writing this
+	-moz-box-pack: center;
+	-moz-box-align: center;*/
+	text-decoration: none;
+
+}
+
+#imgur-uploads .box .album img {
+	margin: 0;
+	border: none;
+	width: 80px;
+	height: 80px;
+}
+
 #imgur-codes,#imgur-scroller{
 	width: 100%;
 }

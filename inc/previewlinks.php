@@ -1,5 +1,7 @@
 <?php
 	header("Content-Type: text/javascript");
+	if(!isset($_GET['page'])||!isset($_GET['file']))
+		die("alert('Error: One or more missing paramater(s)\\n".addslashes($_SERVER["SCRIPT_NAME"])."');");
 	$file=substr($_GET['file'],5);
 ?>
 var fileJS="<?php echo str_replace("\n",'\\n',addslashes($file)); ?>";
@@ -13,10 +15,10 @@ getID("preview_links").innerHTML="<h2><?php echo htmlspecialchars($file); ?></h2
 	<a href=\"index.php?page=Scans&amp;delete=Remove&amp;file="+fileURL+"\" class=\"tool icon del\" onclick=\"return confirm('Delete this scan')\"><span class=\"tip\">Delete</span></a> \
 	<?php
 	if($_GET['page']=="Edit")
-		echo '<span class=\\"tool icon edit-off\\"><span class=\\"tip\\">Edit (Disabled)</span></span> \\';
+		echo '<span class=\\"tool icon edit-off\\"><span class=\\"tip\\">Edit (Disabled)</span></span>';
 	else
-		echo '<a href=\\"index.php?page=Edit&amp;file="+file+"\\" class=\\"tool icon edit\\"><span class=\\"tip\\">Edit</span></a> \\';
-	?>
+		echo '<a href=\\"index.php?page=Edit&amp;file="+file+"\\" class=\\"tool icon edit\\"><span class=\\"tip\\">Edit</span></a>';
+	?> \
 	<a href=\"index.php?page=View&amp;file=Scan_"+fileURL+"\" class=\"tool icon view\"><span class=\"tip\">View</span></a> \
 	<a href=\"#\" class=\"tool icon upload\" onclick=\"return upload('Scan_"+fileJS+"')\"><span class=\"tip\">Upload to Imgur</span></a> \
 	<a href=\"#\" onclick=\"return emailManager('Scan_"+fileJS+"');\" class=\"tool icon email\"><span class=\"tip\">Email</span></a> \

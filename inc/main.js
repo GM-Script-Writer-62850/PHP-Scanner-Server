@@ -635,23 +635,46 @@ function bulkView(link){
 	else
 		return printMsg('Error','No files selected','center',-1);
 }
-function storeImgurUploads(img){
-	if(typeof(localStorage)!="object")
-		return false;
-	var data=localStorage.getItem('imgur'),id,b,a,ele,ele2,div,f;
-	data=parseJSON(data==null?'{}':localStorage.getItem('imgur'));
-	ele=getID('imgur-uploads');
+function getImgurBox(){
+	var ele=getID('imgur-uploads');
 	if(!ele){
 		ele=getID('imgur-box-setup');
 		if(ele){
-			ele2=document.createElement('div');
+			var ele2=document.createElement('div');
 			ele2.className='box box-full';
 			ele2.id='imgur-uploads';
 			ele2.innerHTML='<h2>Imgur Uploads<a href="#" onclick="return imgurDel(\'imgur-uploads\',false)" class="tool icon del"><span class="tip">Hide</span></a></h2>';
 			ele.parentNode.insertBefore(ele2,ele);
-			ele=ele2;
+			return ele2;
 		}
 	}
+	return ele;
+}
+function storeImgurAlbum(id,imgs){
+	if(typeof(localStorage)!="object")
+		return false;
+	var data=localStorage.getItem('imgur'),a='';
+	data=parseJSON(data==null?'{"albums":{}}':data);
+	if(!data['albums'])
+		data['albums']={};
+	data['albums'][id[0]]={"del":id[1],"title":id[2],"imgs":imgs};
+	for(var i in imgs)
+		a+='<img alt="'+imgs[i]+'" src="http://i.imgur.com/'+imgs[i]+'s.jpg"/>';
+	var div=document.createElement('div');
+	div.className="box";
+	div.id='imgur-'+id[0];
+	div.innerHTML='<h2 style="min-height:32px"><span>'+encodeHTML(id[2])+'</span><a href="#" onclick="return '+
+		'imgurDel(\'imgur-'+id[0]+'\',\''+id[0]+'\')" class="tool icon del"><span class="tip">Hide</span></a></h2>'+
+		'<span class="tool"><div class="album" onclick="imgurPopup(\''+encodeHTML(id[2])+'\',\''+id[0]+'\')">'+a+'</div><span class="tip">View Album</span></span>';
+	getImgurBox().appendChild(div);
+	localStorage.setItem('imgur',JSON.stringify(data));
+}
+function storeImgurUploads(img){
+	if(typeof(localStorage)!="object")
+		return false;
+	var data=localStorage.getItem('imgur'),id,b,a,ele,ele2,div,f;
+	data=parseJSON(data==null?'{}':data);
+	ele=getImgurBox();
 	for(var i in img){
 		if(typeof(img[i])=='boolean')
 			continue;
@@ -706,12 +729,12 @@ function bulkUpload(){
 	httpRequest.onreadystatechange = function(){
 		if(httpRequest.readyState==4){
 			if(httpRequest.status==200){//printMsg('Debug',encodeHTML(httpRequest.responseText),'center',0);			
-				var json=parseJSON(httpRequest.responseText);
+				var json=parseJSON(httpRequest.responseText),ids=false,c=0;
 				if(json['success']){
 					printMsg('Success','All '+json['images'].length+' image(s) were uploaded to your new <a href="http://imgur.com/a/'+
 						json['album']['data']['id']+'" target="_blank">album</a><br/>You delete hash is <i>'+json['album']['data']['deletehash']+
 						'</i>. Sorry, I do not know the URL to delete albums. XP','center',0);
-					storeImgurUploads(json['images']);
+					ids=Array();
 				}
 				else{
 					if(json['images'].length==0){
@@ -725,9 +748,21 @@ function bulkUpload(){
 							json['album']['data']['id']+'" target="_blank">album</a> before a error occurred<br/>You delete hash is <i>'+
 							json['album']['data']['deletehash']+'</i>. Sorry, I do not know the URL to delete albums.<br/>The error message was: '+
 							(json['images'][json['images'].length-1]?json['images'][json['images'].length-1]["data"]["error"]:'Connection failure'),'center',0);
-						if(json['images'].length-1>0)
-							storeImgurUploads(json['images']);
+						delete(json['images'][json['images'].length-1]);
+						if(json['images'].length>0)
+							ids=Array();
 					}
+				}
+				if(ids!==false){
+					for(var i in json['images']){
+						if(c>3)
+							break;
+						ids.push(json['images'][i]["data"]["id"]);
+						c++;
+					}
+					storeImgurAlbum(Array(json['album']['data']['id'],json['album']['data']['deletehash'],json['album']['data']['title']),ids);
+					storeImgurUploads(json['images']);
+					imgurPopup(json['album']['data']['title'],json['album']['data']['id']);
 				}
 				var btn=getID('upload-'+now);
 				if(btn)
@@ -819,11 +854,26 @@ function upload(file){
 	return false;
 }
 function imgurPopup(file,links){
+	var attrs='onclick="void(setClipboard(this)?null:this.select());" readonly="readonly" type="text"';
+	if(typeof(links)=='string'){
+		links='http://imgur.com/a/'+links;
+		file=encodeHTML(file);
+		getID("blanket").childNodes[0].innerHTML='<div style="float:left;width:270px;text-align:left;">'+
+			'<h2 class="center" style="font-size:12px;">'+file+'</h2><ul style="list-style:none;padding:0;margin:0;margin-top:90px">'+
+			'<li>View on Imgur:<ul><li><a href="'+links+'" target="_blank">'+file+'</a></li></ul></li>'+
+			'<li>Direct Link (email & IM)<ul><li><input '+attrs+' value="'+links+'"/></li></ul></li>'+
+			'<li>HTML Link (websites & blogs)<ul><li><input '+attrs+' value="&lt;a href=&quot;'+links+'&quot;&gt;'+file+'&lt;/a&gt;"/></li></ul></li>'+
+			'<li>BBCode Link (message boards & forums)<ul><li><input '+attrs+' value="[URL='+links+']'+file+'[/URL]"/></li></ul></li>'+
+			'<li>Markdown Link (reddit comment)<ul><li><input '+attrs+' value="['+file+']('+links+')"/></li></ul></li>'+
+			'</ul></div><iframe style="float:right;border-radius:5px;" width="400" height="400" frameborder="0" src="'+links+'/embed"></iframe>'+
+			'<input type="button" value="Close" style="width:100%;" onclick="toggle(\'blanket\')"/>';
+		popup('blanket',675);
+		return false;
+	}
 	if(links==null){
 		links=parseJSON(localStorage.getItem('imgur'));
 		links=links[file];
 	}
-	var attrs='onclick="void(setClipboard(this)?null:this.select());" readonly="readonly" type="text"';
 	getID("blanket").childNodes[0].innerHTML='<h2 style="font-size:12px;">'+file.substr(5)+' is on Imgur</h2>'+
 		'<div id="imgur-data"><div><img id="'+encodeHTML(file)+'" style="float:left;margin-right:5px;" src="'+links['small_square']+'" width="90" height="90"/>'+
 		'<ul style="list-style:none;">'+
@@ -901,6 +951,7 @@ function imgurPopup(file,links){
 	}
 	return false;
 }
+
 function imgurDel(id,img){
 	if(img===false){
 		if(confirm("Are you sure you want to hide ALL imgur uploads?\nThis only deletes the images from this page,\nnot imgur.")===false)
@@ -916,9 +967,13 @@ function imgurDel(id,img){
 	if(e==null)
 		return false;
 	e=parseJSON(e);
-	delete(e[img]);
+	if(!e[img]){
+		delete(e['albums'][img]);
+	}
+	else
+		delete(e[img]);
 	e=JSON.stringify(e);
-	if(e.length>2)
+	if(e.length>2&&e!='{"albums":{}}')
 		localStorage.setItem('imgur',e);
 	else{
 		localStorage.removeItem('imgur');
