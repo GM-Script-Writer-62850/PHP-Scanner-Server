@@ -17,7 +17,7 @@ getID("preview_links").innerHTML="<h2><?php echo htmlspecialchars($file); ?></h2
 	if($_GET['page']=="Edit")
 		echo '<span class=\\"tool icon edit-off\\"><span class=\\"tip\\">Edit (Disabled)</span></span>';
 	else
-		echo '<a href=\\"index.php?page=Edit&amp;file="+file+"\\" class=\\"tool icon edit\\"><span class=\\"tip\\">Edit</span></a>';
+		echo '<a href=\\"index.php?page=Edit&amp;file="+fileURL+"\\" class=\\"tool icon edit\\"><span class=\\"tip\\">Edit</span></a>';
 	?> \
 	<a href=\"index.php?page=View&amp;file=Scan_"+fileURL+"\" class=\"tool icon view\"><span class=\"tip\">View</span></a> \
 	<a href=\"#\" class=\"tool icon upload\" onclick=\"return upload('Scan_"+fileJS+"')\"><span class=\"tip\">Upload to Imgur</span></a> \

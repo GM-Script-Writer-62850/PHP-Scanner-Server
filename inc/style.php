@@ -666,7 +666,7 @@ code {
 	cursor: pointer;
 }
 
-#imgur-uploads .box .album{
+#imgur-uploads .box .album {
 	width: 160px;
 	height: 160px;
 	margin-top: 3px;
@@ -682,8 +682,6 @@ code {
 	/*display: -moz-box; does not work in firefox as of writing this
 	-moz-box-pack: center;
 	-moz-box-align: center;*/
-	text-decoration: none;
-
 }
 
 #imgur-uploads .box .album img {

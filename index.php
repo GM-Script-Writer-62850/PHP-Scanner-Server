@@ -1093,6 +1093,8 @@ else{
 		else{
 			echo "Set_Cookie( 'scan', '$S_FILENAME', 1, '/', '', '' );".
 				"Set_Cookie( 'preview', '$P_FILENAME', 1, '/', '', '' );".
+				"Set_Cookie( 'source', '$SOURCE', 1, '/', '', '' );".
+				"Set_Cookie( 'size', '$SIZE', 1, '/', '', '' );".
 				"Set_Cookie( 'scanner', '$SCANNER', 1, '/', '', '' );";
 		}
 		$ORNT=($ORNT==''?'vert':$ORNT);

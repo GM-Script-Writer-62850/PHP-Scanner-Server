@@ -215,9 +215,10 @@ Scan Image
 <span class="tool icon email-off"><span class="tip">Email (Disabled)</span></span>
 <?php
 $ls='<span class="tool icon recent-off"><span class="tip">Last Scan (Disabled)</span></span>';
-if(isset($_COOKIE["scan"])&&isset($_COOKIE["preview"])){
+if(isset($_COOKIE["scan"])&&isset($_COOKIE["preview"])&&isset($_COOKIE["size"])&&isset($_COOKIE["source"])){
 	if(file_exists("scans/".$_COOKIE["scan"])&&file_exists("scans/".$_COOKIE["preview"]))
-		echo "<a class=\"tool icon recent\" onclick=\"lastScan('".html(js($_COOKIE["scan"]))."','".html(js($_COOKIE["preview"]))."','".html(js($_COOKIE["scanner"]))."',this');\" href=\"javascript:void(null)\"><span class=\"tip\">Last Scan</span></a>";
+		echo "<a class=\"tool icon recent\" onclick=\"lastScan('".html(js($_COOKIE["scan"]))."','".html(js($_COOKIE["preview"]))."','".html(js($_COOKIE["scanner"]))."','".
+			html(js($_COOKIE["source"]))."','".html(js($_COOKIE["size"]))."',this);\" href=\"javascript:void(null)\"><span class=\"tip\">Last Scan</span></a>";
 	else
 		echo $ls;
 }

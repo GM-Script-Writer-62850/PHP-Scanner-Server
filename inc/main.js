@@ -1,5 +1,5 @@
 var supportErrorA="Your browser does not support the ", supportErrorB="<br/>You have 3 choices: Ignore This, update your browser, and switch browsers.",
-	ias, previewIMG, scanners, paper, filesLst={}, TC='textContent';// TC can be changed to 'innerText' see header.php
+	ias, previewIMG, scanners, checkTimeout, paper, filesLst={}, TC='textContent';// TC can be changed to 'innerText' see header.php
 $(document).ready(function (){
 	e=$('img[title="Preview"]');
 	previewIMG=e[0];
@@ -41,6 +41,7 @@ function pre_scan(form,ias){
 		document.scanning.scanner.removeAttribute('disabled');
 		setTimout(function(){document.scanning.scanner.setAttribute('disabled','disabled');},250);
 	}
+	clearTimeout(checkTimeout);
 	return true;
 }
 function sendE(ele,e){
@@ -157,15 +158,17 @@ function changeColor(colors){
 	N.href='inc/style.php?colors='+colors+'&nocache='+new Date().getTime();
 	document.body.setAttribute('onunload',"if(!document.cookie)alert('The color theme was not saved because you have cookies disabled')");
 }
-function lastScan(scan,preview,scanner,ele){
+function lastScan(scan,preview,scanner,source,size,ele){
 	generic=scan.slice(5);
 	previewIMG.src='scans/'+preview;
 	ias.setOptions({'enable': true });
 	ias.update();
 	getID('sel').removeAttribute('style');
 	document.scanning.scanner.value=scanner;
-	sendE(document.scanning.scanner,'change');
+	scannerChange(document.scanning.scanner);
 	document.scanning.scanner.disabled='disabled';
+	document.scanning.source.value=source;
+	document.scanning.size.value=size;
 	sendE(document.scanning.size,'change');
 	ele.parentNode.parentNode.innerHTML='<h2>'+generic+'</h2><p><a class="tool icon download" href="download.php?file='+scan+'"><span class="tip">Download</span></a> '+
 		'<a class="tool icon zip" href="download.php?file='+scan+'&amp;compress"><span class="tip">Download Zip</span></a> '+
@@ -257,7 +260,7 @@ function checkScanners(){
 						printMsg('Information',"The scanner currently selected is being used by someone right now",'center',-1);
 				}
 			}
-			setTimeout(checkScanners,5000);
+			checkTimeout=setTimeout(checkScanners,5000);
 		}
 	};
 	httpRequest.open('GET', 'config/scanners.json?cacheBust='+new Date().getTime(), true);
@@ -730,12 +733,8 @@ function bulkUpload(){
 		if(httpRequest.readyState==4){
 			if(httpRequest.status==200){//printMsg('Debug',encodeHTML(httpRequest.responseText),'center',0);			
 				var json=parseJSON(httpRequest.responseText),ids=false,c=0;
-				if(json['success']){
-					printMsg('Success','All '+json['images'].length+' image(s) were uploaded to your new <a href="http://imgur.com/a/'+
-						json['album']['data']['id']+'" target="_blank">album</a><br/>You delete hash is <i>'+json['album']['data']['deletehash']+
-						'</i>. Sorry, I do not know the URL to delete albums. XP','center',0);
+				if(json['success'])
 					ids=Array();
-				}
 				else{
 					if(json['images'].length==0){
 						if(!json['album'])
