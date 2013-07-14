@@ -302,79 +302,60 @@ p .icon:not(:last-child){
 .zip-off {
 	background-position: 0 0;
 }
-
 .zip {
 	background-position: -16px 0;
 }
-
 .download-off {
 	background-position: -32px 0;
 }
-
 .download {
 	background-position: -48px 0;
 }
-
 .pdf-off {
 	background-position: 0 -16px;
 }
-
 .pdf {
 	background-position: -16px -16px;
 }
-
 .print-off {
 	background-position: -32px -16px;
 }
-
 .print {
 	background-position: -48px -16px;
 }
-
 .view-off {
 	background-position: 0 -32px;
 }
-
 .view {
 	background-position: -16px -32px;
 }
-
 .edit-off {
 	background-position: -32px -32px;
 }
-
 .edit {
 	background-position: -48px -32px;
 }
-
 .del-off {
 	background-position: -64px 0;
 }
-
 .del {
 	background-position: -64px -16px;
 }
-
 .upload {
 	background-position: -48px -48px;
 }
-
 .upload-off {
 	background-position: -32px -48px;
 }
-
 .recent {
 	background-position: -64px -48px;
 }
-
 .recent-off {
 	background-position: -64px -32px;
 }
-
 .email {
 	background-position: -16px -48px;
 }
-
 .email-off {
 	background-position: 0 -48px;
 }
@@ -659,7 +640,7 @@ code {
 	word-wrap: break-word;
 }
 
-#imgur-uploads .box img {
+#imgur-uploads .box .tool > img {
 	width: 160px;
 	height: 160px;
 	margin: 3px 3px 0;
@@ -671,6 +652,7 @@ code {
 	height: 160px;
 	margin-top: 3px;
 	border: 1px solid #<?php echo $BG_COLOR; ?>;
+	cursor: pointer;
 	display: block;
 	overflow: hidden;
 	display: -webkit-box;

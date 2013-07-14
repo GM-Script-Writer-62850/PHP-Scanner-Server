@@ -13,6 +13,7 @@ function ext2mime($ext){
 		case "txt": return "text/plain";
 		case "pdf": return "application/pdf";
 		case "bz2": return "application/x-bzip";
+		case "lzma": return "application/x-tar";
 		case "zip": return "application/zip";
 	}
 }
@@ -34,11 +35,11 @@ if(isset($_GET['file'])){
 		$_GET['file']=substr($_GET['file'],strrpos($_GET['file'],"/")+1);
 }
 if(isset($_GET['downloadServer'])){
-	$file="/tmp/scanner-".md5(time().rand()).".tar.bz2";
-	$cmd="tar cjf '$file' --exclude=\"scans/*\" --exclude=\"config/*.*\"";
-	$output=shell_exec("$cmd ./ 2>&1");
+	$file="/tmp/scanner-".md5(time().rand()).".tar.lzma";
+	$cmd="tar cfa '$file' ".'--exclude="scans/*" --exclude="config/*.*" --exclude="config/parallel/*" ./';
+	$output=shell_exec("$cmd 2>&1");
 	if(is_file($file)){
-		returnFile($file,'PHP-Scanner-Server-'.$_GET['ver'].'.tar.bz2','bz2');
+		returnFile($file,'PHP-Scanner-Server-'.$_GET['ver'].'.tar.lzma','lzma');
 		@unlink($file);
 	}
 	else

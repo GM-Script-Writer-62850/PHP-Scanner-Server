@@ -39,7 +39,7 @@ function pre_scan(form,ias){
 		return;
 	if(document.scanning.scanner.disabled){
 		document.scanning.scanner.removeAttribute('disabled');
-		setTimout(function(){document.scanning.scanner.setAttribute('disabled','disabled');},250);
+		setTimeout(function(){document.scanning.scanner.setAttribute('disabled','disabled');},250);
 	}
 	clearTimeout(checkTimeout);
 	return true;
