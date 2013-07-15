@@ -27,9 +27,7 @@ h2 .del{
 	_display:none;
 }
 .icon {
-	_height:16px;
-	_width:16px;
-	_padding:0;
+	_height:0;
 }
 .control select{
 	_width:150px;

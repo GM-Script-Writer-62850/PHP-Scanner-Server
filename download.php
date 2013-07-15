@@ -49,16 +49,25 @@ else if((isset($_GET['type'])?$_GET['type']:'')=='pdf'&&!isset($_GET['raw'])){
 	if(!is_file($Fpdf_loc))
 		die(returnFile("I have no idea where fpdf is installed to, I just know it is not at '$Fpdf_loc'\nEdit Line 2 of '".$_SERVER["SCRIPT_FILENAME"].
 			"' with the correct info\nTry running this command to find it:\nlocate fpdf.php",'Error.txt','txt'));
-	$Pwidth=215.9;// Paper Width in millimeters
-	$Pheight=279.4;// Paper Height in millimeters
+	$Pwidth=215.9;// Letter Paper Width in millimeters
+	$Pheight=279.4;// Letter Paper Height in millimeters
+	if(isset($_GET['size'])){
+		$size=explode('-',$_GET['size']);
+		$Pwidth=is_numeric($size[0])?$size[0]:$Pwidth;
+		$Pheight=is_numeric($size[1])?$size[1]:$Pheight;
+	}
 	$fontSize=16;
 	$width=$Pwidth;
 	$height=$Pheight;
 	require($Fpdf_loc);
 	$pdf=new FPDF('P','mm',array($width,$height));
 	$full=isset($_GET['full']);
-	$marginLeft=$full?0:10;
-	$marginTop=$full?0:20;
+	$marginLeft=$full?0:$width/21.59;
+	$marginTop=$full?0:$height/13.97;
+	$pdf->SetLeftMargin($marginLeft);
+	$pdf->SetRightMargin($marginLeft);
+	$pdf->SetTopMargin($marginTop/2);
+	$pdf->SetAutoPageBreak(true, $marginTop);
 	$pages=0;
 	$files=json_decode($_GET['json']);
 	if($files==null)
@@ -77,7 +86,7 @@ else if((isset($_GET['type'])?$_GET['type']:'')=='pdf'&&!isset($_GET['raw'])){
 		$pages+=1;
 		if($full){
 			if($ext=='txt'){
-				$pdf->SetFont('Arial','',$fontSize*0.75);
+				$pdf->SetFont('Arial','',$fontSize*0.75*($width/215.9));
 				$pdf->MultiCell(0,5,file_get_contents("scans/$file"),0,"L",false);
 			}
 			else{
@@ -90,21 +99,21 @@ else if((isset($_GET['type'])?$_GET['type']:'')=='pdf'&&!isset($_GET['raw'])){
 			}
 		}
 		else{
-			$pdf->SetFont('Arial','B',$fontSize);
-			$pdf->MultiCell(0,$fontSize,$file,0,"C",false);
+			$pdf->SetFont('Arial','B',$fontSize*($width/215.9));
+			$pdf->MultiCell(0,$fontSize*($width/215.9),$file,0,"C",false);
 			if($ext=='txt'){
-				$pdf->SetFont('Arial','',$fontSize*0.75);
-				$pdf->MultiCell(0,5,file_get_contents("scans/$file"),0,"L",false);
+				$pdf->SetFont('Arial','',$fontSize*0.75*($width/215.9));
+				$pdf->MultiCell(0,5*($width/215.9),file_get_contents("scans/$file"),0,"L",false);
 			}
 			else{
 				$image=explode("x",shell_exec("identify -format '%wx%h' ".escapeshellarg("scans/$file")));
 				$width=$width-($marginLeft*2);
-				$height=$height-$marginTop*2-$fontSize*0.75;
+				$height=$height-$marginTop*2-$fontSize*0.75*($Pwidth/215.9)/2;
 				if($height/$width<=$image[1]/$image[0])
 					$width=0;
 				else
 					$height=0;
-				$pdf->Image('scans/'.$file,$marginLeft,$marginTop/2+$fontSize,$width,$height);
+				$pdf->Image('scans/'.$file,$marginLeft,$marginTop/2+$fontSize*($Pwidth/215.9),$width,$height);
 			}
 		}
 	}
@@ -158,7 +167,10 @@ else if(isset($_GET['json'])){
 			$file="Does not support '$type' files";
 		}
 		if(is_file($file)){
-			returnFile($file,$name,$type);
+			if(filesize($file)>0)
+				returnFile($file,$name.'---'.filesize($file),$type);
+			else
+				returnFile(debug($cmd,$output),'Error.txt','txt');
 			@unlink($file);
 		}
 		else if(isset($output))
@@ -204,6 +216,13 @@ else if(isset($_GET['update'])){
 	else
 		echo '{"state":-2,"vs":null}';
 }
-else
-	returnFile("You: Hey download.php I want a download.\nMe: Ok here you go!\nYou: Ha ha, very funny that is not what I meant\nMe: Well maybe if you told me what you want I could give it to you","Reply.txt",'txt');
+else{
+	ob_start();
+	echo "GET=";
+	var_dump($_GET);
+	echo "POST=";
+	var_dump($_POST);
+	$text=ob_get_clean();
+	returnFile("You: Hey download.php I want a download.\nMe: Ok here you go!\nYou: Ha ha, very funny that is not what I meant\nMe: Well maybe if you told me what you want I could give it to you\n\nDEBUG:\n$text","Reply.txt",'txt');
+}
 ?>

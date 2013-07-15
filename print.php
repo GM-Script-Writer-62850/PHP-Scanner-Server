@@ -1,6 +1,4 @@
-<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN" "http://www.w3.org/TR/html4/strict.dtd">
-<html><head><meta http-equiv="Content-type" content="text/html; charset=UTF-8"/>
-<link rel="shortcut icon" href="inc/images/favicon.png"/>
+<!DOCTYPE html><html><head><meta charset="UTF-8"/><link rel="shortcut icon" href="inc/images/favicon.png"/>
 <style type="text/css">body,div{text-align:center;}div{padding:20px;display:inline-block;}.break div{padding:0;width:100%;page-break-after:always;}</style><title><?php
 if(isset($_GET['file'])){
 	$files=json_decode('{"'.$_GET['file'].'":1}');
@@ -31,7 +29,7 @@ foreach($files as $file => $val){
 		}
 		else{
 			$file=htmlspecialchars($file);
-			echo "<img src=\"scans/$file\">";
+			echo "<img alt=\"$file\" src=\"scans/$file\">";
 		}
 	}
 	else

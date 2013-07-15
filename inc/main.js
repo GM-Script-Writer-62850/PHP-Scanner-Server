@@ -350,7 +350,7 @@ function sourceChange(ele){
 	width=info['WIDTH-'+ele.value];
 	height=info['HEIGHT-'+ele.value];
 	html2='<option value="full" title="'+width+' mm x '+height+' mm">Full Scan: '+roundNumber(width/25.4,2)+'" x '+roundNumber(height/25.4,2)+'"</option>';
-	for(var i in paper){
+	for(var i in paper){// Similar stuff in ./writescripts/paper.php
 		if(width>=paper[i]['width']&&height>=paper[i]['height']){
 			html2+='<option value="'+paper[i]['width']+'-'+paper[i]['height']+'" title="'+paper[i]['width']+' mm x '+paper[i]['height']+' mm"'+(i=='Letter'?' selected="selected"':'')+'>'+i+': '+
 				roundNumber(paper[i]['width']/25.4,2)+'" x '+roundNumber(paper[i]['height']/25.4,2)+'"</option>';
@@ -538,8 +538,13 @@ function disableIcons(){// Converts disabled icons to act like disabled icons
 	}
 }
 function PDF_popup(files){
-	if(typeof(files)=='string'){
+	if(typeof(files)=='string')
 		files='{"'+files.replace(/"/g,'\"')+'":1}';
+	else if(files.tagName=='form'||files.tagName=='FORM'){
+		// Apparently if I use files.action property it sends format=files.format.value instead of files.format.value so I will just use window.open
+		window.open('download.php?type=pdf&json='+files.files.value+'&size='+files.size.value+'&'+files.format.value);
+		toggle('blanket');
+		return false;
 	}
 	else{
 		if(typeof(JSON)!='object')
@@ -554,16 +559,35 @@ function PDF_popup(files){
 		files=JSON.stringify(files);
 	}
 	files=encodeURIComponent(files);
-	getID("blanket").childNodes[0].innerHTML='How would you prefer for your PDF download?<br/>\
-		A scan placed on the page with a title or<br/>\
-		a would you prefer the scan as the page.<br/>\
-		<button onclick="window.open(\'download.php?json='+files+'&amp;type=pdf\');setTimeout(function(){toggle(\'blanket\');},100);">\
-			<img src="inc/images/pdf-scaled.png" width="106" height="128"/></button>\
-		<button onclick="window.open(\'download.php?json='+files+'&amp;type=pdf&amp;full\');setTimeout(function(){toggle(\'blanket\');},100);">\
-			<img src="inc/images/pdf-full.png" width="106" height="128"/></button>\
-		<br/><input type="button" onclick="window.open(\'download.php?json='+files+'&amp;type=pdf&amp;raw\');setTimeout(function(){toggle(\'blanket\');},100);" \
-			value="I don\'t care just give me a PDF" style="width:261px"/>\
-		<br/><input type="button" value="Cancel" style="width:261px;" onclick="toggle(\'blanket\')"/>';
+	getID("blanket").childNodes[0].innerHTML='<form onsubmit="return PDF_popup(this)" target="_blank" action="#" method="GET">How would you prefer for your PDF download?<br/>\
+		A scan placed on the page with a title or<br/><input type="hidden" name="files" value="'+files+'"/><input type="hidden" name="format" value=""/>\
+		a would you prefer the scan as the page.<br/>Paper Type: <select id="PDF_PAPER" name="size" style="width:190px;"><option value="">Loading...</option></select>\
+		<button type="submit"><img src="inc/images/pdf-scaled.png" width="106" height="128" alt="With title"/></button>\
+		<button type="submit" onclick="this.parentNode.format.value=\'full\';"><img src="inc/images/pdf-full.png" width="106" height="128" alt="Fill page with scan"/></button>\
+		<br/><input type="submit" onclick="this.parentNode.format.value=\'raw\';" value="I don\'t care just give me a PDF" style="width:261px"/>\
+		<br/><input type="button" value="Cancel" style="width:261px;" onclick="toggle(\'blanket\')"/></form>';
+	var httpRequest = new XMLHttpRequest();
+	httpRequest.onreadystatechange = function(){
+		if(httpRequest.readyState==4){
+			if(httpRequest.status==200)
+				paper=parseJSON(httpRequest.responseText);
+			else if(httpRequest.status==404)
+				paper={"Paper":{"height":279.4,"width":215.9},"Picture":{"height":152.4,"width":101.6}};
+			var opt,ele=getID('PDF_PAPER');
+			ele.removeChild(ele.childNodes[0]);
+			for(var i in paper){
+				opt=document.createElement('option');
+				opt.value=paper[i]['width']+'-'+paper[i]['height'];
+				if(i=='Letter')
+					opt.selected="selected";
+				opt.title=paper[i]['width']+' mm x '+paper[i]['height']+' mm';
+				opt[TC]=i+': '+roundNumber(paper[i]['width']/25.4,2)+'" x '+roundNumber(paper[i]['height']/25.4,2)+'"';
+				ele.appendChild(opt);
+			}
+		}
+	};
+	httpRequest.open('GET', 'config/paper.json');
+	httpRequest.send(null);
 	popup('blanket',290);
 	return false;
 }
@@ -705,7 +729,7 @@ function storeImgurUploads(img){
 		div.id='imgur-'+id;
 		div.innerHTML='<h2><span>'+f.slice(5,f.lastIndexOf('.'))+'</span><a href="#" onclick="return '+
 			'imgurDel(\'imgur-'+id+'\',\''+f+'\')" class="tool icon del"><span class="tip">Hide</span></a></h2>'+
-			'<span class="tool"><img src="'+data[f]['big_square']+'" onclick="imgurPopup(\''+f+'\',null)"/><span class="tip">View Codes</span></span>';
+			'<span class="tool"><img alt="'+data[f]['big_square']+'" src="'+data[f]['big_square']+'" onclick="imgurPopup(\''+f+'\',null)"/><span class="tip">View Codes</span></span>';
 		ele.appendChild(div);
 	}
 	localStorage.setItem('imgur',JSON.stringify(data));
@@ -874,7 +898,7 @@ function imgurPopup(file,links){
 		links=links[file];
 	}
 	getID("blanket").childNodes[0].innerHTML='<h2 style="font-size:12px;">'+file.substr(5)+' is on Imgur</h2>'+
-		'<div id="imgur-data"><div><img id="'+encodeHTML(file)+'" style="float:left;margin-right:5px;" src="'+links['small_square']+'" width="90" height="90"/>'+
+		'<div id="imgur-data"><div><img id="'+encodeHTML(file)+'" alt="'+encodeHTML(file)+'" style="float:left;margin-right:5px;" src="'+links['small_square']+'" width="90" height="90"/>'+
 		'<ul style="list-style:none;">'+
 		'<li>View on Imgur:<ul><li><a href="'+links['imgur_page']+'" target="_blank">'+links['imgur_page'].substr(7)+'</a></li></ul></li>'+
 		'<li>Direct Link:<ul><li><a href="'+links['original']+'" target="_blank">'+links['original'].substr(7)+'</a></li></ul></li>'+

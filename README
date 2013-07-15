@@ -5,7 +5,7 @@ Based on Linux Scanner Server 1.2 Beta
 
 Released under the GPL 2.0
 
-Last Update: 07/11/2013 (Month/Day/Year)
+Last Update: 07/15/2013 (Month/Day/Year)
 For Version: 1.3-7
 
 Change Log:
@@ -148,6 +148,17 @@ Enabling Auto-Deletion of old scans:
 		in cleaner.php) and deletes them.
 
 Frequently asked questions/issues:
+	Some times when I download should be a large file I get nothing (a 0 byte file)
+		You will need to increase the max memory PHP can use, 
+			To do this run this command:
+				cat /etc/php5/apache2/php.ini -n| grep memory_limit
+			You will see something like this:
+				407	memory_limit = 128M
+			407 is the line number the setting is on
+			We need to change the 128 to a higher number
+			Open up /etc/php5/apache2/php.ini as root and change the number
+			I am not sure how high you will need it, I have had issues with files under 60MB hitting the 128MB limit (total usage was under 45% of the limit)
+			I set mine to 1024 (1 GiB) if you need more memory than you have ram be sure your swap partition is large enough to cover the overdraw
 	Why don't you have a .deb .rpm etc file I an install
 		This more like a addon than a program so I am note sure if one of thoes would be approate, I have written bash
 		scripts to install and update this, if you look they are on the Downloads page in the Wiki

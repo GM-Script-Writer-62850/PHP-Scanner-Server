@@ -1,6 +1,6 @@
 <!DOCTYPE html><html><?php $path=is_numeric($GLOBALS['PAGE'])?'/':''; ?>
 <head>
-<meta http-equiv="Content-type" content="text/html; charset=UTF-8"/>
+<meta charset="UTF-8"/>
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="chrome=1"><![endif]-->
 <title><?php echo html($GLOBALS['NAME'].' ~ '.$GLOBALS['PAGE'].' - '.$page); ?></title>
 <link id="style" rel="stylesheet" href="<?php echo $path; ?>inc/style.php<?php
