@@ -13,9 +13,9 @@ if($GLOBALS['PAGE']=='Config')
 	echo '<link id="style_new" rel="stylesheet" href="inc/style.php'.(isset($_COOKIE["colors"])?'?colors='.$_COOKIE["colors"]:'').'" type="text/css"/>';
 ?>
 <link rel="shortcut icon" href="<?php echo $path; ?>inc/images/favicon.png"/>
-<link rel="stylesheet" type="text/css" href="<?php echo $path; ?>jquery.imgareaselect-0.9.10/css/imgareaselect-animated.css"/>
-<script type="text/javascript" src="<?php echo $path; ?>jquery.imgareaselect-0.9.10/scripts/jquery.min.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>jquery.imgareaselect-0.9.10/scripts/jquery.imgareaselect.pack.js"></script>
+<link rel="stylesheet" type="text/css" href="<?php echo $path; ?>jquery/imgareaselect-0.9.10/css/imgareaselect-animated.css"/>
+<script type="text/javascript" src="<?php echo $path; ?>jquery/imgareaselect-0.9.10/scripts/jquery.min.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>jquery/imgareaselect-0.9.10/scripts/jquery.imgareaselect.pack.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>inc/model-dialog.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>inc/cookie.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>inc/main.js"></script>

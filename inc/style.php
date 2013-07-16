@@ -56,6 +56,10 @@ button, input[type="button"], input[type="submit"], input[type="reset"], select,
 	cursor: pointer;
 }
 
+input[type="text"][size="3"]{
+	width: 37px;
+}
+
 a {
 	color: #<?php echo $BG_COLOR; ?>;
 	-webkit-transition-property: color;
@@ -117,7 +121,6 @@ a:hover {
 
 #container {
 	width: 735px;
-	/*height: 100%;*/
 	margin: auto;
 	padding: 0.5em;
 	text-align: left;
@@ -696,25 +699,32 @@ code {
 	float: left;
 	width: 50%;
 }
-
 .dualForm form.m {
 	border-left: 1px solid #<?php echo $BG_COLOR; ?>;
 	margin-left: -1px;
 }
-
 .dualForm form span {
 	width: 100px;
 	display: inline-block;
 }
-.dualForm form input[type="text"], .dualForm form input[type="password"] {
+.dualForm form input[type="text"]:not([size]), .dualForm form input[type="password"] {
 	width: 125px;
 }
-
 .dualForm .footer {
 	width: 100%;
 	border-top: 1px solid #<?php echo $BG_COLOR; ?>;
 	display: inline-block;
 	text-align: center;
+}
+.dualForm .largeButton{
+	float: right;
+	width: 200px;
+	height: 125px;
+}
+.dualForm .largeButton span{
+	transform: rotate(-20deg) scale(5);
+	-ms-transform: rotate(-20deg) scale(5);
+	-webkit-transform: rotate(-20deg) scale(5);
 }
 
 #text-editor {

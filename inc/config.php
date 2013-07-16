@@ -35,7 +35,7 @@ Remove All the Scans</a> with that link. If you are having another issue you may
 <div class="box">
 <h2>Paper Configuration</h2>
 <p>
-<a href="index.php?page=Config&amp;action=Detect-Paper">Detect paper</a><br/>
+<a href="index.php?page=Config&amp;action=Detect-Paper"<?php echo file_exists('config/paper.json')?' onclick="return confirm(\'Replace all known paper sizes\')"':'' ?>>Detect paper</a><br/>
 <a href="index.php?page=Paper%20Manager">Paper size manager</a><br/>
 <?php
 if(file_exists("config/paper.json"))

@@ -133,7 +133,8 @@ function validateKey(ele,e,ias){
 	if(e.keyCode)
 		e.which=e.keyCode;// Stoupid IE needs to follow the standards
 	if(e.which==13){// Enter
-		setRegion(ias);
+		if(ias!=null)
+			setRegion(ias);
 		return false;
 	}
 	else if(e.which==43){// +
@@ -141,15 +142,14 @@ function validateKey(ele,e,ias){
 		return false;
 	}
 	else if(e.which==45){// -
-		ele.value--;
+		if(ele.value>0)
+			ele.value--;
 		return false;
 	}
-	else if(!isNaN(String.fromCharCode(e.which))||e.which==8||e.which==0){// number or backspace or unknown
+	else if(!isNaN(String.fromCharCode(e.which))||e.which==8||e.which==0)// number, backspace, or unknown
 		return true;
-	}
-	else{// anything else (mostly letters)
-		return false;
-	}
+	// anything else (mostly letters)
+	return false;
 }
 function changeColor(colors){
 	var O=getID('style');
@@ -350,7 +350,7 @@ function sourceChange(ele){
 	width=info['WIDTH-'+ele.value];
 	height=info['HEIGHT-'+ele.value];
 	html2='<option value="full" title="'+width+' mm x '+height+' mm">Full Scan: '+roundNumber(width/25.4,2)+'" x '+roundNumber(height/25.4,2)+'"</option>';
-	for(var i in paper){// Similar stuff in ./writescripts/paper.php
+	for(var i in paper){// Similar stuff in PDF_popup function
 		if(width>=paper[i]['width']&&height>=paper[i]['height']){
 			html2+='<option value="'+paper[i]['width']+'-'+paper[i]['height']+'" title="'+paper[i]['width']+' mm x '+paper[i]['height']+' mm"'+(i=='Letter'?' selected="selected"':'')+'>'+i+': '+
 				roundNumber(paper[i]['width']/25.4,2)+'" x '+roundNumber(paper[i]['height']/25.4,2)+'"</option>';
@@ -538,10 +538,23 @@ function disableIcons(){// Converts disabled icons to act like disabled icons
 	}
 }
 function PDF_popup(files){
+	function populateSelect(ele){
+		var opt,ele=getID('PDF_PAPER');
+		ele.removeChild(ele.childNodes[0]);
+		for(var i in paper){// Similar code in changeSource function
+			opt=document.createElement('option');
+			opt.value=paper[i]['width']+'-'+paper[i]['height'];
+			if(i=='Letter')
+				opt.selected="selected";
+			opt.title=paper[i]['width']+' mm x '+paper[i]['height']+' mm';
+			opt[TC]=i+': '+roundNumber(paper[i]['width']/25.4,2)+'" x '+roundNumber(paper[i]['height']/25.4,2)+'"';
+			ele.appendChild(opt);
+		}
+	}
 	if(typeof(files)=='string')
 		files='{"'+files.replace(/"/g,'\"')+'":1}';
 	else if(files.tagName=='form'||files.tagName=='FORM'){
-		// Apparently if I use files.action property it sends format=files.format.value instead of files.format.value so I will just use window.open
+		// Apparently if I use the files.action property it sends format=files.format.value instead of files.format.value so I will just use window.open
 		window.open('download.php?type=pdf&json='+files.files.value+'&size='+files.size.value+'&'+files.format.value);
 		toggle('blanket');
 		return false;
@@ -566,28 +579,19 @@ function PDF_popup(files){
 		<button type="submit" onclick="this.parentNode.format.value=\'full\';"><img src="inc/images/pdf-full.png" width="106" height="128" alt="Fill page with scan"/></button>\
 		<br/><input type="submit" onclick="this.parentNode.format.value=\'raw\';" value="I don\'t care just give me a PDF" style="width:261px"/>\
 		<br/><input type="button" value="Cancel" style="width:261px;" onclick="toggle(\'blanket\')"/></form>';
-	var httpRequest = new XMLHttpRequest();
-	httpRequest.onreadystatechange = function(){
-		if(httpRequest.readyState==4){
-			if(httpRequest.status==200)
-				paper=parseJSON(httpRequest.responseText);
-			else if(httpRequest.status==404)
-				paper={"Paper":{"height":279.4,"width":215.9},"Picture":{"height":152.4,"width":101.6}};
-			var opt,ele=getID('PDF_PAPER');
-			ele.removeChild(ele.childNodes[0]);
-			for(var i in paper){
-				opt=document.createElement('option');
-				opt.value=paper[i]['width']+'-'+paper[i]['height'];
-				if(i=='Letter')
-					opt.selected="selected";
-				opt.title=paper[i]['width']+' mm x '+paper[i]['height']+' mm';
-				opt[TC]=i+': '+roundNumber(paper[i]['width']/25.4,2)+'" x '+roundNumber(paper[i]['height']/25.4,2)+'"';
-				ele.appendChild(opt);
+	if(paper==null){
+		var httpRequest = new XMLHttpRequest();
+		httpRequest.onreadystatechange = function(){
+			if(httpRequest.readyState==4){
+				paper=httpRequest.status==200?parseJSON(httpRequest.responseText):{"Paper":{"height":279.4,"width":215.9},"Picture":{"height":152.4,"width":101.6}};
+				populateSelect();
 			}
-		}
-	};
-	httpRequest.open('GET', 'config/paper.json');
-	httpRequest.send(null);
+		};
+		httpRequest.open('GET', 'config/paper.json');
+		httpRequest.send(null);
+	}
+	else
+		populateSelect();
 	popup('blanket',290);
 	return false;
 }
@@ -681,7 +685,7 @@ function storeImgurAlbum(id,imgs){
 	if(typeof(localStorage)!="object")
 		return false;
 	var data=localStorage.getItem('imgur'),a='';
-	data=parseJSON(data==null?'{"albums":{}}':data);
+	data=(data==null?{"albums":{}}:parseJSON(data));
 	if(!data['albums'])
 		data['albums']={};
 	data['albums'][id[0]]={"del":id[1],"title":id[2],"imgs":imgs};
@@ -700,7 +704,7 @@ function storeImgurUploads(img){
 	if(typeof(localStorage)!="object")
 		return false;
 	var data=localStorage.getItem('imgur'),id,b,a,ele,ele2,div,f;
-	data=parseJSON(data==null?'{}':data);
+	data=(data==null?{}:parseJSON(data));
 	ele=getImgurBox();
 	for(var i in img){
 		if(typeof(img[i])=='boolean')
@@ -827,7 +831,7 @@ function upload(file){
 	var test=true;
 	if(typeof(localStorage)=='object'){
 		json=localStorage.getItem('imgur');
-		json=parseJSON(json==null?'{}':json);
+		json=(json==null?{}:parseJSON(json));
 		if(json[file]){
 			test=false;
 			if(confirm("'"+file.substr(5)+"' has been uploaded already!\nOK = Upload Again\nCancel = View Upload dialog")===false)
@@ -1335,6 +1339,16 @@ function login(form){
 	httpRequest.setRequestHeader("Connection", "close");
 	httpRequest.send(params);
 	return false;
+}
+function scanFilter(f2,f1){
+	var names={'y':31557600,'d':86400,'h':3600,'m':60,'s':1},f1Total=0,f2Total=0;
+	for(var i in names){
+		f1Total+=Number(f1[i].value*names[i]);
+		f2Total+=Number(f2[i].value*names[i]);
+	}
+	if(f1Total>f2Total)
+		return alert("That combination can't have any results");
+	document.location.href="index.php?page=Scans&filter=3&t1="+f1Total+"&t2="+f2Total;
 }
 document.onkeyup=function(event){
 	if(!event)

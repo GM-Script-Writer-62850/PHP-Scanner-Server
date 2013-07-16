@@ -55,7 +55,18 @@ $debug='';
 # ****************
 
 function Get_Values($name){
-	return isset($_REQUEST[$name])?$_REQUEST[$name]:null;
+	if(isset($_REQUEST[$name])){
+		$name=$_REQUEST[$name];
+		if(is_numeric($name))
+			if(intval($name)==floatval($name))
+				return intval($name);
+			else
+				return floatval($name);
+		else
+			return $name;
+	}
+	else
+		return null;
 }
 
 function html($X){
@@ -313,43 +324,7 @@ else if($PAGE=="Scans"){
 			Print_Message("File Deleted","The file <code>".html($FILE)."</code> has been removed.",'center');
 		}
 	}
-
-	# Display Thumbnails of scanned images, if any
-	echo '<script type="text/javascript" src="inc/writescripts/imgur-box.js" id="imgur-box-setup"></script>';
-	if(count(scandir("scans"))==2){
-		Print_Message("No Images","All files have been removed. There are no scanned images to display.",'center');
-	}
-	else{
-		echo '<div class="box box-full"><h2>Bulk Operations</h2><p style="text-align:center;"><span>'.
-			'<a onclick="return false" class="tool icon download-off" href="#"><span class="tip">Download (Disabled)</span></a> '.
-			'<a onclick="return bulkDownload(this,\'zip\')" class="tool icon zip" href="#"><span class="tip">Download Zip</span></a> '.
-			'<a onclick="return PDF_popup(filesLst)" class="tool icon pdf" href="#"><span class="tip">Download PDF</span></a> '.
-			'<a onclick="return bulkPrint(this)" class="tool icon print" href="#"><span class="tip">Print</span></a> '.
-			'<a onclick="return bulkDel()" class="tool icon del" href="#"><span class="tip">Delete</span></a> '.
-			'<a onclick="return false" class="tool icon edit-off" href="#"><span class="tip">Edit (Disabled)</span></a> '.
-			'<a onclick="return bulkView(this)" class="tool icon view" href="#"><span class="tip">View</span></a> '.
-			'<a onclick="return bulkUpload()" class="tool icon upload" href="#"><span class="tip">Upload to Imgur</span></a> '.
-			'<a onclick="return emailManager(\'Scan_Compilation\')" class="tool icon email" href="#"><span class="tip">Email</span></a>'.
-			'</span><br/>Double Click a file name to select/deselect it<br/>'.
-			'The order they are selected determines the page order<br/>'.
-			'<button onclick="return selectScans(\'excluded\');">Select All</button> '.
-			'<button onclick="return selectScans(false);">Invert Selection</button> '.
-			'<button onclick="return selectScans(\'included\');">Select None</button>'.
-			'</p></div>';
-		$FILES=explode("\n",substr(exe("cd 'scans'; ls 'Preview'*",true),0,-1));
-		echo '<div id="scans">';
-		for($i=0,$max=count($FILES);$i<$max;$i++){
-			$FILE=substr($FILES[$i],7,-3);
-			$FILE=substr(exe("cd 'scans'; ls ".shell("Scan$FILE").'*',true),5,-1);//Should only have one file listed
-			$IMAGE=$FILES[$i];
-			include "inc/scans.php";
-		}
-		echo '</div><script type="text/javascript">'.
-			'if(typeof document.body.style.MozColumnGap=="string")'.
-				'getID("scans").className="columns";'.// At least someone knows how to do something right
-			'else '.
-				'enableColumns("scans",null,'.(isset($_COOKIE["columns"])?'true':'false').');</script>';
-	}
+	include('inc/scans.php');
 	checkFreeSpace($FreeSpaceWarn);
 	Footer();
 }
@@ -1042,6 +1017,7 @@ else{
 		$CANNERS[$SCANNER]->{"INUSE"}=0;
 		SaveFile("config/scanners.json",json_encode($CANNERS));
 
+		$startTime=time();
 		$files=scandir($CANDIR);
 		for($i=2,$ct=count($files);$i<$ct;$i++){
 			$SCAN=shell("$CANDIR/".$files[$i]);
@@ -1084,6 +1060,7 @@ else{
 			@unlink("$CANDIR/".$files[$i]);
 		}
 		@rmdir($CANDIR);
+		$endTime=time();
 
 		# Remove Crop Option / set last scan / remember last orientation
 		echo '<script type="text/javascript">';
@@ -1099,7 +1076,7 @@ else{
 		}
 		$ORNT=($ORNT==''?'vert':$ORNT);
 		echo "var ornt=document.createElement('input');ornt.name='ornt0';ornt.value='$ORNT';ornt.type='hidden';document.scanning.appendChild(ornt);".
-			"var p=document.createElement('p');p.innerHTML='<small>Changing orientation will void select region.</small>';document.getElementById('opt').appendChild(p);document.scanning.scanner.disabled='disabled'</script>";
+			"var p=document.createElement('p');p.innerHTML='<small>Changing orientation will void select region.</small>';document.getElementById('opt').appendChild(p);document.scanning.scanner.disabled=true</script>";
 
 		# Check if image is empty and post error, otherwise post image to page
 		if(!file_exists("scans/$P_FILENAME")){
@@ -1115,7 +1092,7 @@ else{
 			Update_Preview("scans/$P_FILENAME");
 		}
 		if($ct>3)
-			Print_Message("Info",'Multiple scans made, only displaying last one, go to <a href="index.php?page=Scans">Scanned Files</a> for the rest','center');
+			Print_Message("Info",'Multiple scans made, only displaying last one, go to <a href="index.php?page=Scans&amp;filter=3&amp;T2='.($startTime-1).'&T1='.($endTime+1).'">Scanned Files</a> for the rest','center');
 	}
 	echo '<script type="text/javascript">if(document.scanning)document.scanning.action.disabled=false;</script>';
 	checkFreeSpace($FreeSpaceWarn);

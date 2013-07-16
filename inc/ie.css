@@ -10,6 +10,9 @@
 p .icon{
 	margin-right:3px;
 }
+.dualForm .largeButton span{
+	font-size:33pt;
+}
 /* IE 6 & 7 Hacks */
 h2 .del{
 	*position:relative;
