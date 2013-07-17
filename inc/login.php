@@ -1,5 +1,6 @@
 <?php
 if(isset($_POST['json'])&&!isset($PAGE)){
+	header('Content-type: application/json; charset=UTF-8');
 	$file='../config/.htaccess';
 	if(!is_file($file)){// For security reasons
 		$file=@fopen($file,'w+');

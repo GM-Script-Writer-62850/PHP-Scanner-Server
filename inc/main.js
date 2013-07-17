@@ -158,18 +158,14 @@ function changeColor(colors){
 	N.href='inc/style.php?colors='+colors+'&nocache='+new Date().getTime();
 	document.body.setAttribute('onunload',"if(!document.cookie)alert('The color theme was not saved because you have cookies disabled')");
 }
-function lastScan(scan,preview,scanner,source,size,ele){
-	generic=scan.slice(5);
-	previewIMG.src='scans/'+preview;
+function lastScan(data,ele){
+	generic=data.raw.slice(5);
+	scan=data.scan;
+	previewIMG.src='scans/'+data.preview;
 	ias.setOptions({'enable': true });
 	ias.update();
 	getID('sel').removeAttribute('style');
-	document.scanning.scanner.value=scanner;
-	scannerChange(document.scanning.scanner);
-	document.scanning.scanner.disabled='disabled';
-	document.scanning.source.value=source;
-	document.scanning.size.value=size;
-	sendE(document.scanning.size,'change');
+	config(data.fields);
 	ele.parentNode.parentNode.innerHTML='<h2>'+generic+'</h2><p><a class="tool icon download" href="download.php?file='+scan+'"><span class="tip">Download</span></a> '+
 		'<a class="tool icon zip" href="download.php?file='+scan+'&amp;compress"><span class="tip">Download Zip</span></a> '+
 		'<a class="tool icon pdf" href="#" onclick="PDF_popup(\''+generic+'\');"><span class="tip">Download PDF</span></a> '+
@@ -408,7 +404,7 @@ function paperChange(ele){
 		document.scanning.ornt.removeAttribute('disabled');
 }
 function rotateChange(ele){
-	var val=ele.value;
+	var val=Number(ele.value);
 	ele.nextSibling[TC]=(val==180?'Upside-down':(val<0?'Counterclockwise':'Clockwise'));
 	var prefixes = 't WebkitT MozT OT msT'.split(' ');
 	for(var prefix in prefixes){
@@ -424,6 +420,7 @@ function rotateChange(ele){
 		return;
 	ias.setOptions({ "hide": true, "disable": true, "fadeSpeed": false, "rotating": true });
 	ele.style[prefix]='rotate('+val+'deg)';// To DO add scale(X%)
+	printMsg('Debug',encodeHTML(ele.style[prefix]),'center',0);
 	setTimeout(function(){// We can not leave it rotated, it brutally screws up cropping
 		ele.style[prefix]='';
 		setTimeout(function(){
@@ -464,14 +461,14 @@ function toggleDebug(keyboard){
 	if(debug){
 		if(debug.style.display=='inherit'){
 			debug.removeAttribute('style');
-			Set_Cookie( 'debug', false, 1, '/', '', '' );
+			Set_Cookie('debug',false,1,false,null,null);
 			if(keyboard&&debugLink)
 				debugLink[TC]='Show';
 			return false;
 		}
 		else{
 			debug.style.display='inherit';
-			Set_Cookie( 'debug', true, 1, '/', '', '' );
+			Set_Cookie('debug',true,1,false,null,null);
 			if(keyboard&&debugLink)
 				debugLink[TC]='Hide';
 			return true;
@@ -480,7 +477,7 @@ function toggleDebug(keyboard){
 }
 function toggleFortune(e){
 	e=(e=='Hide'?false:true)
-	Set_Cookie( 'fortune', e, 1, '/', '', '' );
+	Set_Cookie('fortune',e,1,false,null,null);
 	return e;
 }
 function scanReset(){
@@ -1275,21 +1272,21 @@ function enableColumns(ele,e,b){ // They work flawlessly in Firefox so it does n
 				ele.removeAttribute('class');// disable
 				if(e){
 					e.nextSibling[TC]='Enable';
-					Delete_Cookie( 'columns', '/', '' );
+					Delete_Cookie('columns',false);
 				}
 			}
 			else if(ele.className.indexOf('columns')==-1){
 				ele.className+=' columns';// enable
 				if(e){
 					e.nextSibling[TC]='Disable';
-					Set_Cookie( 'columns', true, 1, '/', '', '' );
+					Set_Cookie('columns',true,1,false,null,null);
 				}
 			}
 			else{
 				ele.className=ele.className.substring(0,ele.className.indexOf(' columns'));// Disable preserve original class name
 				if(e){
 					e.nextSibling[TC]='Enable';
-					Delete_Cookie( 'columns', '/', '' );
+					Delete_Cookie('columns',false);
 				}
 			}
 		}
@@ -1297,7 +1294,7 @@ function enableColumns(ele,e,b){ // They work flawlessly in Firefox so it does n
 			ele.className='columns';
 			if(e){
 				e.nextSibling[TC]='Disable';
-				Set_Cookie( 'columns', true, 1, '/', '', '' );
+				Set_Cookie('columns',true,1,false,null,null);
 			}
 		}
 		return false;

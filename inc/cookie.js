@@ -1,6 +1,6 @@
 // http://techpatterns.com/downloads/javascript_cookies.php
-// Why are cookies managed as strings?
 function Set_Cookie( name, value, expires, path, domain, secure ){
+	if(!path) path=window.location.pathname.substr(0,window.location.pathname.lastIndexOf('/')+1);// Added this line
 	var today = new Date();
 	today.setTime( today.getTime() );
 	if ( expires ){
@@ -14,9 +14,10 @@ function Set_Cookie( name, value, expires, path, domain, secure ){
 		( ( domain ) ? ";domain=" + domain : "" ) +
 		( ( secure ) ? ";secure" : "" );
 }
-function Delete_Cookie( name, path, domain ) {// edited, dont delete non-existat cookies
+function Delete_Cookie( name, path ) {// edited, don't delete non-existent cookies
+	if(!path) path=window.location.pathname.substr(0,window.location.pathname.lastIndexOf('/')+1);// Added this line
 	document.cookie = name + "=" +
 		( ( path ) ? ";path=" + path : "") +
-		( ( domain ) ? ";domain=" + domain : "" ) +
+		( ( domain ) ? ";domain=" + document.domain : "" ) +
 		";expires=Thu, 01-Jan-1970 00:00:01 GMT";
 }

@@ -1,4 +1,5 @@
 <?php
+header('Content-type: application/json; charset=UTF-8');
 if(!function_exists('curl_version'))
 	die('{"album":false,"images":[],"success":false,"error":"<code>php5-curl</code>/<code>php-curl</code> is not installed on the server"}');
 function json_curl($data,$type,$anon){// type = upload/image||album ; anon = true|false

@@ -1,12 +1,12 @@
 <?php
 // Chrome's and IE's css columns break things
 $expires=86400;//24 hrs
-header('Content-type: text/css');
+header('Content-type: text/css; charset=UTF-8');
 header("Pragma: public");
 header("Cache-Control: maxage=".$expires);
 header('Expires: '.gmdate('D, d M Y H:i:s',time()+$expires).' GMT');
 if(isset($_GET['colors'])){//10 years long enough for a cookie to stick arround?
-	setcookie("colors",$_GET['colors'],time()+(60*60*24*365*10),"/",$_SERVER['SERVER_NAME']);
+	setcookie("colors",$_GET['colors'],time()+(60*60*24*365.25*10),substr($_SERVER['PHP_SELF'],0,strlen(end(explode('/',$_SERVER['PHP_SELF'])))*-1-4),$_SERVER['SERVER_NAME']);
 	$COLORS=explode('x',$_GET['colors']);
 }
 else{
@@ -39,9 +39,9 @@ $transitionTime='0.8s'; // The rotateChange, setClipboard, and printMsg function
 }
 
 body, #header, #message table, .side_box, .side_box h2, #preview, #preview_links img, #preview_img p, #preview h2, .box, .box img, .box pre.border, .box h2, #footer, #debug pre, .tab.active > div.top, .dualForm .footer {
-	-webkit-transition-property: background, border, color;
+	-webkit-transition-property: background-color, border, color;
 	-webkit-transition-duration: <?php echo $transitionTime; ?>;
-	transition-property: background, border, color;
+	transition-property: background-color, border, color;
 	transition-duration: <?php echo $transitionTime; ?>;
 }
 body {
@@ -720,11 +720,13 @@ code {
 	float: right;
 	width: 200px;
 	height: 125px;
+	overflow: hidden;
 }
 .dualForm .largeButton span{
 	transform: rotate(-20deg) scale(5);
 	-ms-transform: rotate(-20deg) scale(5);
 	-webkit-transform: rotate(-20deg) scale(5);
+	width: auto;
 }
 
 #text-editor {

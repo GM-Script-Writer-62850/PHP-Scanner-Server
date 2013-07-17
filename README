@@ -148,7 +148,10 @@ Enabling Auto-Deletion of old scans:
 		in cleaner.php) and deletes them.
 
 Frequently asked questions/issues:
-	Some times when I download should be a large file I get nothing (a 0 byte file)
+	Why do is there a 404 error trying to display a 404 error
+		Apparently you are running the server in a subfolder on the domain, you will need to edit .htaccess with the full path relative to the root document
+		Basically if you put the server in /var/www/scanner/ you need to put /scanner before /inc in the .htaccess file
+	Sometimes when I download a large file I get nothing (a 0 byte file)
 		You will need to increase the max memory PHP can use, 
 			To do this run this command:
 				cat /etc/php5/apache2/php.ini -n| grep memory_limit
@@ -163,8 +166,6 @@ Frequently asked questions/issues:
 		This more like a addon than a program so I am note sure if one of thoes would be approate, I have written bash
 		scripts to install and update this, if you look they are on the Downloads page in the Wiki
 			https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server/wiki/Downloads
-	I am getting 404 errors for favicon.ico in my error log, how can I stop that
-		sudo ln -s ../mods-available/rewrite.load /etc/apache2/mods-enabled/ && sudo service apache2 restart
 	The brightness and contrast options do not work on lucid lynx.
 		This is because lucid has ImageMagick 6.5.7-8 and the brightness-contrast option was added in version 6.5.9
 			64Bit:
@@ -254,6 +255,8 @@ Installation Notes:
 	This command will give you a easy to remember URL for the scanner (I remember this not working on Windows XP clients)
 		echo http://$(uname -n).local/
 	Be sure to check http://www.canyouseeme.org/ so you know if people can use your scanner on the Internet, I suggest using a firewall to prevent this, or putting a password on it.
+	If you don't have a /etc/apache2/mods-enabled/headers.load file run this command, this enables catch control and defines mime types via .htaccess
+		sudo ln -s ../mods-available/headers.load /etc/apache2/mods-enabled/ && sudo service apache2 restart
 
 Apache Tricks:
 	Enabling .htaccess

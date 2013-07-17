@@ -1062,21 +1062,25 @@ else{
 		@rmdir($CANDIR);
 		$endTime=time();
 
-		# Remove Crop Option / set last scan / remember last orientation
+		# Remove Crop Option / set last scan / remember last scan config
 		echo '<script type="text/javascript">';
 		if(($WIDTH!="0"&&$HEIGHT!="0")||$ROTATE!="0"){
 			echo '$(document).ready(function(){stripSelect();});';
 		}
 		else{
-			echo "Set_Cookie( 'scan', '$S_FILENAME', 1, '/', '', '' );".
-				"Set_Cookie( 'preview', '$P_FILENAME', 1, '/', '', '' );".
-				"Set_Cookie( 'source', '$SOURCE', 1, '/', '', '' );".
-				"Set_Cookie( 'size', '$SIZE', 1, '/', '', '' );".
-				"Set_Cookie( 'scanner', '$SCANNER', 1, '/', '', '' );";
+			setcookie('lastScan',json_encode(Array(
+				"raw"=>$S_FILENAME,"preview"=>$P_FILENAME,"fields"=>Array(
+					"scanner"=>$SCANNER,"quality"=>$QUALITY,"duplex"=>$DUPLEX,
+					"size"=>$SIZE,"ornt"=>$ORNT,"mode"=>$MODE,"bright"=>$BRIGHT,
+					"contrast"=>$CONTRAST,/*"rotate"=>$ROTATE,*/"scale"=>$SCALE,//No need for rotate it will be 0 every time
+					"filetype"=>$FILETYPE,"lang"=>$LANG,"set_save"=>$SET_SAVE
+				)
+			)),time()+86400,substr($_SERVER['PHP_SELF'],0,strlen(end(explode('/',$_SERVER['PHP_SELF'])))*-1),$_SERVER['SERVER_NAME']);
 		}
 		$ORNT=($ORNT==''?'vert':$ORNT);
 		echo "var ornt=document.createElement('input');ornt.name='ornt0';ornt.value='$ORNT';ornt.type='hidden';document.scanning.appendChild(ornt);".
-			"var p=document.createElement('p');p.innerHTML='<small>Changing orientation will void select region.</small>';document.getElementById('opt').appendChild(p);document.scanning.scanner.disabled=true</script>";
+			($ROTATE!="0"?"var p=document.createElement('p');p.innerHTML='<small>Changing orientation will void select region.</small>';":'').
+			"document.getElementById('opt').appendChild(p);document.scanning.scanner.disabled=true</script>";
 
 		# Check if image is empty and post error, otherwise post image to page
 		if(!file_exists("scans/$P_FILENAME")){

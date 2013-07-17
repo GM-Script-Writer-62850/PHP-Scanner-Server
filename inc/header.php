@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><?php $path=is_numeric($GLOBALS['PAGE'])?'/':''; ?>
+<!DOCTYPE html><html><?php $path=is_numeric($GLOBALS['PAGE'])?substr($_SERVER['PHP_SELF'],0,strlen(end(explode('/',$_SERVER['PHP_SELF'])))*-1-4):''; ?>
 <head>
 <meta charset="UTF-8"/>
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="chrome=1"><![endif]-->
@@ -13,9 +13,9 @@ if($GLOBALS['PAGE']=='Config')
 	echo '<link id="style_new" rel="stylesheet" href="inc/style.php'.(isset($_COOKIE["colors"])?'?colors='.$_COOKIE["colors"]:'').'" type="text/css"/>';
 ?>
 <link rel="shortcut icon" href="<?php echo $path; ?>inc/images/favicon.png"/>
-<link rel="stylesheet" type="text/css" href="<?php echo $path; ?>jquery/imgareaselect-0.9.10/css/imgareaselect-animated.css"/>
 <script type="text/javascript" src="<?php echo $path; ?>jquery/imgareaselect-0.9.10/scripts/jquery.min.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>jquery/imgareaselect-0.9.10/scripts/jquery.imgareaselect.pack.js"></script>
+<?php echo in_array($GLOBALS['PAGE'],Array("Scan","Edit"))?'<script type="text/javascript" src="'.$path.'jquery/imgareaselect-0.9.10/scripts/jquery.imgareaselect.pack.js"></script>'.
+'<link rel="stylesheet" type="text/css" href="'.$path.'jquery/imgareaselect-0.9.10/css/imgareaselect-animated.css"/>':''; ?>
 <script type="text/javascript" src="<?php echo $path; ?>inc/model-dialog.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>inc/cookie.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>inc/main.js"></script>
@@ -52,7 +52,7 @@ if($GLOBALS['PAGE']=='Config')
 </div>
 
 <div class="tab<?php echo $GLOBALS['PAGE']=="Login"||is_numeric($GLOBALS['PAGE'])?' active':''; ?>">
-<a href="/"><?php echo $_SERVER['SERVER_NAME']; ?></a>
+<a href="/"<?php echo $GLOBALS['RequireLogin']&&$GLOBALS['Auth']&&$GLOBALS['PAGE']!='Login'?' onclick="Delete_Cookie(\'Authenticated\',false)">Logout':'>'.$_SERVER['SERVER_NAME']; ?></a>
 <div class="topleft top"></div>
 <div class="bottomleft bottom"></div>
 <div class="topright top"></div>

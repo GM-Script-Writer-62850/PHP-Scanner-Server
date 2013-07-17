@@ -11,11 +11,31 @@ ErrorDocument 404 /inc/
 # Compress file for faster network transfer
 php_value output_handler ob_gzhandler
 <IfModule mod_deflate.c>
-	AddOutputFilterByType DEFLATE text/text text/html text/plain text/xml text/css application/x-javascript application/javascript text/javascript application/json
+	AddOutputFilterByType DEFLATE text/html text/plain text/css application/javascript application/json
 </IfModule>
 
-# Some browsers look for a /favicon.ico file, this tells them where to get a favicon
-<IfModule mod_rewrite.c>
-	RewriteEngine on
-	RewriteRule ^favicon.ico$ /inc/images/favicon.png [L]
-</IfModule>
+# Cache Control + Define Content Type
+<ifModule mod_headers.c>
+	<FilesMatch ".json$">
+		Header set Cache-Control "max-age=0, no-cache, no-store, must-revalidate"
+		Header set Content-type "application/json; charset=UTF-8"
+	</FilesMatch>
+	<FilesMatch ".(png|jpg|tiff|txt)$">
+		Header set Cache-Control "max-age=604800"
+	</FilesMatch>
+	<FilesMatch ".(css|js)$">
+		Header set Cache-Control "max-age=86400, must-revalidate"
+	</FilesMatch>
+	<FilesMatch ".js$">
+		Header set Content-type "application/javascript; charset=UTF-8"
+	</FilesMatch>
+	<FilesMatch ".css$">
+		Header set Content-type "text/css; charset=UTF-8"
+	</FilesMatch>
+	<FilesMatch ".txt$">
+		Header set Content-type "text/plain; charset=UTF-8"
+	</FilesMatch>
+	<FilesMatch "^favicon.ico$">
+		Header set Content-type "image/png"
+	</FilesMatch>
+</ifModule>
