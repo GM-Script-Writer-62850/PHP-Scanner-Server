@@ -148,7 +148,7 @@ Enabling Auto-Deletion of old scans:
 		in cleaner.php) and deletes them.
 
 Frequently asked questions/issues:
-	Why do is there a 404 error trying to display a 404 error
+	Why is there a 404 error while trying to display a 404 error
 		Apparently you are running the server in a subfolder on the domain, you will need to edit .htaccess with the full path relative to the root document
 		Basically if you put the server in /var/www/scanner/ you need to put /scanner before /inc in the .htaccess file
 	Sometimes when I download a large file I get nothing (a 0 byte file)

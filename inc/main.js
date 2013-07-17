@@ -413,14 +413,26 @@ function rotateChange(ele){
 			break;
 		}
 	}
-	if(prefix.substr(-8)!='ransform'||val==0)
+	if(prefix.length<9||val==0)
 		return;
 	ele=previewIMG;
 	if(ele.src.indexOf('inc/images/blank.gif')>-1)
 		return;
 	ias.setOptions({ "hide": true, "disable": true, "fadeSpeed": false, "rotating": true });
-	ele.style[prefix]='rotate('+val+'deg)';// To DO add scale(X%)
-	printMsg('Debug',encodeHTML(ele.style[prefix]),'center',0);
+	// If you hava  a fear of numbers do not even try to read this function
+	ele.style[prefix]='rotate('+val+'deg) scale('+
+		(function(deg,h,w){ // Credit: http://userscripts.org/topics/127570?page=1#posts-502266 (http://jsfiddle.net/swU6Z/)
+			// scale = sin(phi) / sin(phi + theta)
+			// phi being the original rectangle's first diagonal's angle
+			var RATIO=h>w?h/w:w/h,theta=Math.abs(deg)*Math.PI/180,phi,psi;
+			ratio=w>h?RATIO:1/RATIO;
+			if(ratio>1)ratio=1/ratio;
+			phi=Math.atan(1/RATIO);
+			theta=Math.abs(theta);
+			psi=theta<Math.PI/2?phi+theta:phi-theta;
+			return Math.abs(Math.sin(phi)/Math.sin(psi));
+		})(val,ele.offsetHeight,ele.offsetWidth)+')';
+	//printMsg('debug',encodeHTML(ele.style[prefix]),'center');
 	setTimeout(function(){// We can not leave it rotated, it brutally screws up cropping
 		ele.style[prefix]='';
 		setTimeout(function(){

@@ -452,8 +452,8 @@ select.upper, select.upper option {
 	-webkit-transition-duration: <?php echo $transitionTime; ?>;
 	transition-property: transform, -webkit-transform, -o-transform, -moz-transform, -webkit-filter;
 	transition-duration: <?php echo $transitionTime; ?>;
-	transform: rotate(0);
-	-webkit-transform: rotate(0);
+	transform: rotate(0) scale(1);
+	-webkit-transform: rotate(0) scale(1);
 	/*-webkit-filter: brightness(100%) contrast(100%);*/
 }
 
@@ -703,7 +703,7 @@ code {
 	border-left: 1px solid #<?php echo $BG_COLOR; ?>;
 	margin-left: -1px;
 }
-.dualForm form span {
+.dualForm form > span {
 	width: 100px;
 	display: inline-block;
 }
@@ -726,7 +726,6 @@ code {
 	transform: rotate(-20deg) scale(5);
 	-ms-transform: rotate(-20deg) scale(5);
 	-webkit-transform: rotate(-20deg) scale(5);
-	width: auto;
 }
 
 #text-editor {

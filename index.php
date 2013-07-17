@@ -1062,7 +1062,7 @@ else{
 		@rmdir($CANDIR);
 		$endTime=time();
 
-		# Remove Crop Option / set last scan / remember last scan config
+		# Remove Crop Option / set lastScan
 		echo '<script type="text/javascript">';
 		if(($WIDTH!="0"&&$HEIGHT!="0")||$ROTATE!="0"){
 			echo '$(document).ready(function(){stripSelect();});';
