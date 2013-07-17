@@ -703,7 +703,7 @@ code {
 	border-left: 1px solid #<?php echo $BG_COLOR; ?>;
 	margin-left: -1px;
 }
-.dualForm form > span {
+.dualForm form p > span {
 	width: 100px;
 	display: inline-block;
 }
@@ -723,6 +723,7 @@ code {
 	overflow: hidden;
 }
 .dualForm .largeButton span{
+	display: inline-block;
 	transform: rotate(-20deg) scale(5);
 	-ms-transform: rotate(-20deg) scale(5);
 	-webkit-transform: rotate(-20deg) scale(5);
