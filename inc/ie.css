@@ -13,6 +13,13 @@ p .icon{
 .dualForm .largeButton span{
 	font-size:33pt;
 }
+.colorPicker{
+	font-size:0;
+	line-height:9001px;
+}
+.colorpicker div{
+	filter:inherit;
+}
 /* IE 6 & 7 Hacks */
 h2 .del{
 	*position:relative;

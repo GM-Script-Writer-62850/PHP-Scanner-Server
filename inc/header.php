@@ -1,21 +1,25 @@
-<!DOCTYPE html><html><?php $path=is_numeric($GLOBALS['PAGE'])?substr($_SERVER['PHP_SELF'],0,strlen(end(explode('/',$_SERVER['PHP_SELF'])))*-1-4):''; ?>
+<?php 
+$path=is_numeric($GLOBALS['PAGE'])?substr($_SERVER['PHP_SELF'],0,strlen(end(explode('/',$_SERVER['PHP_SELF'])))*-1-4):'';
+$Theme=isset($_COOKIE["theme"])?url($_COOKIE["theme"]):$GLOBALS['Theme'];
+$GLOBALS['Theme']=$Theme;
+?>
+<!DOCTYPE html><html>
 <head>
 <meta charset="UTF-8"/>
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="chrome=1"><![endif]-->
 <title><?php echo html($GLOBALS['NAME'].' ~ '.$GLOBALS['PAGE'].' - '.$page); ?></title>
-<link id="style" rel="stylesheet" href="<?php echo $path; ?>inc/style.php<?php
-if(isset($_COOKIE["colors"])){
-	echo "?colors=".url($_COOKIE["colors"]);
-}
-?>" type="text/css"/>
-<?php
-if($GLOBALS['PAGE']=='Config')
-	echo '<link id="style_new" rel="stylesheet" href="inc/style.php'.(isset($_COOKIE["colors"])?'?colors='.$_COOKIE["colors"]:'').'" type="text/css"/>';
-?>
 <link rel="shortcut icon" href="<?php echo $path; ?>inc/images/favicon.png"/>
-<script type="text/javascript" src="<?php echo $path; ?>jquery/imgareaselect-0.9.10/scripts/jquery.min.js"></script>
-<?php echo in_array($GLOBALS['PAGE'],Array("Scan","Edit"))?'<script type="text/javascript" src="'.$path.'jquery/imgareaselect-0.9.10/scripts/jquery.imgareaselect.pack.js"></script>'.
-'<link rel="stylesheet" type="text/css" href="'.$path.'jquery/imgareaselect-0.9.10/css/imgareaselect-animated.css"/>':''; ?>
+<link rel="stylesheet" href="<?php echo $path; ?>inc/style.php?theme=<?php echo $Theme; ?>" type="text/css"/>
+<script type="text/javascript" src="<?php echo $path; ?>jquery/jquery.min.js"></script>
+<?php 
+	if(in_array($GLOBALS['PAGE'],Array("Scan","Edit")))
+		echo '<link rel="stylesheet" type="text/css" href="'.$path.'jquery/imgareaselect-0.9.10/css/imgareaselect-animated.css"/>'."\n".
+			'<script type="text/javascript" src="'.$path.'jquery/imgareaselect-0.9.10/scripts/jquery.imgareaselect.pack.js"></script>';
+	else if($GLOBALS['PAGE']=='Config')
+		echo '<style id="style_old" type="text/css"/></style><style id="style_new" type="text/css"/></style>'."\n".
+			'<link rel="stylesheet" media="screen" type="text/css" href="'.$path.'jquery/colorpicker-custom/css/colorpicker.css"/>'."\n".
+			'<script type="text/javascript" src="'.$path.'jquery/colorpicker-custom/js/colorpicker.js"></script>';
+?>
 <script type="text/javascript" src="<?php echo $path; ?>inc/model-dialog.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>inc/cookie.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>inc/main.js"></script>

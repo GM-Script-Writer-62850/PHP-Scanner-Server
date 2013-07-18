@@ -233,6 +233,8 @@ Credit where credit is due:
 		phpmailer 5.2.6
 	openiconlibrary.sourceforge.net
 		Powered by Linux image
+	Stefan Petre
+		ColorPicker (www.eyecon.ro/colorpicker/)
 
 Installation Notes:
 	Extract files to /var/www (or where ever your web pages are visible from)

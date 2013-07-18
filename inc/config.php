@@ -20,30 +20,35 @@ Make sure all scanners are plugged in and turned on.
 </div>
 
 <div class="box">
-<h2>Color Sceme</h2>
-<p>
-Select a Color:
-<select onchange="if(this.value!='void')changeColor(this.value);">
-<option value="void">Please Select</option>
-<option value="3c9642x3c7796" style="background-color:#3c9642;color:#3c7796;">Green</option>
-<option value="3c7796x963c8f" style="background-color:#3c7796;color:#963c8f;">Blue</option>
-<option value="963c8fx3c7796" style="background-color:#963c8f;color:#3c7796;">Purple</option>
-<option value="663366x3c7796" style="background-color:#663366;color:#3c7796;">Dark Purple</option>
-<option value="000000x999999" style="background-color:#000000;color:#999999;">Black</option>
-<option value="996633xbfbfbf" style="background-color:#996633;color:#bfbfbf;">Light Brown</option>
-<option value="848484xbfbfbf" style="background-color:#848484;color:#bfbfbf;">Gray</option>
-<option value="383838x838383" style="background-color:#383838;color:#838383;">Dark Gray</option>
-<option value="ff007exbb045e" style="background-color:#ff007e;color:#bb045e;">Pink</option>
-</select>
+<h2>Debug Console</h2>
+<p><?php
+if(isset($Fortune)){
+	echo '<a href="javascript:void(\'toggleFortune\')" onclick="this[TC]=toggleFortune(this[TC])?\'Hide\':\'Show\';">'.($_COOKIE["fortune"]?'Hide':'Show').'</a> fortunes. (Refresh to apply)<br/>';
+}
+?>
+<a href="javascript:void('toggleDebug')" id="debug-link" onclick="this[TC]=toggleDebug(false)?'Hide':'Show';"><?php
+if(isset($_COOKIE["debug"])){
+	if($_COOKIE["debug"]=='true'){
+		echo 'Hide';
+	}
+	else{
+		echo 'Show';
+	}
+}
+else{
+	echo 'Show';
+}
+?></a> the Debug Console. You can toggle the Debug Console at any time by pressing this:<br/><code>[Ctrl]+[Shift]+[D]</code>
 </p>
-<!-- Manual color picker (for theme development)-->
-<!--<input value="000000xFFFFFF" onkeypress="if(event.which==13){changeColor(this.value);return false;}"/>-->
 </div>
 
 <div class="box">
-<h2>Email Configuration</h2>
-<p><input type="submit" value="Edit" onclick="emailManager(null);"/>
-<input type="submit" value="Delete" onclick="deleteEmail();" style="float:right;"/></p>
+<h2>Trouble Shooting</h2>
+<p>
+If you are having issues loading the Scanned Files page due to over population you can <a href="index.php?page=Scans&amp;delete=Remove" onclick="return confirm('Delete all scanned files?')">
+Remove All the Scans</a> with that link or you can use <a href="index.php?page=Scans&filter=1&t=0">this link</a> so you can use the scan filter. If you are having another issue you may want to read the <a href="index.php?page=About">Release Notes</a> or
+ take a look at the <a href="index.php?page=PHP%20Information">PHP Configuration</a>.
+</p>
 </div>
 
 </div>
@@ -84,35 +89,62 @@ If you want to save a setting for your own use, right-click it and save it to yo
 <div class="column">
 
 <div class="box">
-<h2>Trouble Shooting</h2>
-<p>
-If you are having issues loading the Scanned Files page due to over population you can <a href="index.php?page=Scans&amp;delete=Remove" onclick="return confirm('Delete all scanned files?')">
-Remove All the Scans</a> with that link or you can use <a href="index.php?page=Scans&filter=1&t=0">this link</a> so you can use the scan filter. If you are having another issue you may want to read the <a href="index.php?page=About">Release Notes</a> or
- take a look at the <a href="index.php?page=PHP%20Information">PHP Configuration</a>.
-</p>
+<h2>Color Scheme</h2>
+<p><span style="margin-right:30px;">Theme Picker:</span><select onchange="if(this.value!='void')changeColor(this.value,true);">
+<option value="void">Please Select</option>
+<option value="3C9642.3C7796.3C9642.FFFFFF.3C9642.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#3c9642;color:#3c7796;">Green</option>
+<option value="3C7796.963C8F.3C7796.FFFFFF.3C7796.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#3c7796;color:#963c8f;">Blue</option>
+<option value="963C8f.3C7796.963C8f.FFFFFF.963C8f.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#963c8f;color:#3c7796;">Purple</option>
+<option value="663366.3C7796.663366.FFFFFF.663366.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#663366;color:#3c7796;">Dark Purple</option>
+<option value="000000.999999.000000.FFFFFF.000000.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#000000;color:#999999;">Black</option>
+<option value="996633.BFBFBF.996633.FFFFFF.996633.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#996633;color:#bfbfbf;">Light Brown</option>
+<option value="848484.BFBFBF.848484.FFFFFF.848484.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#848484;color:#bfbfbf;">Gray</option>
+<option value="383838.838383.383838.FFFFFF.383838.FFFFFF.000000.000000.FFFFFF.FF0000.FFFFFF" style="background-color:#383838;color:#838383;">Dark Gray</option>
+<option value="FF007E.BB045E.FF007E.FFFFFF.FF007E.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#ff007e;color:#bb045e;">Pink</option>
+</select></p>
+<?php $Theme=explode('.',$Theme);$attrs='class="colorPicker" readonly="readonly" onchange="changeColor(this,false);"'; ?>
+<div class="footer"><form name="theme" onsubmit="return changeColor(null,true);" action="#"><p style="line-height:23px;">
+<span>Background Color:</span>			<input name="BG_COLOR" style="background-color:#<?php echo $Theme[0]; ?>" value="<?php echo $Theme[0]; ?>" <?php echo $attrs; ?>/>
+<span>Page Background:</span>			<input name="PB_COLOR" style="background-color:#<?php echo $Theme[3]; ?>" value="<?php echo $Theme[3]; ?>" <?php echo $attrs; ?>/>
+<span>Page Text:</span>					<input name="PT_COLOR" style="background-color:#<?php echo $Theme[6]; ?>" value="<?php echo $Theme[6]; ?>" <?php echo $attrs; ?>/>
+<span>Header Background:</span>			<input name="HB_COLOR" style="background-color:#<?php echo $Theme[4]; ?>" value="<?php echo $Theme[4]; ?>" <?php echo $attrs; ?>/>
+<span>Header Text:</span>				<input name="HT_COLOR" style="background-color:#<?php echo $Theme[5]; ?>" value="<?php echo $Theme[5]; ?>" <?php echo $attrs; ?>/>
+<span>Link Color:</span>				<input name="LC_COLOR" style="background-color:#<?php echo $Theme[2]; ?>" value="<?php echo $Theme[2]; ?>" <?php echo $attrs; ?>/>
+<span>Link Color (Mouse Over):</span>	<input name="LK_COLOR" style="background-color:#<?php echo $Theme[1]; ?>" value="<?php echo $Theme[1]; ?>" <?php echo $attrs; ?>/>
+<span>Debug Background:</span>			<input name="BB_COLOR" style="background-color:#<?php echo $Theme[7]; ?>" value="<?php echo $Theme[7]; ?>" <?php echo $attrs; ?>/>
+<span>Debug Text:</span>				<input name="BT_COLOR" style="background-color:#<?php echo $Theme[8]; ?>" value="<?php echo $Theme[8]; ?>" <?php echo $attrs; ?>/>
+<span>Alert Header Background:</span>	<input name="AH_COLOR" style="background-color:#<?php echo $Theme[9]; ?>" value="<?php echo $Theme[9]; ?>" <?php echo $attrs; ?>/>
+<span>Alert Header Text:</span>			<input name="AT_COLOR" style="background-color:#<?php echo $Theme[10]; ?>" value="<?php echo $Theme[10]; ?>" <?php echo $attrs; ?>/>
+<script type="text/javascript">(function(){
+var pickers=$('.colorPicker').ColorPicker({
+	onSubmit:function(hsb,hex,rgb,el){
+		$(el).val(hex);
+		$(el).ColorPickerHide();
+		sendE(el,'change');
+	},
+	onShow:function(colpkr){
+		$(colpkr)['fade'+(colpkr.style.display=='block'?'Out':'In')](500);
+		return false;
+	},
+	onHide: function(colpkr){
+		$(colpkr).fadeOut(500);
+		return false;
+	}
+});
+document.theme.reset();
+for(var i in pickers){
+	if(isNaN(i))
+		break;
+	$(pickers[i]).ColorPickerSetColor(pickers[i].value);
+}
+})();</script><br/>
+<input type="submit" value="Save"/></p></form></div>
 </div>
 
 <div class="box">
-<h2>Debug Console</h2>
-<p><?php
-if(isset($Fortune)){
-	echo '<a href="javascript:void(\'toggleFortune\')" onclick="this[TC]=toggleFortune(this[TC])?\'Hide\':\'Show\';">'.($_COOKIE["fortune"]?'Hide':'Show').'</a> fortunes. (Refresh to apply)<br/>';
-}
-?>
-<a href="javascript:void('toggleDebug')" id="debug-link" onclick="this[TC]=toggleDebug(false)?'Hide':'Show';"><?php
-if(isset($_COOKIE["debug"])){
-	if($_COOKIE["debug"]=='true'){
-		echo 'Hide';
-	}
-	else{
-		echo 'Show';
-	}
-}
-else{
-	echo 'Show';
-}
-?></a> the Debug Console. You can toggle the Debug Console at any time by pressing this:<br/><code>[Ctrl]+[Shift]+[D]</code>
-</p>
+<h2>Email Configuration</h2>
+<p><input type="submit" value="Edit" onclick="emailManager(null);"/>
+<input type="submit" value="Delete" onclick="deleteEmail();" style="float:right;"/></p>
 </div>
 
 <div class="box">

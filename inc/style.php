@@ -1,24 +1,26 @@
-<?php
-// Chrome's and IE's css columns break things
+<?php // Chrome's and IE's css columns break things
 $expires=86400;//24 hrs
 header('Content-type: text/css; charset=UTF-8');
 header("Pragma: public");
 header("Cache-Control: maxage=".$expires);
 header('Expires: '.gmdate('D, d M Y H:i:s',time()+$expires).' GMT');
-if(isset($_GET['colors'])){//10 years long enough for a cookie to stick arround?
-	setcookie("colors",$_GET['colors'],time()+(60*60*24*365.25*10),substr($_SERVER['PHP_SELF'],0,strlen(end(explode('/',$_SERVER['PHP_SELF'])))*-1-4),$_SERVER['SERVER_NAME']);
-	$COLORS=explode('x',$_GET['colors']);
+if(isset($_GET['save'])&&isset($_GET["theme"])){//10 years long enough for a cookie to stick arround?
+	setcookie("theme",$_GET['theme'],time()+(60*60*24*365.25*10),substr($_SERVER['PHP_SELF'],0,strlen(end(explode('/',$_SERVER['PHP_SELF'])))*-1-4),$_SERVER['SERVER_NAME']);
+	$C=explode('.',$_GET['theme']);
 }
-else{
-	if(!isset($_COOKIE["colors"])){
-		$COLORS=array('3c9642','3c7796');
-	}
-	else{
-		$COLORS=explode('x',$_COOKIE["colors"]);
-	}
-}
-$BG_COLOR=$COLORS[0];
-$LK_COLOR=$COLORS[1];
+else
+	$C=isset($_GET["theme"])?explode('.',$_GET["theme"]):array('000',111,222,333,444,555,666,777,888,999,'AAA');
+$BG_COLOR=$C[0]; // Page Background
+$LK_COLOR=$C[1]; // Link Color (hover)
+$LC_COLOR=$C[2]; // Link Color
+$PB_COLOR=$C[3]; // Page Content Background
+$HB_COLOR=$C[4]; // Header Background
+$HT_COLOR=$C[5]; // Header Text
+$PT_COLOR=$C[6]; // Page Text
+$BB_COLOR=$C[7]; // Debug Console Background
+$BT_COLOR=$C[8]; // Debug Console Text
+$AH_COLOR=$C[9]; // Alert Header Background
+$AT_COLOR=$C[10]; // Alert Header Text
 $transitionTime='0.8s'; // The rotateChange, setClipboard, and printMsg functions in main.js needs to be adjusted based on this value
 ?>
 @-webkit-keyframes fadein { /* Chrome, Safari, and Opera */
@@ -37,8 +39,8 @@ $transitionTime='0.8s'; // The rotateChange, setClipboard, and printMsg function
 		opacity: 1;
 	}
 }
-
-body, #header, #message table, .side_box, .side_box h2, #preview, #preview_links img, #preview_img p, #preview h2, .box, .box img, .box pre.border, .box h2, #footer, #debug pre, .tab.active > div.top, .dualForm .footer {
+body, #container, #header, #message table, .side_box, .side_box h2, #preview, #preview_links img, #preview_img p, #preview h2,
+  .box, .box img, .box pre.border, .box h2, #footer, #debug pre, .tab, .tab div, .dualForm .footer, .colorPicker, .message h2 {
 	-webkit-transition-property: background-color, border, color;
 	-webkit-transition-duration: <?php echo $transitionTime; ?>;
 	transition-property: background-color, border, color;
@@ -49,10 +51,11 @@ body {
 	padding: 1em;
 	font: 12px verdana, arial, helvetica, sans-serif;
 	font-size: 12px;
-	background: url("images/powered_by_linux.png") bottom right no-repeat fixed #<?php echo $BG_COLOR; ?>;
+	background: url("images/powered_by_linux.png") bottom right no-repeat fixed;
+	background-color: #<?php echo $BG_COLOR; ?>;
 }
 
-button, input[type="button"], input[type="submit"], input[type="reset"], select, a, #scans .box h2 {
+button, input[type="button"], input[type="submit"], input[type="reset"], select, a, #scans .box h2, .colorPicker {
 	cursor: pointer;
 }
 
@@ -61,7 +64,7 @@ input[type="text"][size="3"]{
 }
 
 a {
-	color: #<?php echo $BG_COLOR; ?>;
+	color: #<?php echo $LC_COLOR; ?>;
 	-webkit-transition-property: color;
 	-webkit-transition-duration: <?php echo $transitionTime; ?>;
 	transition-property: color;
@@ -70,6 +73,10 @@ a {
 
 a:hover {
 	color: #<?php echo $LK_COLOR; ?>;
+}
+
+img{
+	display: block;
 }
 
 .i{
@@ -124,22 +131,24 @@ a:hover {
 	margin: auto;
 	padding: 0.5em;
 	text-align: left;
-	background: #FFFFFF;
+	background-color: #<?php echo $PB_COLOR; ?>;
+	color: #<?php echo $PT_COLOR; ?>;
 	border-radius: 5px;
 }
 
 #header {
 	height: 75px;
 	margin: 0 0 0.5em 0;
-	border: 1px solid #<?php echo $BG_COLOR; ?>;
-	background: url("images/logo.png") no-repeat scroll left center #<?php echo $BG_COLOR; ?>;
+	border: 1px solid #<?php echo $HB_COLOR; ?>;
+	background: url("images/logo.png") no-repeat scroll left center;
+	background-color: #<?php echo $HB_COLOR; ?>;
 	border-radius: 5px 5px 0 0;
 }
 
 .tab {
 	height: 25px;
 	float: right;
-	background: #ffffff;
+	background-color: #<?php echo $PB_COLOR; ?>;
 	padding: 2px 2px 0px 2px;
 	margin: 22px 10px 0 0;
 	font-size: 16px;
@@ -175,11 +184,11 @@ a:hover {
 
 .tab.active div.top {
 	z-index: 2;
-	background-color: #<?php echo $BG_COLOR; ?>;
+	background-color: #<?php echo $HB_COLOR; ?>;
 }
 
 .tab.active div.bottom {
-	background-color: white;
+	background-color: #<?php echo $PB_COLOR; ?>;
 }
 
 .tab.active div.topleft {
@@ -215,13 +224,13 @@ a:hover {
 
 h2 > .del {
 	float: right;
-	border: 1px #ffffff solid;
+	border: 1px #<?php echo $PB_COLOR; ?> solid;
 	border-radius: 3px;
 	text-indent: 0;
 }
 
 .message {
-	border: 1px solid #aa0000;
+	border: 1px solid #<?php echo $AH_COLOR; ?>;
 	padding: 0;
 	margin-bottom: 0.5em;
 	border-radius: 5px 5px 0 0;
@@ -236,20 +245,21 @@ h2 > .del {
 }
 
 .message.ie {
-	background: url("images/best_viewed_in_firefox.png") bottom right no-repeat scroll #ffffff;
+	background: url("images/best_viewed_in_firefox.png") bottom right no-repeat scroll;
+	background-color: #<?php echo $PB_COLOR; ?>;
 	padding-bottom: 20px;
 }
 
 .message h2 {
-	border: 1px solid #ff0000;
+	border: 1px solid #<?php echo $AH_COLOR; ?>;
 	border-radius: 2px 2px 0 0;
 	text-indent: 0.5em;
 	font-size: 12px;
 	font-variant: small-caps;
-	color: #ffffff;
+	color: #<?php echo $AT_COLOR; ?>;
 	margin: 0;
 	padding: 0.5em;
-	background: #ff0000;
+	background-color: #<?php echo $AH_COLOR; ?>;
 }
 
 .message div {
@@ -258,14 +268,14 @@ h2 > .del {
 }
 
 .message table {
-	background-color: #<?php echo $BG_COLOR; ?>;
+	background-color: #<?php echo $HB_COLOR; ?>;
 	border-radius: 5px;
 	margin: 0;
 	width: 100%;
 }
 
 .message td,th {
-	background-color: #ffffff;
+	background-color: #<?php echo $PB_COLOR; ?>;
 }
 
 .message ul {
@@ -277,8 +287,8 @@ h2 > .del {
 }
 
 #debug pre {
-	background-color: #<?php echo $BG_COLOR==383838?'000000':'383838'?>;
-	color: #ffffff;
+	background-color: #<?php echo $BB_COLOR; ?>;
+	color: #<?php echo $BT_COLOR; ?>;
 	margin: 0;
 	max-height: 500px;
 	padding: 10px;
@@ -295,7 +305,7 @@ h2 > .del {
 	padding: 16px 16px 0 0;
 	background-repeat: no-repeat;
 	background-image: url("images/buttons.png");
-	border: 1px solid #<?php echo $BG_COLOR; ?>;
+	border: 1px solid #<?php echo $HB_COLOR; ?>;
 }
 
 p .icon:not(:last-child){
@@ -363,9 +373,22 @@ p .icon:not(:last-child){
 	background-position: 0 -48px;
 }
 
+form[name="theme"] p > span{
+	width: 180px;
+	display: inline-block;
+	text-align: left;
+}
+input.colorPicker{
+	width: 30px;
+	height: 12px;
+	color: transparent;
+	border-radius: 5px;
+	border: 2px inset #<?php echo $HB_COLOR; ?>;
+}
+
 .side_box {
 	width: 250px;
-	border: 1px solid #<?php echo $BG_COLOR; ?>;
+	border: 1px solid #<?php echo $HB_COLOR; ?>;
 	float: left;
 	padding: 0;
 	margin: 0 0 0.5em 0.5em;
@@ -373,14 +396,14 @@ p .icon:not(:last-child){
 }
 
 .side_box h2 {
-	border: 1px solid #<?php echo $BG_COLOR; ?>;
+	border: 1px solid #<?php echo $HB_COLOR; ?>;
 	text-indent: 0.5em;
 	font-size: 12px;
 	font-variant: small-caps;
-	color: #ffffff;
+	color: #<?php echo $HT_COLOR; ?>;
 	margin: 0;
 	padding: 0.5em;
-	background: #<?php echo $BG_COLOR; ?>;
+	background-color: #<?php echo $HB_COLOR; ?>;
 }
 
 .side_box input {
@@ -428,7 +451,7 @@ select.upper, select.upper option {
 
 #preview {
 	width: 462px;
-	border: 1px solid #<?php echo $BG_COLOR; ?>;
+	border: 1px solid #<?php echo $HB_COLOR; ?>;
 	float: left;
 	padding: 0;
 	margin: 0 0 0.5em 0.5em;
@@ -440,7 +463,7 @@ select.upper, select.upper option {
 }
 
 #preview_links img, #preview_img p {
-	border: 1px solid #<?php echo $BG_COLOR; ?>;
+	border: 1px solid #<?php echo $HB_COLOR; ?>;
 	text-align: center;
 }
 
@@ -460,6 +483,7 @@ select.upper, select.upper option {
 #preview_img p {
 	position: relative;
 	overflow: hidden;
+	background-color: #FFF;
 }
 
 img[src="inc/images/blank.gif"] {
@@ -474,14 +498,14 @@ img[src="inc/images/blank.gif"] {
 }
 
 #preview h2 {
-	border: 1px solid #<?php echo $BG_COLOR; ?>;
+	border: 1px solid #<?php echo $HB_COLOR; ?>;
 	text-indent: 0.5em;
 	font-size: 12px;
 	font-variant: small-caps;
-	color: #ffffff;
+	color: #<?php echo $HT_COLOR; ?>;
 	margin: 0;
 	padding: 0.5em;
-	background: #<?php echo $BG_COLOR; ?>;
+	background-color: #<?php echo $HB_COLOR; ?>;
 }
 
 #scans {
@@ -491,7 +515,7 @@ img[src="inc/images/blank.gif"] {
 	width: 100%;
 }
 
-#scans .box h2 { /* Doubleclick tends to highlight text and it does not look right */
+#scans .box h2, .colorPicker { /* Doubleclick tends to highlight text and it does not look right */
 	user-select: none;
 	-ms-user-select: none;
 	-moz-user-select: none;
@@ -522,7 +546,7 @@ img[src="inc/images/blank.gif"] {
 }
 
 .box, .box-full {
-	border: 1px solid #<?php echo $BG_COLOR; ?>;
+	border: 1px solid #<?php echo $HB_COLOR; ?>;
 	float: left;
 	padding: 0;
 	margin: 0 0 0.5em 0.5em;
@@ -544,24 +568,24 @@ img[src="inc/images/blank.gif"] {
 }
 
 .box img {
-	border: 1px solid #<?php echo $BG_COLOR; ?>;
+	border: 1px solid #<?php echo $HB_COLOR; ?>;
 }
 
 .box pre.border{
 	margin: 5px;
-	border: 1px solid #<?php echo $BG_COLOR; ?>;
+	border: 1px solid #<?php echo $HB_COLOR; ?>;
 }
 
 .box h2 {
-	border: 1px solid #<?php echo $BG_COLOR; ?>;
+	border: 1px solid #<?php echo $HB_COLOR; ?>;
 	border-radius: 2px 2px 0 0;
 	text-align: center;
 	font-size: 12px;
 	font-variant: small-caps;
-	color: #ffffff;
+	color: #<?php echo $HT_COLOR; ?>;
 	margin: 0;
 	padding: 0.5em;
-	background: #<?php echo $BG_COLOR; ?>;
+	background-color: #<?php echo $HB_COLOR; ?>;
 }
 
 .box h3 {
@@ -570,6 +594,12 @@ img[src="inc/images/blank.gif"] {
 
 .box p {
 	margin: 5px;/*5px 10px 5px 5px*/
+}
+.box .footer {
+	width: 100%;
+	border-top: 1px solid #<?php echo $HB_COLOR; ?>;
+	display: inline-block;
+	text-align: center;
 }
 
 pre {
@@ -604,7 +634,7 @@ code {
 }
 
 #paper-list li, .boxlist {
-	border: 1px solid #<?php echo $BG_COLOR; ?>;
+	border: 1px solid #<?php echo $HB_COLOR; ?>;
 	margin-top: -1px;
 	position: relative;
 	height: 20px;
@@ -654,7 +684,7 @@ code {
 	width: 160px;
 	height: 160px;
 	margin-top: 3px;
-	border: 1px solid #<?php echo $BG_COLOR; ?>;
+	border: 1px solid #<?php echo $HB_COLOR; ?>;
 	cursor: pointer;
 	display: block;
 	overflow: hidden;
@@ -700,7 +730,7 @@ code {
 	width: 50%;
 }
 .dualForm form.m {
-	border-left: 1px solid #<?php echo $BG_COLOR; ?>;
+	border-left: 1px solid #<?php echo $HB_COLOR; ?>;
 	margin-left: -1px;
 }
 .dualForm form p > span {
@@ -709,12 +739,6 @@ code {
 }
 .dualForm form input[type="text"]:not([size]), .dualForm form input[type="password"] {
 	width: 125px;
-}
-.dualForm .footer {
-	width: 100%;
-	border-top: 1px solid #<?php echo $BG_COLOR; ?>;
-	display: inline-block;
-	text-align: center;
 }
 .dualForm .largeButton{
 	float: right;
@@ -753,7 +777,7 @@ code {
 	height: 20px;
 	margin: 0;
 	padding: 0;
-	border: 5px solid #<?php echo $BG_COLOR; ?>;
+	border: 5px solid #<?php echo $HB_COLOR; ?>;
 	border-radius: 0 0 5px 5px;
 }
 
@@ -784,14 +808,14 @@ code {
 }
 
 #popUpDiv #email {
-	border: 1px solid #<?php echo $BG_COLOR; ?>;
+	border: 1px solid #<?php echo $HB_COLOR; ?>;
 	border-radius: 5px 5px 0 0;
 	overflow: hidden;
 	padding: 5px;
 }
 #popUpDiv #email > h2 {
-	background-color: #<?php echo $BG_COLOR; ?>;
-	color: #ffffff;
+	background-color: #<?php echo $HB_COLOR; ?>;
+	color: #<?php echo $HT_COLOR; ?>;
 	margin: -5px -5px 5px;
 	font-size: 15px;
 	padding: 0.5em;
@@ -826,7 +850,7 @@ code {
 	width: 150px;
 }
 #popUpDiv #email .help {
-	border: 1px solid #<?php echo $BG_COLOR; ?>;
+	border: 1px solid #<?php echo $HB_COLOR; ?>;
 	border-radius: 5px 5px 0 0;
 	margin-bottom: 5px;
 	float: right;
@@ -834,8 +858,8 @@ code {
 	text-align: left;
 }
 #popUpDiv #email .help h2 {
-	background-color: #<?php echo $BG_COLOR; ?>;
-	color: #ffffff;
+	background-color: #<?php echo $HB_COLOR; ?>;
+	color: #<?php echo $HT_COLOR; ?>;
 	margin: 0;
 	font-size: 15px;
 	text-align: center;

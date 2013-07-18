@@ -1,5 +1,5 @@
 var supportErrorA="Your browser does not support the ", supportErrorB="<br/>You have 3 choices: Ignore This, update your browser, and switch browsers.",
-	ias, previewIMG, scanners, checkTimeout, paper, filesLst={}, TC='textContent';// TC can be changed to 'innerText' see header.php
+	ias, previewIMG, scanners, checkTimeout, rotateTimer, paper, filesLst={}, TC='textContent';// TC can be changed to 'innerText' see header.php
 $(document).ready(function (){
 	e=$('img[title="Preview"]');
 	previewIMG=e[0];
@@ -26,6 +26,51 @@ $(document).ready(function (){
 function getID(id){
 	return document.getElementById(id);
 }
+function encodeHTML(string){// http://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery#answer-12034334
+	var entityMap={
+		"&": "&amp;",
+		"<": "&lt;",
+		">": "&gt;",
+		'"': '&quot;',
+		"'": '&#39;',
+		"/": '&#x2F;'
+	};
+	return String(string).replace(/[&<>"'\/]/g,function(s){return entityMap[s];});
+}
+function changeColor(x,save){
+	if(typeof(XMLHttpRequest)=='undefined')
+		return printMsg('Sorry',supportErrorA+"XMLHttpRequest "+(TC=='textContent'?'function':'object')+" so can't change themes."+supportErrorB,'center',0);
+	var fields=Array('BG','LK','LC','PB','HB','HT','PT','BB','BT','AH','AT'),str='';
+	if(typeof(x)=='string'){
+		x=x.split('.');
+		for(var i in fields){
+			document.theme[fields[i]+'_COLOR'].value=x[i];
+			document.theme[fields[i]+'_COLOR'].style.backgroundColor='#'+x[i];
+			$(document.theme[fields[i]+'_COLOR']).ColorPickerSetColor(x[i]);
+		}
+	}
+	else if(!save)
+		x.style.backgroundColor='#'+x.value;
+	for(var i in fields)
+		str+=document.theme[fields[i]+'_COLOR'].value+'.';
+	var O=getID('style_old');
+	var N=getID('style_new');
+	O[TC]=N[TC];
+	var httpRequest = new XMLHttpRequest();
+	httpRequest.onreadystatechange = function(){
+		if(httpRequest.readyState==4){
+			if(httpRequest.status==200)
+				N[TC]=httpRequest.responseText.replace(/url\("images/g,'url("inc/images');
+			else
+				printMsg('Error '+httpRequest.status,' Failed to connect to '+document.domain,'center',-1);
+		}
+	};
+	httpRequest.open('GET', 'inc/style.php?theme='+str.slice(0,-1)+(save?'&save='+new Date().getTime():''));
+	httpRequest.send(null);
+	document.body.setAttribute('onbeforeunload',save?"if(!document.cookie)return confirm('The color theme was not saved because you have cookies disabled\\nPress OK to leave or Cancel to stay')":"return confirm('You did not save your color scheme\\nPress OK to leave or Cancel to stay')");
+	return false;
+}
+
 function pre_scan(form,ias){
 	previewIMG.style.zIndex=-1;
 	previewIMG.nextSibling.removeAttribute('style');
@@ -151,13 +196,6 @@ function validateKey(ele,e,ias){
 	// anything else (mostly letters)
 	return false;
 }
-function changeColor(colors){
-	var O=getID('style');
-	var N=getID('style_new');
-	O.href=N.href;
-	N.href='inc/style.php?colors='+colors+'&nocache='+new Date().getTime();
-	document.body.setAttribute('onunload',"if(!document.cookie)alert('The color theme was not saved because you have cookies disabled')");
-}
 function lastScan(data,ele){
 	generic=data.raw.slice(5);
 	scan=data.scan;
@@ -176,17 +214,6 @@ function lastScan(data,ele){
 		'<a class="tool icon upload" href="#" onclick="return upload(\''+scan+'\')"><span class="tip">Upload to Imgur</span></a> '+
 		'<a href="#" onclick="return emailManager(\''+scan+'\');" class="tool icon email"><span class=\"tip\">Email</span></a> '+
 		'<span class="tool icon recent-off"><span class="tip">Last Scan (Disabled)</span></span></p>';
-}
-function encodeHTML(string){// http://stackoverflow.com/questions/24816/escaping-html-strings-with-jquery#answer-12034334
-	var entityMap={
-		"&": "&amp;",
-		"<": "&lt;",
-		">": "&gt;",
-		'"': '&quot;',
-		"'": '&#39;',
-		"/": '&#x2F;'
-	};
-	return String(string).replace(/[&<>"'\/]/g,function(s){return entityMap[s];});
 }
 function buildScannerOptions(json){
 	var str='',id,name,loc,sel=0;
@@ -420,6 +447,7 @@ function rotateChange(ele){
 		return;
 	ias.setOptions({ "hide": true, "disable": true, "fadeSpeed": false, "rotating": true });
 	// If you hava  a fear of numbers do not even try to read this function
+	clearTimeout(rotateTimer);
 	ele.style[prefix]='rotate('+val+'deg) scale('+
 		(function(deg,h,w){ // Credit: http://userscripts.org/topics/127570?page=1#posts-502266 (http://jsfiddle.net/swU6Z/)
 			// scale = sin(phi) / sin(phi + theta)
@@ -433,7 +461,7 @@ function rotateChange(ele){
 			return Math.abs(Math.sin(phi)/Math.sin(psi));
 		})(val,ele.offsetHeight,ele.offsetWidth)+')';
 	//printMsg('debug',encodeHTML(ele.style[prefix]),'center');
-	setTimeout(function(){// We can not leave it rotated, it brutally screws up cropping
+	rotateTimer=setTimeout(function(){// We can not leave it rotated, it brutally screws up cropping
 		ele.style[prefix]='';
 		setTimeout(function(){
 			ias.setOptions({ "hide": false, "disable": false, "fadeSpeed": 850, "rotating": false });
@@ -596,7 +624,7 @@ function PDF_popup(files){
 				populateSelect();
 			}
 		};
-		httpRequest.open('GET', 'config/paper.json');
+		httpRequest.open('GET', 'config/paper.json?nocache='+new Date().getTime());
 		httpRequest.send(null);
 	}
 	else

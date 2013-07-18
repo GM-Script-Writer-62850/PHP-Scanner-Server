@@ -15,6 +15,7 @@ $VER="1.3-8_dev";
 $page=($PAGE==200?"Success":"Error");
 $Auth=true;
 $RequireLogin=false;
+$Theme='3C9642.3C7796.3C9642.FFFFFF.3C9642.FFFFFF.000000.383838.FFFFFF';
 include("header.php");
 ?>
 <div class="box box-full"><h2>HTTP Status Code: <?php echo $PAGE; ?></h2><p class="center"><?php echo $PAGE==200?'Ok, you found me':'That is a error'; ?></p></div>

@@ -6,6 +6,7 @@ $ExtraScanners=false;// Adds sample scanners from ./inc/scanhelp/
 $CheckForUpdates=true;// Enables auto update checking
 $RequireLogin=false;// Require user to login (A 'geek' could bypass this without too much trouble using JavaScript); Create the user 'root' 1st, also Authorization is root's password
 $SessionDuration=86400;// Max time (in seconds) signed in is 24hrs (irrelevant with the above off)
+$Theme='3C9642.3C7796.3C9642.FFFFFF.3C9642.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF'; // Default Color Scheme
 // Sorry for the lack of explanations in the code feel free to ask what something does
 
 // The next 2 lines are also in ./inc/index.php
