@@ -6,8 +6,9 @@ else{
 	if(is_dir("../$here"))
 		$here=substr($here,0,strrpos($here,'/'));
 	else
-		die(include('error.php'));
+		die(include('status.php'));
 }
+header("HTTP/1.1 200 OK");
 include("../config.php");
 function get_Type($ext){
 	switch($ext){
@@ -55,7 +56,7 @@ function get_Type($ext){
 $PAGE='Index Of';
 $path=InsertHeader($here);
 ?>
-<div class="box box-full"><h2>Index Of <?php echo $here ?></h2><ul>
+<div class="box box-full"><h2>Index Of <?php echo $here; ?></h2><ul>
 <?php
 function recursive_scandir($dir,$level,$max){
 	if($level>=$max)

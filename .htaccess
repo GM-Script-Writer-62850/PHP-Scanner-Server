@@ -1,7 +1,9 @@
+ErrorDocument 401 /res/status.php
 ErrorDocument 403 /res/index.php
-ErrorDocument 404 /res/error.php
+ErrorDocument 404 /res/status.php
+ErrorDocument 500 /res/status.php
 
-# Create 403 errors to use 403 error page as a replacement
+# Create 403 errors to use custom Index Of page as a replacement
 Options -Indexes
 
 # I will leave these here for you to enable
@@ -42,3 +44,8 @@ php_value output_handler ob_gzhandler
 		Header set Content-type "image/png"
 	</FilesMatch>
 </ifModule>
+
+# Prevent viewing blank page
+<Files config.php>
+	Deny from all
+</Files>
