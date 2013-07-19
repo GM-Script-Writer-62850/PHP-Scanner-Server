@@ -1,0 +1,4 @@
+Deny from all
+<Files login.php>
+	Allow from all
+</Files>

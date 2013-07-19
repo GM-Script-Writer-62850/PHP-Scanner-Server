@@ -1,5 +1,5 @@
 <?php 
-$path=is_numeric($GLOBALS['PAGE'])?substr($_SERVER['PHP_SELF'],0,strlen(end(explode('/',$_SERVER['PHP_SELF'])))*-1-4):'';
+$path=is_numeric($page)||$page=='Index Of'?substr($_SERVER['PHP_SELF'],0,strlen(end(explode('/',$_SERVER['PHP_SELF'])))*-1-4):'';
 $Theme=isset($_COOKIE["theme"])?url($_COOKIE["theme"]):$GLOBALS['Theme'];
 $GLOBALS['Theme']=$Theme;
 ?>
@@ -7,31 +7,33 @@ $GLOBALS['Theme']=$Theme;
 <head>
 <meta charset="UTF-8"/>
 <!--[if IE]><meta http-equiv="X-UA-Compatible" content="chrome=1"><![endif]-->
-<title><?php echo html($GLOBALS['NAME'].' ~ '.$GLOBALS['PAGE'].' - '.$page); ?></title>
-<link rel="shortcut icon" href="<?php echo $path; ?>inc/images/favicon.png"/>
-<link rel="stylesheet" href="<?php echo $path; ?>inc/style.php?theme=<?php echo $Theme; ?>" type="text/css"/>
+<title><?php echo html($GLOBALS['NAME'].' ~ '.$page.' - '.$title); ?></title>
+<link rel="shortcut icon" href="<?php echo $path; ?>res/images/favicon.png"/>
+<link rel="stylesheet" href="<?php echo $path; ?>res/style.php?theme=<?php echo $Theme; ?>" type="text/css"/>
 <script type="text/javascript" src="<?php echo $path; ?>jquery/jquery.min.js"></script>
 <?php 
-	if(in_array($GLOBALS['PAGE'],Array("Scan","Edit")))
+	if(in_array($page,Array("Scan","Edit")))
 		echo '<link rel="stylesheet" type="text/css" href="'.$path.'jquery/imgareaselect-0.9.10/css/imgareaselect-animated.css"/>'."\n".
 			'<script type="text/javascript" src="'.$path.'jquery/imgareaselect-0.9.10/scripts/jquery.imgareaselect.pack.js"></script>';
-	else if($GLOBALS['PAGE']=='Config')
-		echo '<style id="style_old" type="text/css"/></style><style id="style_new" type="text/css"/></style>'."\n".
+	else if($page=='Config')
+		echo '<style id="style_old" type="text/css"></style><style id="style_new" type="text/css"></style>'."\n".
 			'<link rel="stylesheet" media="screen" type="text/css" href="'.$path.'jquery/colorpicker-custom/css/colorpicker.css"/>'."\n".
 			'<script type="text/javascript" src="'.$path.'jquery/colorpicker-custom/js/colorpicker.js"></script>';
+	else if($page=='Index Of')
+		echo '<link rel="stylesheet" type="text/css" href="'.$path.'res/indexOf.css"/>';
 ?>
-<script type="text/javascript" src="<?php echo $path; ?>inc/model-dialog.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>inc/cookie.js"></script>
-<script type="text/javascript" src="<?php echo $path; ?>inc/main.js"></script>
-<!--[if lt IE 9]><script type="text/javascript">TC='innerText';var ie8=false;</script><link rel="stylesheet" type="text/css" href="<?php echo $path; ?>inc/ie.css"/><![endif]-->
+<script type="text/javascript" src="<?php echo $path; ?>res/model-dialog.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>res/cookie.js"></script>
+<script type="text/javascript" src="<?php echo $path; ?>res/main.js"></script>
+<!--[if lt IE 9]><script type="text/javascript">TC='innerText';var ie8=false;</script><link rel="stylesheet" type="text/css" href="<?php echo $path; ?>res/ie.css"/><![endif]-->
 </head>
-<body>
+<body<?php echo isset($_COOKIE['darkPicker'])?' class="darkPicker"':''; ?>>
 <div id="blanket" style="display:none;background-color:transparent;"><div id="popUpDiv" style="opacity:0;"></div></div>
 <div id="container">
 
 <div id="header">
 
-<div class="tab<?php echo in_array($GLOBALS['PAGE'],Array("Config","About","Paper Manager","Access Enabler","Device Notes","Parallel-Form","PHP Information"))?' active':''; ?>">
+<div class="tab<?php echo in_array($page,Array("Config","About","Paper Manager","Access Enabler","Device Notes","Parallel-Form","PHP Information"))?' active':''; ?>">
 <a href="<?php echo $path; ?>index.php?page=Config">Configure</a>
 <div class="topleft top"></div>
 <div class="bottomleft bottom"></div>
@@ -39,7 +41,7 @@ $GLOBALS['Theme']=$Theme;
 <div class="bottomright bottom"></div>
 </div>
 
-<div class="tab<?php echo in_array($GLOBALS['PAGE'],Array("Scans","View","Edit"))?' active':''; ?>">
+<div class="tab<?php echo in_array($page,Array("Scans","View","Edit"))?' active':''; ?>">
 <a href="<?php echo $path; ?>index.php?page=Scans">Scanned Files</a>
 <div class="topleft top"></div>
 <div class="bottomleft bottom"></div>
@@ -47,7 +49,7 @@ $GLOBALS['Theme']=$Theme;
 <div class="bottomright bottom"></div>
 </div>
 
-<div class="tab<?php echo $GLOBALS['PAGE']=="Scan"?' active':''; ?>">
+<div class="tab<?php echo $page=="Scan"?' active':''; ?>">
 <a href="<?php echo $path; ?>index.php?page=Scan">Use Scanner</a>
 <div class="topleft top"></div>
 <div class="bottomleft bottom"></div>
@@ -55,8 +57,8 @@ $GLOBALS['Theme']=$Theme;
 <div class="bottomright right bottom"></div>
 </div>
 
-<div class="tab<?php echo $GLOBALS['PAGE']=="Login"||is_numeric($GLOBALS['PAGE'])?' active':''; ?>">
-<a href="/"<?php echo $GLOBALS['RequireLogin']&&$GLOBALS['Auth']&&$GLOBALS['PAGE']!='Login'?' onclick="Delete_Cookie(\'Authenticated\',false)">Logout':'>'.$_SERVER['SERVER_NAME']; ?></a>
+<div class="tab<?php echo in_array($page,Array("Index Of","Login"))||is_numeric($page)?' active':''; ?>">
+<a href="/"<?php echo $GLOBALS['RequireLogin']&&$GLOBALS['Auth']&&$page!='Login'?' onclick="Delete_Cookie(\'Authenticated\',false)">Logout':'>'.$_SERVER['SERVER_NAME']; ?></a>
 <div class="topleft top"></div>
 <div class="bottomleft bottom"></div>
 <div class="topright top"></div>
@@ -70,7 +72,7 @@ $GLOBALS['Theme']=$Theme;
 <noscript id="nojs">
 <div style="height:auto;" class="message">
 <h2>JavaScript Disabled</h2>
-<p class="center">This application requires JavaScript to function. Please enable JavaScript, then reload this page.<?php echo $GLOBALS['PAGE']=='Login'?'<br/><b>LOGIN REQUIRES JAVASCRIPT</b>':''; ?></p>
+<p class="center">This application requires JavaScript to function. Please enable JavaScript, then reload this page.<?php echo $page=='Login'?'<br/><b>LOGIN REQUIRES JAVASCRIPT</b>':''; ?></p>
 </div>
 </noscript>
 <!--[if IE 8]><script type="text/javascript">ie8=true</script><![endif]-->

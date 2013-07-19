@@ -18,6 +18,6 @@ function Delete_Cookie( name, path ) {// edited, don't delete non-existent cooki
 	if(!path) path=window.location.pathname.substr(0,window.location.pathname.lastIndexOf('/')+1);// Added this line
 	document.cookie = name + "=" +
 		( ( path ) ? ";path=" + path : "") +
-		( ( domain ) ? ";domain=" + document.domain : "" ) +
+		";domain=" + document.domain +
 		";expires=Thu, 01-Jan-1970 00:00:01 GMT";
 }

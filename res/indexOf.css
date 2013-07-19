@@ -1,0 +1,55 @@
+/* from /usr/share/apache2/icons */
+div > ul{
+	margin-left:12px;
+}
+ul{
+	list-style:none;
+	padding-left:0;
+}
+li{
+	background-repeat:no-repeat;
+	padding-left:25px;
+	line-height:25px;
+}
+.dir{
+	background-image:url(/icons/dir.gif);
+}
+.image{
+	background-image:url(/icons/image2.gif);
+}
+.css{
+	background-image:url(/icons/layout.gif);
+}
+.txt{
+	background-image:url(/icons/text.gif);
+}
+.patch{
+	background-image:url(/icons/patch.gif);
+}
+.pdf{
+	background-image:url(/icons/pdf.gif);
+}
+.script{
+	background-image:url(/icons/script.gif);
+}
+.archive{
+	background-image:url(/icons/compressed.gif);
+}
+.video{
+	background-image:url(/icons/movie.gif);
+}
+.bin{
+	background-image:url(/icons/binary.gif);
+}
+.sound{
+	background-image:url(/icons/sound2.gif);
+}
+.idk{
+	background-image:url(/icons/unknown.gif);
+}
+.parent{
+	background-image:url(/icons/back.gif);
+}
+.none{
+	padding-left:0;
+}

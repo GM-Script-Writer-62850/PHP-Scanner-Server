@@ -1,5 +1,8 @@
-ErrorDocument 403 /inc/
-ErrorDocument 404 /inc/
+ErrorDocument 403 /res/index.php
+ErrorDocument 404 /res/error.php
+
+# Create 403 errors to use 403 error page as a replacement
+Options -Indexes
 
 # I will leave these here for you to enable
 # ErrorDocument 401 https://i.chzbgr.com/maxW500/1935027968/hE19A8C6D/

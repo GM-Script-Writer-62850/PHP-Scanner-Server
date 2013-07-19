@@ -3,23 +3,46 @@ var supportErrorA="Your browser does not support the ", supportErrorB="<br/>You 
 $(document).ready(function (){
 	e=$('img[title="Preview"]');
 	previewIMG=e[0];
-	if(!previewIMG)
-		return;
-	ias=e.imgAreaSelect({
-		handles: true,
-		onSelectEnd: storeRegion,
-		instance: true,
-		enable: true,
-		disable: ((previewIMG.src.indexOf('inc/images/blank.gif')>-1)?true:false),
-		fadeSpeed: 850,
-		parent: 'div#select',
-		zIndex: 1,
-		rotating: false
-	});
 	if(previewIMG){
-		if(previewIMG.src.indexOf('inc/images/blank.gif')>-1){
-			getID('sel').style.display='none';
-			document.scanning.rotate.title="If you plan to crop do this on the final scan";
+		ias=e.imgAreaSelect({
+			handles: true,
+			onSelectEnd: storeRegion,
+			instance: true,
+			enable: true,
+			disable: ((previewIMG.src.indexOf('res/images/blank.gif')>-1)?true:false),
+			fadeSpeed: 850,
+			parent: 'div#select',
+			zIndex: 1,
+			rotating: false
+		});
+		if(previewIMG){
+			if(previewIMG.src.indexOf('res/images/blank.gif')>-1){
+				getID('sel').style.display='none';
+				document.scanning.rotate.title="If you plan to crop do this on the final scan";
+			}
+		}
+	}
+	else if(typeof($().ColorPicker)=="function"){
+		var pickers=$('.colorPicker').ColorPicker({
+			onSubmit:function(hsb,hex,rgb,el){
+				$(el).val(hex);
+				$(el).ColorPickerHide();
+				sendE(el,'change');
+			},
+			onShow:function(colpkr){
+				$(colpkr)['fade'+(colpkr.style.display=='block'?'Out':'In')](800);
+				return false;
+			},
+			onHide: function(colpkr){
+				$(colpkr).fadeOut(800);
+				return false;
+			}
+		});
+		document.theme.reset();
+		for(var i in pickers){
+			if(isNaN(i))
+				break;
+			$(pickers[i]).ColorPickerSetColor(pickers[i].value);
 		}
 	}
 });
@@ -55,19 +78,25 @@ function changeColor(x,save){
 		str+=document.theme[fields[i]+'_COLOR'].value+'.';
 	var O=getID('style_old');
 	var N=getID('style_new');
-	O[TC]=N[TC];
+	T=TC;
+	if(TC=='innerText'){// Stoupid IE
+		O=O.styleSheet;
+		N=N.styleSheet;
+		T='cssText';
+	}
+	O[T]=N[T];
 	var httpRequest = new XMLHttpRequest();
 	httpRequest.onreadystatechange = function(){
 		if(httpRequest.readyState==4){
 			if(httpRequest.status==200)
-				N[TC]=httpRequest.responseText.replace(/url\("images/g,'url("inc/images');
+				N[T]=httpRequest.responseText.replace(/url\("images/g,'url("res/images');
 			else
 				printMsg('Error '+httpRequest.status,' Failed to connect to '+document.domain,'center',-1);
 		}
 	};
-	httpRequest.open('GET', 'inc/style.php?theme='+str.slice(0,-1)+(save?'&save='+new Date().getTime():''));
+	httpRequest.open('GET', 'res/style.php?theme='+str.slice(0,-1)+(save?'&save='+new Date().getTime():''));
 	httpRequest.send(null);
-	document.body.setAttribute('onbeforeunload',save?"if(!document.cookie)return confirm('The color theme was not saved because you have cookies disabled\\nPress OK to leave or Cancel to stay')":"return confirm('You did not save your color scheme\\nPress OK to leave or Cancel to stay')");
+	document.body.setAttribute('onbeforeunload',save?"if(!document.cookie)return confirm('The color theme was not saved because you have cookies disabled\\nPress OK to leave or Cancel to stay')":"if(!confirm('You did not save your color scheme\\nPress OK to leave or Cancel to stay'))return false");
 	return false;
 }
 
@@ -351,7 +380,7 @@ function scannerChange(ele){
 	sourceChange(document.scanning.source);
 }
 function sourceChange(ele){
-	var info,text,html1,html2,html3,dpi,modes,valA,valB,valC;
+	var info,text,html1,html2,html3,dpi,modes,valA,valB,valC,duplex;
 	info=document.scanning.scanner;
 	info=scanners[info.selectedIndex];
 	// Change Mode
@@ -385,6 +414,13 @@ function sourceChange(ele){
 	dpi=info['DPI-'+ele.value].split('|');
 	for(var i=0,max=dpi.length;i<max;i++)
 		html3+='<option value="'+dpi[i]+'">'+dpi[i]+' '+(isNaN(dpi[i])?'':'DPI')+'</option>';
+	// Change Duplex
+	duplex=typeof(info['DUPLEX-'+ele.value])=='boolean'?'false|true':info['DUPLEX-'+ele.value];
+	duplex=duplex.split('|');
+	html4='';
+	for(i in duplex){
+		html4+='<option value="'+duplex[i]+'">'+duplex[i]+'</option>';
+	}
 	// Apply Changes
 	valA=document.scanning.mode.value;
 	valB=document.scanning.size.value;
@@ -393,11 +429,13 @@ function sourceChange(ele){
 		document.scanning.mode.parentNode.innerHTML='<select name="mode" class="title">'+html1+'</select>';
 		document.scanning.size.parentNode.innerHTML='<select onchange="paperChange(this);" name="size">'+html2+'</select>';
 		document.scanning.quality.parentNode.innerHTML='<select name="quality" class="upper">'+html3+'</select>';
+		document.scanning.duplex.parentNode.innerHTML='<select name="duplex" class="title">'+html4+'</select>';
 	}
 	else{
 		document.scanning.mode.innerHTML=html1;
 		document.scanning.size.innerHTML=html2;
 		document.scanning.quality.innerHTML=html3;
+		document.scanning.duplex.innerHTML=html4;
 	}
 	if(inArray(modes,valA))
 		document.scanning.mode.value=valA;
@@ -443,7 +481,7 @@ function rotateChange(ele){
 	if(prefix.length<9||val==0)
 		return;
 	ele=previewIMG;
-	if(ele.src.indexOf('inc/images/blank.gif')>-1)
+	if(ele.src.indexOf('res/images/blank.gif')>-1)
 		return;
 	ias.setOptions({ "hide": true, "disable": true, "fadeSpeed": false, "rotating": true });
 	// If you hava  a fear of numbers do not even try to read this function
@@ -475,7 +513,7 @@ function changeBrightContrast(){// Webkit based only :(
 	// Does not work properly so lets disable it: brightness/contrast have a screwed up/illogical max %
 	//if(typeof(document.body.style.webkitFilter)!='string') 
 		return;
-	if(previewIMG.src.indexOf('inc/images/blank.gif')>-1)
+	if(previewIMG.src.indexOf('res/images/blank.gif')>-1)
 		return;
 	previewIMG.style.webkitFilter='brightness('+(Number(document.scanning.bright.value)+100)+'%) contrast('+(Number(document.scanning.contrast.value)+100)+'%)';
 }
@@ -612,8 +650,8 @@ function PDF_popup(files){
 	getID("blanket").childNodes[0].innerHTML='<form onsubmit="return PDF_popup(this)" target="_blank" action="#" method="GET">How would you prefer for your PDF download?<br/>\
 		A scan placed on the page with a title or<br/><input type="hidden" name="files" value="'+files+'"/><input type="hidden" name="format" value=""/>\
 		a would you prefer the scan as the page.<br/>Paper Type: <select id="PDF_PAPER" name="size" style="width:190px;"><option value="">Loading...</option></select>\
-		<button type="submit"><img src="inc/images/pdf-scaled.png" width="106" height="128" alt="With title"/></button>\
-		<button type="submit" onclick="this.parentNode.format.value=\'full\';"><img src="inc/images/pdf-full.png" width="106" height="128" alt="Fill page with scan"/></button>\
+		<button type="submit"><img src="res/images/pdf-scaled.png" width="106" height="128" alt="With title"/></button>\
+		<button type="submit" onclick="this.parentNode.format.value=\'full\';"><img src="res/images/pdf-full.png" width="106" height="128" alt="Fill page with scan"/></button>\
 		<br/><input type="submit" onclick="this.parentNode.format.value=\'raw\';" value="I don\'t care just give me a PDF" style="width:261px"/>\
 		<br/><input type="button" value="Cancel" style="width:261px;" onclick="toggle(\'blanket\')"/></form>';
 	if(paper==null){
@@ -1362,7 +1400,7 @@ function login(form){
 			}
 		}
 	};
-	httpRequest.open('POST', "inc/login.php");
+	httpRequest.open('POST', "res/inc/login.php");
 	var params = "json=1"+
 		"&mode="+encodeURIComponent(form.mode.value)+
 		"&name="+encodeURIComponent(form.name.value)+

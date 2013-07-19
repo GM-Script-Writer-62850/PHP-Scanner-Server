@@ -27,17 +27,10 @@ if(isset($Fortune)){
 }
 ?>
 <a href="javascript:void('toggleDebug')" id="debug-link" onclick="this[TC]=toggleDebug(false)?'Hide':'Show';"><?php
-if(isset($_COOKIE["debug"])){
-	if($_COOKIE["debug"]=='true'){
-		echo 'Hide';
-	}
-	else{
-		echo 'Show';
-	}
-}
-else{
+if(isset($_COOKIE["debug"]))
+	echo $_COOKIE["debug"]=='true'?'Hide':'Show';
+else
 	echo 'Show';
-}
 ?></a> the Debug Console. You can toggle the Debug Console at any time by pressing this:<br/><code>[Ctrl]+[Shift]+[D]</code>
 </p>
 </div>
@@ -46,7 +39,7 @@ else{
 <h2>Trouble Shooting</h2>
 <p>
 If you are having issues loading the Scanned Files page due to over population you can <a href="index.php?page=Scans&amp;delete=Remove" onclick="return confirm('Delete all scanned files?')">
-Remove All the Scans</a> with that link or you can use <a href="index.php?page=Scans&filter=1&t=0">this link</a> so you can use the scan filter. If you are having another issue you may want to read the <a href="index.php?page=About">Release Notes</a> or
+Remove All the Scans</a> with that link or you can use <a href="index.php?page=Scans&amp;filter=1&amp;t=0">this link</a> so you can use the scan filter. If you are having another issue you may want to read the <a href="index.php?page=About">Release Notes</a> or
  take a look at the <a href="index.php?page=PHP%20Information">PHP Configuration</a>.
 </p>
 </div>
@@ -103,7 +96,7 @@ If you want to save a setting for your own use, right-click it and save it to yo
 <option value="FF007E.BB045E.FF007E.FFFFFF.FF007E.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#ff007e;color:#bb045e;">Pink</option>
 </select></p>
 <?php $Theme=explode('.',$Theme);$attrs='class="colorPicker" readonly="readonly" onchange="changeColor(this,false);"'; ?>
-<div class="footer"><form name="theme" onsubmit="return changeColor(null,true);" action="#"><p style="line-height:23px;">
+<div class="footer"><form name="theme" onsubmit="try{changeColor(null,true);}catch(e){alert(e)}return false" action="#"><p style="line-height:23px;">
 <span>Background Color:</span>			<input name="BG_COLOR" style="background-color:#<?php echo $Theme[0]; ?>" value="<?php echo $Theme[0]; ?>" <?php echo $attrs; ?>/>
 <span>Page Background:</span>			<input name="PB_COLOR" style="background-color:#<?php echo $Theme[3]; ?>" value="<?php echo $Theme[3]; ?>" <?php echo $attrs; ?>/>
 <span>Page Text:</span>					<input name="PT_COLOR" style="background-color:#<?php echo $Theme[6]; ?>" value="<?php echo $Theme[6]; ?>" <?php echo $attrs; ?>/>
@@ -111,34 +104,17 @@ If you want to save a setting for your own use, right-click it and save it to yo
 <span>Header Text:</span>				<input name="HT_COLOR" style="background-color:#<?php echo $Theme[5]; ?>" value="<?php echo $Theme[5]; ?>" <?php echo $attrs; ?>/>
 <span>Link Color:</span>				<input name="LC_COLOR" style="background-color:#<?php echo $Theme[2]; ?>" value="<?php echo $Theme[2]; ?>" <?php echo $attrs; ?>/>
 <span>Link Color (Mouse Over):</span>	<input name="LK_COLOR" style="background-color:#<?php echo $Theme[1]; ?>" value="<?php echo $Theme[1]; ?>" <?php echo $attrs; ?>/>
-<span>Debug Background:</span>			<input name="BB_COLOR" style="background-color:#<?php echo $Theme[7]; ?>" value="<?php echo $Theme[7]; ?>" <?php echo $attrs; ?>/>
-<span>Debug Text:</span>				<input name="BT_COLOR" style="background-color:#<?php echo $Theme[8]; ?>" value="<?php echo $Theme[8]; ?>" <?php echo $attrs; ?>/>
 <span>Alert Header Background:</span>	<input name="AH_COLOR" style="background-color:#<?php echo $Theme[9]; ?>" value="<?php echo $Theme[9]; ?>" <?php echo $attrs; ?>/>
 <span>Alert Header Text:</span>			<input name="AT_COLOR" style="background-color:#<?php echo $Theme[10]; ?>" value="<?php echo $Theme[10]; ?>" <?php echo $attrs; ?>/>
-<script type="text/javascript">(function(){
-var pickers=$('.colorPicker').ColorPicker({
-	onSubmit:function(hsb,hex,rgb,el){
-		$(el).val(hex);
-		$(el).ColorPickerHide();
-		sendE(el,'change');
-	},
-	onShow:function(colpkr){
-		$(colpkr)['fade'+(colpkr.style.display=='block'?'Out':'In')](500);
-		return false;
-	},
-	onHide: function(colpkr){
-		$(colpkr).fadeOut(500);
-		return false;
-	}
-});
-document.theme.reset();
-for(var i in pickers){
-	if(isNaN(i))
-		break;
-	$(pickers[i]).ColorPickerSetColor(pickers[i].value);
-}
-})();</script><br/>
+<span>Debug Background:</span>			<input name="BB_COLOR" style="background-color:#<?php echo $Theme[7]; ?>" value="<?php echo $Theme[7]; ?>" <?php echo $attrs; ?>/>
+<span>Debug Text:</span>				<input name="BT_COLOR" style="background-color:#<?php echo $Theme[8]; ?>" value="<?php echo $Theme[8]; ?>" <?php echo $attrs; ?>/>
+<br/>
 <input type="submit" value="Save"/></p></form></div>
+<div class="footer"><p><span style="margin-right:30px;">Color Picker Themer:</span>
+<select style="width:61px;" onchange="if(this.value==1){document.body.className='darkPicker';Set_Cookie('darkPicker',true,365.25*10,false,null,null);}else{document.body.removeAttribute('class');Delete_Cookie('darkPicker',false);};">
+<option value="0">Light</option>
+<option value="1"<?php echo isset($_COOKIE['darkPicker'])?' selected="selected"':''; ?>>Dark</option>
+</select></p></div>
 </div>
 
 <div class="box">

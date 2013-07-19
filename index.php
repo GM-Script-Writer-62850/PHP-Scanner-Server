@@ -1,18 +1,5 @@
 <?php
-// Warning is displayed if there is less then the amount specified
-$FreeSpaceWarn=2048;// In Megabytes
-$Fortune=true;// Enable/disable fortunes in the debug console
-$ExtraScanners=false;// Adds sample scanners from ./inc/scanhelp/
-$CheckForUpdates=true;// Enables auto update checking
-$RequireLogin=false;// Require user to login (A 'geek' could bypass this without too much trouble using JavaScript); Create the user 'root' 1st, also Authorization is root's password
-$SessionDuration=86400;// Max time (in seconds) signed in is 24hrs (irrelevant with the above off)
-$Theme='3C9642.3C7796.3C9642.FFFFFF.3C9642.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF'; // Default Color Scheme
-// Sorry for the lack of explanations in the code feel free to ask what something does
-
-// The next 2 lines are also in ./inc/index.php
-$NAME="PHP Scanner Server";
-$VER="1.3-8_dev";
-$SAE_VER="1.4"; // Scanner access enabler version
+include 'config.php';
 
 # ****************
 # Varables
@@ -70,18 +57,6 @@ function Get_Values($name){
 		return null;
 }
 
-function html($X){
-	return htmlspecialchars($X);
-}
-
-function url($X){
-	return rawurlencode($X);
-}
-
-function js($X){
-	return str_replace("\n",'\\n',addslashes($X));
-}
-
 function shell($X){
 	return escapeshellarg($X);
 }
@@ -109,7 +84,7 @@ function Print_Message($TITLE,$MESSAGE,$ALIGN) { # Add a Message div after the p
 	$TITLE=js(html($TITLE));
 	$MESSAGE=js($MESSAGE);
 	$ALIGN=js(html($ALIGN));
-	include "inc/message.php";
+	include "res/inc/message.php";
 }
 
 function Update_Preview($l) { # Change the Preview Pane image via JavaScript
@@ -121,14 +96,6 @@ function Update_Preview($l) { # Change the Preview Pane image via JavaScript
 function Update_Links($l,$p) { # Change the Preview Pane image links via JavaScript
 	echo '<script type="text/javascript" src="inc/previewlinks.php?file='.url($l).'&page='.url($p).'"></script>';
 }// main.js, previewlinks.php, scan.php, scans.php, view.php, and edit.php conatain icon links
-
-function InsertHeader($page) { # Spit out HTML header
-	include "inc/header.php";
-}
-
-function Footer() { # Spit out HTML footer
-	include "inc/footer.php";
-}
 
 function SaveFile($file,$content){// @ Suppresses any warnings
 	$file=@fopen($file,'w+');
@@ -278,7 +245,7 @@ foreach($dirs as $dir){
 		$PAGE="Incomplete Installation";
 		InsertHeader($PAGE);
 		Print_Message("Missing Directory","<i>$here/$dir</i> does not exist!<br/><code>$user</code> also needs to have write access to it<br>To fix run this in a terminal as root<br><code>mkdir $here/$dir && chown $user $here/$dir</code>","center");
-		Footer();
+		Footer('');
 		quit();
 	}
 }
@@ -286,18 +253,11 @@ foreach($dirs as $dir){
 # ****************
 # Login Page
 # ****************
-$Auth=true;
-if($RequireLogin){
-	if(!isset($_COOKIE['Authenticated']))
-		$Auth=false;
-	else if(time()>intval($_COOKIE['Authenticated'])+$SessionDuration)// NOT FOR USE ON 32BIT OS IN 2038 http://en.wikipedia.org/wiki/Year_2038_problem
-		$Auth=false;
-}
 if($RequireLogin&&!$Auth||$PAGE=='Login'){
 	$PAGE='Login';
 	InsertHeader('Authenticate Required');
-	include('inc/login.php');
-	Footer();
+	include('res/inc/login.php');
+	Footer('');
 }
 # ****************
 # All Scans Page
@@ -325,9 +285,9 @@ else if($PAGE=="Scans"){
 			Print_Message("File Deleted","The file <code>".html($FILE)."</code> has been removed.",'center');
 		}
 	}
-	include('inc/scans.php');
+	include('res/inc/scans.php');
 	checkFreeSpace($FreeSpaceWarn);
-	Footer();
+	Footer('');
 }
 # ****************
 # Config Page
@@ -386,9 +346,9 @@ else if($PAGE=="Config"){
 		$file=json_decode(file_get_contents("config/settings.json"));
 	else
 		$file=json_decode('[]');
-	include "inc/config.php";
+	include "res/inc/config.php";
 
-	Footer();
+	Footer('');
 
 	if($ACTION=="Search-For-Scanners"){ # Find avalible scanners on the system
 		$OP=json_decode(
@@ -398,33 +358,34 @@ else if($PAGE=="Config"){
 				-1
 			)."]"
 		);
+		$ct=count($OP);
 		$scan=scandir('config/parallel');
 		for($i=0,$max=count($scan);$i<$max;$i++){
 			if($scan[$i]=="."||$scan[$i]=="..")
 				continue;
-			$ct=count($OP);
 			$OP[$ct]=json_decode(file_get_contents("config/parallel/".$scan[$i]));
 			$OP[$ct]->{'ID'}=$ct;
 			$OP[$ct]->{'INUSE'}=0;
+			$ct++;
 		}
 		$FakeCt=0;
 		if($ExtraScanners){
-			$sample=scandir('inc/scanhelp');
+			$sample=scandir('res/scanhelp');
 			unset($sample[0]);unset($sample[1]);// Delete ./ and ../ from the list
 			foreach($sample as $key => $val){
-				$ct=count($OP);
-				$help=file_get_contents('inc/scanhelp/'.$val);
+				$help=file_get_contents('res/scanhelp/'.$val);
 				$help=substr($help,strpos($help,'Options specific to device `')+28);
 				$help=substr($help,0,strpos($help,"':"));
-				$OP[$ct]=array("ID" => $ct, "INUSE" => 0, "DEVICE" => $help, "NAME" => $val);
+				$OP[$ct]=(object)array("ID" => $ct, "INUSE" => 0, "DEVICE" => $help, "NAME" => $val);
+				$ct++;
 				$FakeCt++;
 			}
 		}
-		for($i=0,$max=count($OP);$i<$max;$i++){// Get scanner specific data
-			if($i<$max-$FakeCt)
+		for($i=0;$i<$ct;$i++){// Get scanner specific data
+			if($i<$ct-$FakeCt)
 				$help=exe("scanimage --help -d ".shell($OP[$i]->{"DEVICE"}),true);
 			else
-				$help=file_get_contents('inc/scanhelp/'.$OP[$i]->{"NAME"});
+				$help=file_get_contents('res/scanhelp/'.$OP[$i]->{"NAME"});
 			// Get Source
 			$sources=substr($help,strpos($help,'--source ')+9);
 			$defSource=substr($sources,strpos($sources,' [')+2);
@@ -436,13 +397,15 @@ else if($PAGE=="Config"){
 				if($val=='Inactive'||$val==$defSource)
 					$help2=$help;
 				else{
-					if($i<$max-$FakeCt)
+					if($i<$ct-$FakeCt)
 						$help2=exe("scanimage --help -d ".shell($OP[$i]->{"DEVICE"})." --source ".shell($val),true);
 					else{
-						$help2=file_get_contents('inc/scanhelp/'.$OP[$i]->{"NAME"});
+						$help2=file_get_contents('res/scanhelp/'.$OP[$i]->{"NAME"});
 						exe("echo ".shell("scanimage --help -d 'SIMULATED_$i-$key' --source '$val'"),true);
 					}
 				}
+				if(!is_bool(strpos($help2,'Segmentation fault (core dumped)')))
+					Print_Message("Warning: scanimage crashed",html($OP[$i]->{"NAME"})." may not be configured properly",'center');
 				// Get DPI
 				$res=substr($help2,strpos($help2,'--resolution ')+13);
 				$res=substr($res,0,strpos($res,'dpi'));
@@ -465,6 +428,17 @@ else if($PAGE=="Config"){
 					$duplex=substr($help2,$duplex+21);
 					$duplex=substr($duplex,0,strpos($duplex,']'));
 					$duplex=strtolower($duplex)!=='inactive';
+					// TODO: add support for --adf-mode Simplex|Duplex [inactive]
+				}
+				else{
+					$duplex=strpos($help2,'--adf-mode ');
+					if(!is_bool($duplex)){
+						$duplex=substr($help2,$duplex+11);
+						$duplexOpts=substr($duplex,0,strpos($duplex,' ['));
+						$duplex=substr($duplex,strpos($duplex,' [')+2);
+						$duplex=substr($duplex,0,strpos($duplex,']'));
+						$duplex=strtolower($duplex)!=='inactive'?$duplexOpts:false;
+					}
 				}
 				$OP[$i]->{"DUPLEX-$val"}=$duplex;
 				// Get color modes
@@ -499,14 +473,14 @@ else if($PAGE=="Config"){
 		}
 		$save=SaveFile("config/scanners.json",json_encode($OP));
 		$CANNERS='<table border="1" align="center"><tbody><tr><th>Name</th><th>Device</th></tr>';
-		for($i=0,$max=count($OP);$i<$max;$i++){
+		for($i=0;$i<$ct;$i++){
 			$CANNERS.='<tr><td>'.html($OP[$i]->{"NAME"}).'</td><td>'.html($OP[$i]->{"DEVICE"}).'</td></tr>';
 		}
 		$CANNERS.='<tr><td colspan="2" align="center">Missing a scanner? Make sure the scanner is plugged in and turned on.<br/>You may have to use the <a href="index.php?page=Access%20Enabler">Access Enabler</a>.<br/><a href="index.php?page=Parallel-Form">[Click here for parallel-port scanners]</a>'.
 			($save?'':'</td></tr><tr><td colspan="2" style="color:red;font-weight:bold;text-align:center;">Bad news: <code>'.$user.'</code> does not have permission to write files to the <code>'.html(getcwd()).'/config</code> folder.<br/><code>sudo chown '.$user.' '.html(getcwd()).'/config</code>').
 			'</td></tr>';
 		$CANNERS.='</tbod></table>';
-		if($max>1){
+		if($ct>1){
 			$CANNERS.='<small>It looks like you have more than one scanner. You can change the default scanner on the <a href="index.php?page=Device%20Notes">Scanner List</a> page if you want.</small>';
 		}
 		if(count($OP)==0)
@@ -538,8 +512,8 @@ else if($PAGE=="Parallel-Form"){
 		$save=SaveFile('config/parallel/'.$int.'.json',json_encode(array("NAME"=>$name,"DEVICE"=>$device)));
 	}
 	$scan=scandir('config/parallel');
-	include "inc/parallel.php";
-	Footer();
+	include "res/inc/parallel.php";
+	Footer('');
 	if($name!=null&&$device!=null&&$file==null){
 		if(!$save)
 			Print_Message("Permissions Error:","<code>$user</code> does not have permission to write files to <code>".html(getcwd())."/config/parallel</code><br/>".
@@ -551,34 +525,34 @@ else if($PAGE=="Parallel-Form"){
 # ****************
 else if($PAGE=="About"){
 	InsertHeader("Release Notes");
-	include "inc/about.php";
-	Footer();
+	include "res/inc/about.php";
+	Footer('');
 }
 # ***************
 # PHP Info
 # ***************
 else if($PAGE=="PHP Information"){
         InsertHeader($PAGE);
-        echo '<div class="box box-full"><h2>'.$PAGE.'</h2><iframe id="phpinfo" src="inc/phpinfo.php" style="border:none;width:100%;height:500px;margin:0;"></iframe><script type="text/javascript">';
-	include "inc/writescripts/phpinfo.js";
+        echo '<div class="box box-full"><h2>'.$PAGE.'</h2><iframe id="phpinfo" src="res/phpinfo.php" style="border:none;width:100%;height:500px;margin:0;"></iframe><script type="text/javascript">';
+	include "res/writeScripts/phpinfo.js";
 	echo '</script></div>';
-        Footer();
+        Footer('');
 }
 # ***************
 # Paper Manager
 # ***************
 else if($PAGE=="Paper Manager"){
 	InsertHeader("Paper Manager");
-	include "inc/paper.php";
-	Footer();
+	include "res/inc/paper.php";
+	Footer('');
 }
 # ****************
 # Access Enabler
 # ****************
 else if($PAGE=="Access Enabler"){
 	InsertHeader("Release Notes");
-	include "inc/enabler.php";
-	Footer();
+	include "res/inc/enabler.php";
+	Footer('');
 }
 # ****************
 # Scanner Info
@@ -659,7 +633,7 @@ else if($PAGE=="Device Notes"){
 		}
 		echo '</ul></div>';
 	}
-	Footer();
+	Footer('');
 }
 # ****************
 # View Page
@@ -677,10 +651,10 @@ else if($PAGE=="View"){
 	}
 	foreach($files as $file => $val){
 		$file=fileSafe($prefix.$file);
-		include "inc/view.php";
+		include "res/inc/view.php";
 	}
 	echo '<script type="text/javascript">disableIcons();</script>';
-	Footer();
+	Footer('');
 }
 # ***************
 # Edit Page
@@ -690,7 +664,7 @@ else if($PAGE=="Edit"){
 	$file=fileSafe(Get_Values('file'));
 	if($file!=null){
 		if(substr($file,-3)=="txt")
-			include "inc/edit-text.php";
+			include "res/inc/edit-text.php";
 		else{
 			if(Get_Values('edit')!=null){
 				if(file_exists("scans/Scan_$file")){
@@ -699,7 +673,7 @@ else if($PAGE=="Edit"){
 					  ($FILETYPE!=="txt"&&$FILETYPE!=="png"&&$FILETYPE!=="tiff"&&$FILETYPE!=="jpg")||
 					  !in_array($LANG,$langs)){
 						Print_Message("No, you can not do that","Input data is invalid and most likely an attempt to run malicious code on the server <i>denied</i>",'center');
-						Footer();
+						Footer('');
 						quit();
 					}
 					$tmpFileRaw="/tmp/Scan_$file";
@@ -781,9 +755,9 @@ else if($PAGE=="Edit"){
 			}
 			if(file_exists("scans/Scan_$file")){
 				if(substr($file,-3)=="txt")
-					include "inc/edit-text.php";
+					include "res/inc/edit-text.php";
 				else
-					include "inc/edit.php";
+					include "res/inc/edit.php";
 			}
 			else{
 				Print_Message("404 Not Found","It appears that <code>$file</code> has been deleted.",'center');
@@ -801,12 +775,12 @@ else if($PAGE=="Edit"){
 				$FILE=substr($FILES[$i],7,-3);
 				$FILE=substr(exe("cd 'scans'; ls ".shell("Scan$FILE").'*',true),5);//Should only have one file listed
 				$IMAGE=$FILES[$i];
-				include "inc/editscans.php";
+				include "res/inc/editscans.php";
 			}
 		}
 	}
 	checkFreeSpace($FreeSpaceWarn);
-	Footer();
+	Footer('');
 }
 # ****************
 # Scanner Page
@@ -818,7 +792,7 @@ else{
 		$langs=findLangs();
 		if(!validNum(Array($SCANNER,$BRIGHT,$CONTRAST,$SCALE,$ROTATE))||!in_array($LANG,$langs)||!in_array($QUALITY,explode("|",$CANNERS[$SCANNER]->{"DPI-$SOURCE"}))){//security check
 			Print_Message("No, you can not do that","Input data is invalid and most likely an attempt to run malicious code on the server <i>denied</i>",'center');
-			Footer();
+			Footer('');
 			quit();
 		}
 	}
@@ -847,13 +821,13 @@ else{
 			$file=file_get_contents('config/settings.json');
 		else
 			$file='{}';
-		include "inc/scan.php";
+		include "res/inc/scan.php";
 	}
 	if(strlen($ACTION)>0) # Only update values back to form if they aren't empty
 		Put_Values();
 	else
 		echo '<script type="text/javascript">scanReset();</script>';
-	Footer();
+	Footer('');
 
 	if($ACTION=="Scan Image"){# Check to see if scanner is in use
 		$SCAN_IN_USE=$CANNERS[$SCANNER]->{"INUSE"};
@@ -894,6 +868,7 @@ else{
 		   (count($sizes)!=2&&$SIZE!=='full')||
 		   (!in_array($MODE,explode('|',$CANNERS[$SCANNER]->{"MODE-$SOURCE"})))||
 		   (!in_array($SOURCE,explode('|',$CANNERS[$SCANNER]->{"SOURCE"})))||
+		   (!in_array($DUPLEX,explode('|',(is_bool($CANNERS[$SCANNER]->{"DUPLEX-$SOURCE"})?'true|false':$CANNERS[$SCANNER]->{"DUPLEX-$SOURCE"}))))||
 		   ($FILETYPE!=="txt"&&$FILETYPE!=="png"&&$FILETYPE!=="tiff"&&$FILETYPE!=="jpg")){
 			Print_Message("No, you can not do that","Input data is invalid and most likely an attempt to run malicious code on the server. <i>Denied</i>",'center');
 			quit();
@@ -980,7 +955,10 @@ else{
 			$LAMP='--lamp-switch=yes --lamp-off-at-exit=yes ';
 		}*/
 
-		if($CANNERS[$SCANNER]->{"DUPLEX-$SOURCE"}===true){
+		if(!is_bool($CANNERS[$SCANNER]->{"DUPLEX-$SOURCE"})){
+			$DUPLEX="--adf-mode $DUPLEX";
+		}
+		else if($CANNERS[$SCANNER]->{"DUPLEX-$SOURCE"}===true){
 			if($DUPLEX=='true')
 				$DUPLEX='--duplex=yes ';
 			else

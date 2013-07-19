@@ -72,10 +72,7 @@ echo file_exists("config/paper.json")?file_get_contents("config/paper.json"):'{"
 <span>Duplex<span class="tip">Double Sided Scan</span></span>:
 </div>
 <div class="control">
-<div class="ie_276228"><select name="duplex" class="title">
-<option value="false">No</option>
-<option value="true">yes</option>
-</select></div>
+<div class="ie_276228"><select name="duplex" class="title"></select></div>
 </div>
 </div>
 
@@ -88,27 +85,27 @@ echo file_exists("config/paper.json")?file_get_contents("config/paper.json"):'{"
 <span class="tool">Brightness<span class="tip">Lighting</span></span>:
 </div>
 <div class="control">
-<script type="text/JavaScript"><?php include "inc/writescripts/bright.js"; ?></script>
+<script type="text/JavaScript"><?php include "res/writeScripts/bright.js"; ?></script>
 </div>
 
 <div class="label">
 <span class="tool">Contrast<span class="tip">Vividness</span></span>:
 </div>
 <div class="control">
-<script type="text/JavaScript"><?php include "inc/writescripts/contrast.js"; ?></script>
+<script type="text/JavaScript"><?php include "res/writeScripts/contrast.js"; ?></script>
 </div>
 
 <div class="label">
 <span class="tool">Rotate<span class="tip">Turn</span></span>:
 </div>
-<div class="control tool"><script type="text/javascript"><?php include "inc/writescripts/rotate.js"; ?></script>
+<div class="control tool"><script type="text/javascript"><?php include "res/writeScripts/rotate.js"; ?></script>
 </div>
 
 <div class="label">
 <span class="tool">Scale<span class="tip">Size/Dimensions</span></span>:
 </div>
 <div class="control">
-<script type="text/JavaScript"><?php include "inc/writescripts/scale.js"; ?></script>
+<script type="text/JavaScript"><?php include "res/writeScripts/scale.js"; ?></script>
 </div>
 
 <div class="label">
@@ -129,7 +126,7 @@ echo file_exists("config/paper.json")?file_get_contents("config/paper.json"):'{"
 </div>
 <div class="control">
 <select name="lang">
-<?php include('inc/langs.php'); ?>
+<?php include('res/inc/langs.php'); ?>
 </select>
 </div>
 </div>
@@ -228,5 +225,5 @@ else
 	echo $ls;
 ?>
 </p></div><!-- there are no line breaks on the next line to make the javascript ever so slightly faster -->
-<div id="preview_img"><p><img src="inc/images/blank.gif" title="Preview" alt="Preview"/><img alt="" src="inc/images/blank.gif" title="Scanning" style="z-index:-1;"/></p></div>
+<div id="preview_img"><p><img src="res/images/blank.gif" title="Preview" alt="Preview"/><img alt="" src="res/images/blank.gif" title="Scanning" style="z-index:-1;"/></p></div>
 </div>

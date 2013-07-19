@@ -28,7 +28,7 @@
 </div>
 <div class="control">
 <select name="lang">
-<?php include('inc/langs.php'); ?>
+<?php include('res/inc/langs.php'); ?>
 </select>
 </div>
 </div>
@@ -37,14 +37,14 @@
 <span class="tool">Brightness<span class="tip">Lighting</span></span>:
 </div>
 <div class="control">
-<script type="text/JavaScript"><?php include "inc/writescripts/bright.js"; ?></script>
+<script type="text/JavaScript"><?php include "res/writeScripts/bright.js"; ?></script>
 </div>
 
 <div class="label">
 <span class="tool">Contrast<span class="tip">Vividness</span></span>:
 </div>
 <div class="control">
-<script type="text/JavaScript"><?php include "inc/writescripts/contrast.js"; ?></script>
+<script type="text/JavaScript"><?php include "res/writeScripts/contrast.js"; ?></script>
 </div>
 
 <div class="label">
@@ -62,14 +62,14 @@
 <span class="tool">Rotate<span class="tip">Turn</span></span>:
 </div>
 <div class="control tool">
-<script type="text/JavaScript"><?php include "inc/writescripts/rotate.js"; ?></script>
+<script type="text/JavaScript"><?php include "res/writeScripts/rotate.js"; ?></script>
 </div>
 
 <div class="label">
 <span class="tool">Scale<span class="tip">Size/Dimensions</span></span>:
 </div>
 <div class="control">
-<script type="text/JavaScript"><?php include "inc/writescripts/scale.js"; ?></script>
+<script type="text/JavaScript"><?php include "res/writeScripts/scale.js"; ?></script>
 </div>
 
 </div>
@@ -121,5 +121,5 @@ Save Image
 <a class="tool icon upload" href="#" onclick="return upload('Scan_<?php echo html(js($file,5)); ?>')"><span class="tip">Upload to Imgur</span></a>
 <a href="#" onclick="return emailManager('Scan_<?php echo html(js($file)); ?>');" class="tool icon email"><span class="tip">Email</span></a>
 </p></div><!-- There are no line breaks on the next line to make the javascript ever so slightly faster -->
-<div id="preview_img"><p><img alt="Preview" src="scans/Preview_<?php echo url(substr($file,0,strrpos($file,'.'))); ?>.jpg" title="Preview"/><img style="z-index:-1;" src="inc/images/blank.gif" title="Processing" alt=""/></p></div>
+<div id="preview_img"><p><img alt="Preview" src="scans/Preview_<?php echo url(substr($file,0,strrpos($file,'.'))); ?>.jpg" title="Preview"/><img style="z-index:-1;" src="res/images/blank.gif" title="Processing" alt=""/></p></div>
 </div>

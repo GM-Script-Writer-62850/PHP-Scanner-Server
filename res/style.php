@@ -124,6 +124,8 @@ img{
 	text-decoration: none;
 	-webkit-animation-duration: <?php echo $transitionTime; ?>;
 	animation-duration: <?php echo $transitionTime; ?>;
+	text-shadow: none;
+	box-shadow: 0 0 3px rgba(255, 255, 255, 0.65);
 }
 
 #container {
@@ -486,7 +488,7 @@ select.upper, select.upper option {
 	background-color: #FFF;
 }
 
-img[src="inc/images/blank.gif"] {
+img[src="res/images/blank.gif"] {
 	background: url("images/preview.png") no-repeat scroll center center transparent;
 }
 

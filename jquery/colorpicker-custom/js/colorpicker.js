@@ -12,8 +12,62 @@
 			ids = {},
 			inAction,
 			charMin = 65,
-			visible,char3Input='<input onkeypress="return validateKey(this,event,null);" type="text" maxlength="3" size="3"/>';
-			tpl = '<div class="colorpicker"><div class="colorpicker_color"><div><div></div></div></div><div class="colorpicker_hue tool"><span class="tip">Hue</span><div></div></div><div class="colorpicker_new_color tool"><span class="tip">New Color</span></div><div class="colorpicker_current_color tool"><span class="tip">Old Color</span></div><div class="colorpicker_hex tool"><span class="tip">Hex Code</span><input type="text" maxlength="6" size="6" /></div><div class="colorpicker_rgb_r colorpicker_field tool"><span class="tip">Red</span>'+char3Input+'<span></span></div><div class="colorpicker_rgb_g colorpicker_field tool"><span class="tip">Green</span>'+char3Input+'<span></span></div><div class="colorpicker_rgb_b colorpicker_field tool"><span class="tip">Blue</span>'+char3Input+'<span></span></div><div class="colorpicker_hsb_h colorpicker_field tool"><span class="tip">Hue</span>'+char3Input+'<span></span></div><div class="colorpicker_hsb_s colorpicker_field tool"><span class="tip">Saturation</span>'+char3Input+'<span></span></div><div class="colorpicker_hsb_b colorpicker_field tool"><span class="tip">Brightness</span>'+char3Input+'<span></span></div><div class="colorpicker_submit tool"><span class="tip">Apply</span></div></div>',
+			visible,
+			char3Input='<input onkeypress="return validateKey(this,event,null);" type="text" maxlength="3" size="3"/>',
+			tpl =	'<div class="colorpicker">'+
+						'<div class="colorpicker_color">'+
+							'<div>'+
+								'<div></div>'+
+							'</div>'+
+						'</div>'+
+						'<div class="colorpicker_hue tool">'+
+							'<span class="tip">Hue</span>'+
+							'<div></div>'+
+						'</div>'+
+						'<div class="colorpicker_new_color tool">'+
+							'<span class="tip">New Color</span>'+
+						'</div>'+
+						'<div class="colorpicker_current_color tool">'+
+							'<span class="tip">Old Color</span>'+
+						'</div>'+
+						'<div class="colorpicker_hex tool">#'+
+							'<span class="tip">Hex Code</span>'+
+							'<input type="text" maxlength="6" size="6"/>'+
+						'</div>'+
+						'<div class="colorpicker_rgb_r colorpicker_field tool">R'+
+							'<span class="tip">Red</span>'+
+							char3Input+
+							'<span></span>'+
+						'</div>'+
+						'<div class="colorpicker_rgb_g colorpicker_field tool">G'+
+							'<span class="tip">Green</span>'+
+							char3Input+
+							'<span></span>'+
+						'</div>'+
+						'<div class="colorpicker_rgb_b colorpicker_field tool">B'+
+							'<span class="tip">Blue</span>'+
+							char3Input+
+							'<span></span>'+
+						'</div>'+
+						'<div class="colorpicker_hsb_h colorpicker_field tool">H'+
+							'<span class="tip">Hue</span>'+
+							char3Input+
+							'<span></span>'+
+						'</div>'+
+						'<div class="colorpicker_hsb_s colorpicker_field tool">S'+
+							'<span class="tip">Saturation</span>'+
+							char3Input+
+							'<span></span>'+
+						'</div>'+
+						'<div class="colorpicker_hsb_b colorpicker_field tool">B'+
+							'<span class="tip">Brightness</span>'+
+							char3Input+
+							'<span></span>'+
+						'</div>'+
+						'<div class="colorpicker_submit tool">'+
+							'<span class="tip">Apply</span>'+
+						'</div>'+
+					'</div>',
 			defaults = {
 				eventName: 'click',
 				onShow: function () {},
