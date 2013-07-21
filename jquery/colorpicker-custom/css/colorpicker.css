@@ -155,27 +155,27 @@
 	top: 137px;
 	cursor: pointer;
 }
-.colorpicker_rgb_r {
-	top: 47px;
-	left: 207px;
-}
-.colorpicker_rgb_g {
-	top: 77px;
-	left: 207px;
-}
-.colorpicker_rgb_b {
-	top: 107px;
-	left: 207px;
-}
 .colorpicker_hsb_h {
 	top: 47px;
-	left: 277px;
+	left: 207px;
 }
 .colorpicker_hsb_s {
 	top: 77px;
-	left: 277px;
+	left: 207px;
 }
 .colorpicker_hsb_b {
+	top: 107px;
+	left: 207px;
+}
+.colorpicker_rgb_r {
+	top: 47px;
+	left: 277px;
+}
+.colorpicker_rgb_g {
+	top: 77px;
+	left: 277px;
+}
+.colorpicker_rgb_b {
 	top: 107px;
 	left: 277px;
 }

@@ -6,7 +6,7 @@ Based on Linux Scanner Server 1.2 Beta
 Released under the GPL 2.0
 
 Last Update: 07/20/2013 (Month/Day/Year)
-For Version: 1.3-8_dev
+For Version: 1.3-8
 
 Change Log:
 	https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server/wiki/Change-Log
@@ -264,6 +264,8 @@ Credit where credit is due:
 		Powered by Linux image
 	Stefan Petre
 		ColorPicker (www.eyecon.ro/colorpicker/)
+			Does not get full credit, it had lots of issues
+	There are a few others, there are comments in the source code for them
 
 Installation Notes:
 	Extract files to /var/www (or where ever your web pages are visible from)
