@@ -1,4 +1,4 @@
-<!DOCTYPE html><html><head><meta charset="UTF-8"/><link rel="shortcut icon" href="inc/images/favicon.png"/>
+<!DOCTYPE html><html><head><meta charset="UTF-8"/><link rel="shortcut icon" href="res/images/favicon.png"/>
 <style type="text/css">body,div{text-align:center;}div{padding:20px;display:inline-block;}.break div{padding:0;width:100%;page-break-after:always;}</style><title><?php
 if(isset($_GET['file'])){
 	$files=json_decode('{"'.$_GET['file'].'":1}');

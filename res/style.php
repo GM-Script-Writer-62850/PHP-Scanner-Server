@@ -2,7 +2,7 @@
 $expires=86400;//24 hrs
 header('Content-type: text/css; charset=UTF-8');
 header("Pragma: public");
-header("Cache-Control: maxage=".$expires);
+header("Cache-Control: ".(isset($_GET['save'])?"no-cache, must-revalidate":"maxage=$expires"));
 header('Expires: '.gmdate('D, d M Y H:i:s',time()+$expires).' GMT');
 if(isset($_GET['save'])&&isset($_GET["theme"])){//10 years long enough for a cookie to stick arround?
 	setcookie("theme",$_GET['theme'],time()+(60*60*24*365.25*10),substr($_SERVER['PHP_SELF'],0,strlen(end(explode('/',$_SERVER['PHP_SELF'])))*-1-4),$_SERVER['SERVER_NAME']);
@@ -106,7 +106,6 @@ img{
 }
 
 .tool .tip {
-	background-color: black;
 	background-color: rgba(0, 0, 0, 0.75);
 	border-radius: 5px;
 	color: #ffffff;
@@ -130,12 +129,13 @@ img{
 
 #container {
 	width: 735px;
-	margin: auto;
+	margin: 10px auto;
 	padding: 0.5em;
 	text-align: left;
 	background-color: #<?php echo $PB_COLOR; ?>;
 	color: #<?php echo $PT_COLOR; ?>;
 	border-radius: 5px;
+	box-shadow: 0 0 10px #<?php echo $PB_COLOR; ?>;
 }
 
 #header {
@@ -145,6 +145,25 @@ img{
 	background: url("images/logo.png") no-repeat scroll left center;
 	background-color: #<?php echo $HB_COLOR; ?>;
 	border-radius: 5px 5px 0 0;
+	position: relative;
+}
+#header > span{
+	text-shadow: <?php echo "0 0 1px #$PB_COLOR, 0 0 2px #$PB_COLOR, 0 0 3px #$PB_COLOR, 0 0 4px #$PB_COLOR, 0 0 5px #$PB_COLOR" ?>;
+	color: #<?php echo $HB_COLOR; ?>;
+	font-size: 25px;
+	display: block;
+	position: absolute;
+	top: 6px;
+    left: 71px;
+	width: 138px;
+	line-height: 30px;
+	-webkit-transition-property: color, text-shadow;
+	-webkit-transition-duration: <?php echo $transitionTime; ?>;
+	transition-property: color, text-shadow;
+	transition-duration: <?php echo $transitionTime; ?>;
+}
+#header > span span{
+	float: right;
 }
 
 .tab {
@@ -226,7 +245,7 @@ img{
 
 h2 > .del {
 	float: right;
-	border: 1px #<?php echo $PB_COLOR; ?> solid;
+	border: 1px #<?php echo $HT_COLOR; ?> solid;
 	border-radius: 3px;
 	text-indent: 0;
 }
@@ -238,20 +257,19 @@ h2 > .del {
 	border-radius: 5px 5px 0 0;
 	width: 720px;
 	margin: 0px 0px 0.5em 0.5em;
-	-webkit-transition-property: height;
+	-webkit-transition-property: height, opacity, margin-bottom;
 	-webkit-transition-duration: <?php echo $transitionTime; ?>;
-	transition-property: height;
+	transition-property: height, opacity, margin-bottom;
 	transition-duration: <?php echo $transitionTime; ?>;
 	height: 0;
+	opacity: 0;
 	overflow: hidden;
 }
-
 .message.ie {
 	background: url("images/best_viewed_in_firefox.png") bottom right no-repeat scroll;
 	background-color: #<?php echo $PB_COLOR; ?>;
 	padding-bottom: 20px;
 }
-
 .message h2 {
 	border: 1px solid #<?php echo $AH_COLOR; ?>;
 	border-radius: 2px 2px 0 0;
@@ -263,23 +281,22 @@ h2 > .del {
 	padding: 0.5em;
 	background-color: #<?php echo $AH_COLOR; ?>;
 }
-
+.message h2 .del {
+	border-color: #<?php echo $AT_COLOR; ?>;
+}
 .message div {
 	text-align: center;
 	margin: 1em;
 }
-
 .message table {
 	background-color: #<?php echo $HB_COLOR; ?>;
 	border-radius: 5px;
 	margin: 0;
 	width: 100%;
 }
-
 .message td,th {
 	background-color: #<?php echo $PB_COLOR; ?>;
 }
-
 .message ul {
 	margin:0;
 }
@@ -527,6 +544,7 @@ img[src="res/images/blank.gif"] {
 #scans .box h2.included {
 	background-color: #<?php echo $LK_COLOR; ?>;
 	border-color: #<?php echo $LK_COLOR; ?>;
+	border-radius: 5px 5px 0 0;
 }
 
 #scans.columns {
@@ -816,8 +834,8 @@ code {
 	padding: 5px;
 }
 #popUpDiv #email > h2 {
-	background-color: #<?php echo $HB_COLOR; ?>;
-	color: #<?php echo $HT_COLOR; ?>;
+	background-color: #000;
+	color: #FFF;
 	margin: -5px -5px 5px;
 	font-size: 15px;
 	padding: 0.5em;
@@ -852,7 +870,7 @@ code {
 	width: 150px;
 }
 #popUpDiv #email .help {
-	border: 1px solid #<?php echo $HB_COLOR; ?>;
+	border: 1px solid #000;
 	border-radius: 5px 5px 0 0;
 	margin-bottom: 5px;
 	float: right;
@@ -860,8 +878,8 @@ code {
 	text-align: left;
 }
 #popUpDiv #email .help h2 {
-	background-color: #<?php echo $HB_COLOR; ?>;
-	color: #<?php echo $HT_COLOR; ?>;
+	background-color: #000;
+	color: #FFF;
 	margin: 0;
 	font-size: 15px;
 	text-align: center;
@@ -898,4 +916,5 @@ code {
 	transition-property: opacity;
 	transition-duration: <?php echo $transitionTime; ?>;
 	padding: 5px;
+	box-shadow: 0 0 7px #FFF;
 }

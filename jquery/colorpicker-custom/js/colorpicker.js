@@ -13,7 +13,7 @@
 			inAction,
 			charMin = 65,
 			visible,
-			char3Input='<input onkeypress="return validateKey(this,event,null);" type="text" maxlength="3" size="3"/>',
+			char3Input='<input onkeypress="return validateKey(this,event,null);" onchange="this.value=Number(this.value)||0;" type="text" maxlength="3"/>',
 			tpl =	'<div class="colorpicker">'+
 						'<div class="colorpicker_color">'+
 							'<div>'+
@@ -32,37 +32,37 @@
 						'</div>'+
 						'<div class="colorpicker_hex tool">#'+
 							'<span class="tip">Hex Code</span>'+
-							'<input type="text" maxlength="6" size="6"/>'+
+							'<input type="text" maxlength="6" spellcheck="false"/>'+
 						'</div>'+
 						'<div class="colorpicker_rgb_r colorpicker_field tool">R'+
-							'<span class="tip">Red</span>'+
-							char3Input+
 							'<span></span>'+
+							char3Input+
+							'<span class="tip">Red</span>'+
 						'</div>'+
 						'<div class="colorpicker_rgb_g colorpicker_field tool">G'+
-							'<span class="tip">Green</span>'+
-							char3Input+
 							'<span></span>'+
+							char3Input+
+							'<span class="tip">Green</span>'+
 						'</div>'+
 						'<div class="colorpicker_rgb_b colorpicker_field tool">B'+
-							'<span class="tip">Blue</span>'+
-							char3Input+
 							'<span></span>'+
+							char3Input+
+							'<span class="tip">Blue</span>'+
 						'</div>'+
 						'<div class="colorpicker_hsb_h colorpicker_field tool">H'+
-							'<span class="tip">Hue</span>'+
-							char3Input+
 							'<span></span>'+
+							char3Input+
+							'<span class="tip">Hue</span>'+
 						'</div>'+
 						'<div class="colorpicker_hsb_s colorpicker_field tool">S'+
-							'<span class="tip">Saturation</span>'+
-							char3Input+
 							'<span></span>'+
+							char3Input+
+							'<span class="tip">Saturation</span>'+
 						'</div>'+
 						'<div class="colorpicker_hsb_b colorpicker_field tool">B'+
-							'<span class="tip">Brightness</span>'+
-							char3Input+
 							'<span></span>'+
+							char3Input+
+							'<span class="tip">Brightness</span>'+
 						'</div>'+
 						'<div class="colorpicker_submit tool">'+
 							'<span class="tip">Apply</span>'+
@@ -75,7 +75,7 @@
 				onHide: function () {},
 				onChange: function () {},
 				onSubmit: function () {},
-				color: 'ff0000',
+				color: '408080',
 				livePreview: true,
 				flat: false
 			},
@@ -172,7 +172,7 @@
 				$(document).bind('mousemove', current, moveIncrement);
 			},
 			moveIncrement = function (ev) {
-				ev.data.field.val(Math.max(0, Math.min(ev.data.max, parseInt(ev.data.val + ev.pageY - ev.data.y, 10))));
+				ev.data.field.val(Math.max(0, Math.min(ev.data.max, -parseInt(ev.data.val*-1 + ev.pageY - ev.data.y, 10))));
 				if (ev.data.preview) {
 					change.apply(ev.data.field.get(0), [true]);
 				}
@@ -191,8 +191,11 @@
 					y: $(this).offset().top
 				};
 				current.preview = current.cal.data('colorpicker').livePreview;
+
 				$(document).bind('mouseup', current, upHue);
 				$(document).bind('mousemove', current, moveHue);
+				ev.data=current;
+				moveHue(ev);
 			},
 			moveHue = function (ev) {
 				change.apply(
@@ -208,7 +211,7 @@
 			upHue = function (ev) {
 				fillRGBFields(ev.data.cal.data('colorpicker').color, ev.data.cal.get(0));
 				fillHexFields(ev.data.cal.data('colorpicker').color, ev.data.cal.get(0));
-				moveHue(ev);
+
 				$(document).unbind('mouseup', upHue);
 				$(document).unbind('mousemove', moveHue);
 				return false;
@@ -219,8 +222,11 @@
 					pos: $(this).offset()
 				};
 				current.preview = current.cal.data('colorpicker').livePreview;
+
 				$(document).bind('mouseup', current, upSelector);
 				$(document).bind('mousemove', current, moveSelector);
+				ev.data=current;
+				moveSelector(ev);
 			},
 			moveSelector = function (ev) {
 				change.apply(
@@ -239,7 +245,7 @@
 			upSelector = function (ev) {
 				fillRGBFields(ev.data.cal.data('colorpicker').color, ev.data.cal.get(0));
 				fillHexFields(ev.data.cal.data('colorpicker').color, ev.data.cal.get(0));
-				moveSelector(ev);
+
 				$(document).unbind('mouseup', upSelector);
 				$(document).unbind('mousemove', moveSelector);
 				return false;
@@ -314,16 +320,16 @@
 			},
 			fixHSB = function (hsb) {
 				return {
-					h: Math.min(360, Math.max(0, hsb.h)),
-					s: Math.min(100, Math.max(0, hsb.s)),
-					b: Math.min(100, Math.max(0, hsb.b))
+					h: Math.min(360, Math.max(0, hsb.h||0)),
+					s: Math.min(100, Math.max(0, hsb.s||0)),
+					b: Math.min(100, Math.max(0, hsb.b||0))
 				};
 			}, 
 			fixRGB = function (rgb) {
 				return {
-					r: Math.min(255, Math.max(0, rgb.r)),
-					g: Math.min(255, Math.max(0, rgb.g)),
-					b: Math.min(255, Math.max(0, rgb.b))
+					r: Math.min(255, Math.max(0, rgb.r||0)),
+					g: Math.min(255, Math.max(0, rgb.g||0)),
+					b: Math.min(255, Math.max(0, rgb.b||0))
 				};
 			},
 			fixHex = function (hex) {
@@ -355,9 +361,6 @@
 				var max = Math.max(rgb.r, rgb.g, rgb.b);
 				var delta = max - min;
 				hsb.b = max;
-				if (max != 0) {
-					
-				}
 				hsb.s = max != 0 ? 255 * delta / max : 0;
 				if (hsb.s != 0) {
 					if (rgb.r == max) {
@@ -458,20 +461,17 @@
 												.bind('blur', blur)
 												.bind('focus', focus);
 						cal
-							.find('span').bind('mousedown', downIncrement).end()
+							.find('span:first-child').bind('mousedown', downIncrement).end()
 							.find('>div.colorpicker_current_color').bind('click', restoreOriginal);
 						options.selector = cal.find('div.colorpicker_color').bind('mousedown', downSelector);
-						options.selectorIndic = options.selector.find('div div');
+						options.selectorIndic = options.selector.find('>div');
 						options.el = this;
 						options.hue = cal.find('div.colorpicker_hue div');
 						cal.find('div.colorpicker_hue').bind('mousedown', downHue);
 						options.newColor = cal.find('div.colorpicker_new_color');
 						options.currentColor = cal.find('div.colorpicker_current_color');
 						cal.data('colorpicker', options);
-						cal.find('div.colorpicker_submit')
-							.bind('mouseenter', enterSubmit)
-							.bind('mouseleave', leaveSubmit)
-							.bind('click', clickSubmit);
+						cal.find('div.colorpicker_submit').bind('click', clickSubmit);
 						fillRGBFields(options.color, cal.get(0));
 						fillHSBFields(options.color, cal.get(0));
 						fillHexFields(options.color, cal.get(0));

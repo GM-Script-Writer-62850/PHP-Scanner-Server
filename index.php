@@ -200,12 +200,10 @@ function quit(){
 
 $dir="/usr/games";// This is where fortune, cowsay, and cowthink are installed to
 if(file_exists("$dir/fortune") && $Fortune===true){
-	if(!isset($_COOKIE["fortune"])){
+	if(!isset($_COOKIE["fortune"]))
 		$_COOKIE["fortune"]=$Fortune;
-	}
-	else{
-		$_COOKIE["fortune"]=$_COOKIE["fortune"]=='true'?true:false;
-	}
+	else
+		$_COOKIE["fortune"]=$_COOKIE["fortune"]=='true';
 	if($Fortune && $_COOKIE["fortune"]){
 		if(file_exists("$dir/cowsay")&&file_exists("$dir/cowthink")){
 			$cows=scandir("/usr/share/cowsay/cows/");// This is where cowsay's ACSII art is stored
@@ -533,7 +531,7 @@ else if($PAGE=="About"){
 # ***************
 else if($PAGE=="PHP Information"){
         InsertHeader($PAGE);
-        echo '<div class="box box-full"><h2>'.$PAGE.'</h2><iframe id="phpinfo" src="res/phpinfo.php" style="border:none;width:100%;height:500px;margin:0;"></iframe><script type="text/javascript">';
+        echo '<div class="box box-full"><h2>'.$PAGE.'</h2><iframe id="phpinfo" src="res/phpinfo.php" style="display:block;border:none;width:100%;height:500px;"></iframe><script type="text/javascript">';
 	include "res/writeScripts/phpinfo.js";
 	echo '</script></div>';
         Footer('');
@@ -559,7 +557,7 @@ else if($PAGE=="Access Enabler"){
 # ****************
 else if($PAGE=="Device Notes"){
 	$id=Get_Values('id');
-	if($id!=null){// Set default scanner
+	if($id!==null){// Set default scanner
 		$id=intval($id);
 		if(is_int($id)&&file_exists("config/scanners.json")){
 			$CANNERS=json_decode(file_get_contents('config/scanners.json'));

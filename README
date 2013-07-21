@@ -5,8 +5,8 @@ Based on Linux Scanner Server 1.2 Beta
 
 Released under the GPL 2.0
 
-Last Update: 07/15/2013 (Month/Day/Year)
-For Version: 1.3-7
+Last Update: 07/20/2013 (Month/Day/Year)
+For Version: 1.3-8
 
 Change Log:
 	https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server/wiki/Change-Log
@@ -215,7 +215,36 @@ Frequently asked questions/issues:
 		because the selected paper size will olny fit in the scanner one way
 	Why is the pdf download (single page) not working I keep getting a file with a error in it
 		The script assumes fpdf.php is located in /usr/share/php/fpdf/ this is set on line 2 of download.php
-
+Internal Configuration Options:
+	Free Space Warning
+		This puts a warning on the page if you are low in disk space
+		low is defined on line 2 of config.php
+	Fortunes
+		This setting is on line 3 of config.php
+		This setting is ignored if the program fortune is not installed
+		If it is not working and fortune is installed you may need to update line 201 of index.php with the correct path
+	Extra Scanners
+		This is a developer tool used for simulating scanners
+		This is just for testing the search for scanners feature
+		This is set on line 4 of config.php
+	Check For Updates
+		Every 24 hours the scanner will check for updates, This is checked on page load
+		It only checks the Internet if the last check was over 24 hours ago
+		This is set on line 5 of config.php
+	Enable Login
+		There are 2 ways, one is pretty and one is not, but the not so pretty one is more secure
+		Look under apache tricks for the secure one
+		The pretty one is enabled on line 6 of config.php
+	Session Duration
+		This defines the maximum amount of time a user can stay logged in
+		This is set on line 7 of config.php
+	Default Theme
+		The default theme is set on line 8 of config.php, you can get the theme code on the 'Configure' page
+		by clicking the 'Save' button under 'Color Scheme'
+	Dark Picker
+		Tells the page whether or not to use the dark color picker theme by default
+		This is set on line 9 of config.php
+	
 Credit where credit is due:
 	PHiLLIP KLiEWER
 		Original CGI script

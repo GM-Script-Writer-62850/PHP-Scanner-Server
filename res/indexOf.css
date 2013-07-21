@@ -48,7 +48,7 @@ li{
 	background-image:url(/icons/unknown.gif);
 }
 .parent{
-	background-image:url(/icons/back.gif);
+    background-image: url("/icons/back.gif");
 }
 .none{
 	padding-left:0;

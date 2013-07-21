@@ -11,8 +11,8 @@
 	-ms-user-select: none;
 	-moz-user-select: none;
 	-webkit-user-select: none;
-	background-color:#EBECEF;
-	z-index:3;
+	background-color: #EBECEF;
+	z-index: 3;
 }
 .darkPicker .colorpicker {
 	border-color: #474848;
@@ -29,6 +29,8 @@
 	font-size: 9px;
 	font-weight: bold;
 	position: absolute;
+	text-align: left;
+	line-height: 11px;
 }
 .darkPicker .colorpicker_submit, .darkPicker .colorpicker_hex, .darkPicker .colorpicker_field{
 	color: #bfbfbf;
@@ -44,23 +46,21 @@
 	cursor: crosshair;
 	border: 2px solid #bfc4ce;
 	border-radius: 2px;
+	overflow: hidden;
+	background-image: url(../images/colorpicker_overlay.png);
 }
-.colorpicker_color div {
+.colorpicker_color > div {
 	position: absolute;
-	top: 0;
-	left: 0;
-	width: 150px;
-	height: 150px;
-	background: url(../images/colorpicker_overlay.png);
-}
-.colorpicker_color div div {
-	position: absolute;
-	top: 0;
-	left: 0;
 	width: 11px;
 	height: 11px;
+}
+.colorpicker_color > div > div{
 	background: url(../images/colorpicker_select.gif);
-	margin: -5px 0 0 -5px;
+	width: 100%;
+	height: 100%;
+	left: -50%;
+    position: relative;
+    top: -50%;
 }
 .colorpicker_hue {
 	position: absolute;
@@ -68,7 +68,7 @@
 	left: 173px;
 	width: 17px;
 	height: 150px;
-	cursor: n-resize;
+	cursor: ns-resize;
 	background: url(../images/colorpicker_hue.png) repeat-x scroll 0 0 #EBECEF;
 	border: 2px solid #bfc4ce;
 	border-radius: 2px;
@@ -103,21 +103,23 @@
 	border-radius: 2px;
 }
 .darkPicker .colorpicker_color, .darkPicker .colorpicker_hue, .darkPicker .colorpicker_new_color, .darkPicker .colorpicker_current_color {
-	border-color: #121212;
+	border-color: #474848;
 }
 .colorpicker input {
 	background-color: transparent;
-	border: 1px solid transparent;
+	border: none;
 	position: absolute;
+	right: 12px;
+	top: 5px;
+	height: 12px;
 	font-size: 10px;
 	font-family: Arial, Helvetica, sans-serif;
 	color: #000;
-	top: 4px;
-	right: 11px;
+	width: 30px;
 	text-align: right;
 	margin: 0;
 	padding: 0;
-	height: 11px;
+	outline: 0;
 }
 .darkPicker .colorpicker input {
 	color: #898989;
@@ -131,24 +133,27 @@
 .colorpicker_hex input {
 	right: 6px;
 	text-transform: uppercase;
+	width: 46px;
 }
 .colorpicker_field {
 	width: 55px;
 	background-position: 0 0;
 	position: absolute;
 }
-.colorpicker_field span:not(.tip) {
+.colorpicker_field span:first-child {
 	width: 12px;
 	height: 22px;
 	top: 0;
 	right: 0;
-	cursor: n-resize;
+	cursor: ns-resize;
+	position: absolute;
 }
 .colorpicker_submit {
 	width: 15px;
 	background-position: -62px -44px;
 	left: 317px;
 	top: 137px;
+	cursor: pointer;
 }
 .colorpicker_rgb_r {
 	top: 47px;
@@ -180,9 +185,9 @@
 .colorpicker_hex.colorpicker_focus {
 	background-position: -62px -22px;
 }
-.colorpicker_submit.colorpicker_focus {
+.colorpicker_submit:hover {
 	background-position: -84px -44px;
 }
 .colorpicker_slider {
-	background-position: bottom;
+	background-position: 0 -44px;
 }

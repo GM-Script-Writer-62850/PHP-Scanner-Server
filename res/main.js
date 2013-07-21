@@ -39,11 +39,8 @@ $(document).ready(function (){
 			}
 		});
 		document.theme.reset();
-		for(var i in pickers){
-			if(isNaN(i))
-				break;
+		for(var i=0;i<11;i++)// 11 is the total number of color inputs
 			$(pickers[i]).ColorPickerSetColor(pickers[i].value);
-		}
 	}
 });
 function getID(id){
@@ -84,12 +81,17 @@ function changeColor(x,save){
 		N=N.styleSheet;
 		T='cssText';
 	}
-	O[T]=N[T];
+	if(N[T].length>0)
+		O[T]=N[T];
 	var httpRequest = new XMLHttpRequest();
 	httpRequest.onreadystatechange = function(){
 		if(httpRequest.readyState==4){
-			if(httpRequest.status==200)
+			if(httpRequest.status==200){
 				N[T]=httpRequest.responseText.replace(/url\("images/g,'url("res/images');
+				if(save&&x==null)
+					printMsg('Saved: Your color scheme has been saved',"This is your theme's data you can put in the configuration file:<br/>"+str.slice(0,-1).toUpperCase()+
+						'<br/>Themes will last 10 years or untill you delete the cookie.','center',-1);
+			}
 			else
 				printMsg('Error '+httpRequest.status,' Failed to connect to '+document.domain,'center',-1);
 		}
@@ -211,16 +213,19 @@ function validateKey(ele,e,ias){
 			setRegion(ias);
 		return false;
 	}
-	else if(e.which==43){// +
+	if(e.which==43){// +
 		ele.value++;
+		sendE(ele,'change');
 		return false;
 	}
-	else if(e.which==45){// -
-		if(ele.value>0)
+	if(e.which==45){// -
+		if(ele.value>0){
 			ele.value--;
+			sendE(ele,'change');
+		}
 		return false;
 	}
-	else if(!isNaN(String.fromCharCode(e.which))||e.which==8||e.which==0)// number, backspace, or unknown
+	if(!isNaN(String.fromCharCode(e.which))||e.which==8||e.which==0)// number, backspace, or unknown
 		return true;
 	// anything else (mostly letters)
 	return false;
@@ -322,14 +327,15 @@ function printMsg(t,m,a,r){// if r is -1 message goes at the top of the message 
 	var div=document.createElement('div');
 	var ele=getID('new_mes');
 	div.className="message";
-	div.innerHTML="<h2>"+t+'<a class="icon tool del" onclick="(function(e){e.setAttribute(\'style\',\'height:0;\');setTimeout(function(){e.parentNode.removeChild(e);},'+(TC=='textContent'?800:0)+');})(this.parentNode.parentNode);return false;" href="#"><span class="tip">Close</span></a>'+"</h2>"+
-		"<div"+(a!='center'?' style="text-align:'+a+';"':'')+">"+m+"</div>";
+	div.innerHTML="<h2>"+t+'<a class="icon tool del" onclick="(function(e){e.setAttribute(\'style\',\'height:0;opacity:0;margin-bottom:0;\');setTimeout(function(){e.parentNode.removeChild(e);},'+
+		(TC=='textContent'?800:0)+');})(this.parentNode.parentNode);this.setAttribute(\'onclick\',\'return false;\');this.removeChild(this.childNodes[0]);return false;" href="#">'+
+		'<span class="tip">Close</span></a></h2><div'+(a!='center'?' style="text-align:'+a+';"':'')+">"+m+"</div>";
 	if(r!=-1&& typeof(ele.insertBefore)=='function')
 		ele.insertBefore(div,ele.childNodes[0]);
 	else
 		ele.appendChild(div);
-	div.style.height=(TC=='textContent'?(div.scrollHeight+'px'):'auto');
-	setTimeout(function(){div.style.overflow='visible';},(TC=='textContent'?800:0));// 800ms is the animation duration in the css
+	div.setAttribute('style','opacity:1;height:'+(TC=='textContent'?(div.scrollHeight+'px;'):'auto;'));
+	setTimeout(function(){if(div)div.style.overflow='visible';},(TC=='textContent'?800:0));// 800ms is the animation duration in the css
 	return false;
 }
 function roundNumber(num,dec){// http://forums.devarticles.com/javascript-development-22/javascript-to-round-to-2-decimal-places-36190.html#post71368
@@ -419,12 +425,13 @@ function sourceChange(ele){
 	duplex=duplex.split('|');
 	html4='';
 	for(i in duplex){
-		html4+='<option value="'+duplex[i]+'">'+duplex[i]+'</option>';
+		html4+='<option value="'+duplex[i]+'">'+(typeof(duplex[i])=='boolean'?(duplex[i]?'Yes':'No'):duplex[i])+'</option>';
 	}
 	// Apply Changes
 	valA=document.scanning.mode.value;
 	valB=document.scanning.size.value;
 	valC=document.scanning.quality.value;
+	valD=document.scanning.duplex.value;
 	if(document.all){// http://support.microsoft.com/kb/276228
 		document.scanning.mode.parentNode.innerHTML='<select name="mode" class="title">'+html1+'</select>';
 		document.scanning.size.parentNode.innerHTML='<select onchange="paperChange(this);" name="size">'+html2+'</select>';
@@ -443,8 +450,11 @@ function sourceChange(ele){
 		document.scanning.size.value=valB;
 	if(inArray(dpi,valC))
 		document.scanning.quality.value=valC;
-	if(info['DUPLEX-'+ele.value])
+	if(info['DUPLEX-'+ele.value]!==false){
 		getID('duplex').removeAttribute('style');
+		if(inArray(duplex,valD))
+			document.scanning.duplex.value=valD;
+	}
 	else
 		getID('duplex').style.display='none';
 	sendE(document.scanning.size,'change');
@@ -490,15 +500,11 @@ function rotateChange(ele){
 		(function(deg,h,w){ // Credit: http://userscripts.org/topics/127570?page=1#posts-502266 (http://jsfiddle.net/swU6Z/)
 			// scale = sin(phi) / sin(phi + theta)
 			// phi being the original rectangle's first diagonal's angle
-			var RATIO=h>w?h/w:w/h,theta=Math.abs(deg)*Math.PI/180,phi,psi;
-			ratio=w>h?RATIO:1/RATIO;
-			if(ratio>1)ratio=1/ratio;
-			phi=Math.atan(1/RATIO);
-			theta=Math.abs(theta);
-			psi=theta<Math.PI/2?phi+theta:phi-theta;
+			var theta=Math.abs(deg*Math.PI/180),
+				phi=Math.atan(1/Math.max(w/h,h/w)),
+				psi=theta<Math.PI/2?phi+theta:phi-theta;
 			return Math.abs(Math.sin(phi)/Math.sin(psi));
 		})(val,ele.offsetHeight,ele.offsetWidth)+')';
-	//printMsg('debug',encodeHTML(ele.style[prefix]),'center');
 	rotateTimer=setTimeout(function(){// We can not leave it rotated, it brutally screws up cropping
 		ele.style[prefix]='';
 		setTimeout(function(){

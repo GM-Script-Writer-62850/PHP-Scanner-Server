@@ -2,6 +2,18 @@
 	var iframe=getID('phpinfo'),s,txt,content,ct;
 	iframe.onload=function(){
 		content=iframe.contentWindow?iframe.contentWindow.document:iframe.contentDocument;
+		try{
+			ct=getID('container');
+			content.body.style.backgroundColor=getComputedStyle(ct,null).getPropertyValue('background-color');
+			content.body.style.color=getComputedStyle(ct,null).getPropertyValue('color');
+			s=content.evaluate("//tr[not(@class)]/td[not(@class)]/../../tr[not(@class)]",content,null,6,null);
+			for(var i=s.snapshotLength-1;i>-1;i--){
+				s.snapshotItem(i).className='v';
+			}
+		}
+		catch(e){
+			void('Old browser is old');
+		}
 		if(typeof content.getElementsByClassName=='function')
 			s=content.getElementsByClassName('v');
 		else{

@@ -5,7 +5,6 @@
 #blanket,.tool .tip{
 	background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3QcLEiIwmZz/0gAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAANSURBVAjXY2BgYFgGAACrAKf/dVSlAAAAAElFTkSuQmCC");
 	background-repeat:repeat;
-	background-color:transparent;
 }
 p .icon{
 	margin-right:3px;
@@ -15,7 +14,11 @@ p .icon{
 }
 .colorPicker{
 	font-size:0;
-	line-height:9001px;
+	line-height:9999px;
+	text-indent:-9999px;
+}
+.colorpicker_field span:first-child, .colorpicker_hue {
+	cursor:n-resize;
 }
 .colorpicker div{
 	filter:inherit;

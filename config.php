@@ -5,11 +5,12 @@ $ExtraScanners=false;// Adds sample scanners from ./inc/scanhelp/
 $CheckForUpdates=true;// Enables auto update checking
 $RequireLogin=false;// Require user to login (A 'geek' could bypass this without too much trouble using JavaScript); Create the user 'root' 1st, also Authorization is root's password
 $SessionDuration=86400;// Max time (in seconds) signed in is 24hrs (irrelevant with the above off)
-$Theme='3C9642.3C7796.3C9642.FFFFFF.3C9642.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF'; // Default Color Scheme
-// End Global Varables
+$Theme='383838.B84E40.407EB4.202020.3B8080.FFFF00.FFFFFF.3B133B.FFFFFF.FF0000.FFFFFF'; // Default Color Scheme
+$DarkPicker=true;// Use the dark color picker by default (It is part of the theme manager)
+// Do not edit stuff below this line 
 
 $NAME="PHP Scanner Server";
-$VER="1.3-8_dev";
+$VER="1.3-8";
 $SAE_VER="1.4"; // Scanner Access Enabler version
 
 // Login Stuff
@@ -33,6 +34,7 @@ function js($X){
 }
 function InsertHeader($title) { # Spit out HTML header
 	$page=$GLOBALS['PAGE'];
+	$GLOBALS['DarkPicker']=$DarkPicker=isset($_COOKIE['darkPicker'])?$_COOKIE['darkPicker']=='true':$GLOBALS['DarkPicker'];
 	include "res/inc/header.php";
 	return $path;
 }

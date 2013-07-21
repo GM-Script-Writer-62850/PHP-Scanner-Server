@@ -144,14 +144,14 @@ Select Region
 	<div class="control"><input onkeypress="return false" type="text" readonly="readonly" name="loc_width" value="0<?php //echo (isset($M_WIDTH)?$M_WIDTH:0); ?>" size="3"/> pixle(s)</div>
 <div class="label">Height: </div>
 	<div class="control"><input onkeypress="return false" type="text" readonly="readonly" name="loc_height" value="0<?php //echo (isset($M_HEIGHT)?$M_HEIGHT:0); ?>" size="3"/> pixle(s)</div>
-<div class="label">X<sub>1</sub> (Left): </div>
-	<div class="control"><input onkeypress="return validateKey(this,event,ias);" type="text" name="loc_x1" value="0<?php //echo (isset($X_1)?$X_1:0); ?>" size="3"/> pixle(s)</div>
-<div class="label">Y<sub>1</sub> (Top): </div>
-	<div class="control"><input onkeypress="return validateKey(this,event,ias);" type="text" name="loc_y1" value="0<?php //echo (isset($Y_1)?$Y_1:0); ?>" size="3"/> pixle(s)</div>
-<div class="label">X<sub>2</sub> (Right): </div>
-	<div class="control"><input onkeypress="return validateKey(this,event,ias);" type="text" name="loc_x2" value="0" size="3"/> pixle(s)</div>
-<div class="label">Y<sub>2</sub> (Bottom): </div>
-	<div class="control"><input onkeypress="return validateKey(this,event,ias);" type="text" name="loc_y2" value="0" size="3"/> pixle(s)</div>
+<div class="label">X<sub>1</sub> (Left):</div>
+	<div class="control"><input onkeypress="return validateKey(this,event,ias);" onchange="this.value=Number(this.value)||0;" type="text" name="loc_x1" value="0<?php //echo (isset($X_1)?$X_1:0); ?>" size="3"/> pixle(s)</div>
+<div class="label">Y<sub>1</sub> (Top):</div>
+	<div class="control"><input onkeypress="return validateKey(this,event,ias);" onchange="this.value=Number(this.value)||0;" type="text" name="loc_y1" value="0<?php //echo (isset($Y_1)?$Y_1:0); ?>" size="3"/> pixle(s)</div>
+<div class="label">X<sub>2</sub> (Right):</div>
+	<div class="control"><input onkeypress="return validateKey(this,event,ias);" onchange="this.value=Number(this.value)||0;" type="text" name="loc_x2" value="0" size="3"/> pixle(s)</div>
+<div class="label">Y<sub>2</sub> (Bottom):</div>
+	<div class="control"><input onkeypress="return validateKey(this,event,ias);" onchange="this.value=Number(this.value)||0;" type="text" name="loc_y2" value="0" size="3"/> pixle(s)</div>
 <p class="center"><input type="button" value="Update" onclick="setRegion(ias);"/> <input type="button" onclick="clearRegion(ias,true)" value="Clear"/></p>
 </div>
 

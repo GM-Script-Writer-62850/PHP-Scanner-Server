@@ -96,14 +96,14 @@ if(isset($_POST['json'])&&!isset($PAGE)){
 else if(isset($_GET['nojs']))
 	header("Location: http://www.enable-javascript.com/");
 ?><div class="box box-full dualForm"><h2>Authorization Required</h2>
-<form action="/inc/login.php?nojs=true" method="POST" onsubmit="return login(this);">
+<form action="res/inc/login.php?nojs=true" method="POST" onsubmit="return login(this);">
 <h3>Login</h3><p>
 <input type="hidden" name="mode" value="login"/>
 <span>User Name:</span><input type="text" name="name"/><br/>
 <span>Password:</span><input type="password" name="pass" ondblclick="this.type=(this.type=='text'?'password':'text')"/><br/>
 <input type="submit" value="Login"/>
 </p></form>
-<form class="m" action="/inc/login.php" method="POST" onsubmit="return login(this);" autocomplete="off">
+<form class="m" action="res/inc/login.php" method="POST" onsubmit="return login(this);" autocomplete="off">
 <h3>Create Account</h3><p>
 <input type="hidden" name="mode" value="create"/>
 <span>User Name:</span><input type="text" name="name"/><br/>
@@ -115,7 +115,7 @@ else if(isset($_GET['nojs']))
 </div>
 
 <div class="box box-full dualForm"><h2>Account Recovery</h2>
-<form action="/inc/login.php?nojs=true" method="POST" onsubmit="return login(this);" autocomplete="off">
+<form action="res/inc/login.php?nojs=true" method="POST" onsubmit="return login(this);" autocomplete="off">
 <h3>Change Password</h3><p>
 <input type="hidden" name="mode" value="change"/>
 <span>User Name:</span><input type="text" name="name"/><br/>
@@ -123,7 +123,7 @@ else if(isset($_GET['nojs']))
 <span>New Password:</span><input type="password" name="newp" ondblclick="this.type=(this.type=='text'?'password':'text')"/><br/>
 <input type="submit" value="Change"/>
 </p></form>
-<form class="m" action="/inc/login.php?nojs=true" method="POST" onsubmit="return login(this);" autocomplete="off">
+<form class="m" action="res/inc/login.php?nojs=true" method="POST" onsubmit="return login(this);" autocomplete="off">
 <h3>Forgot Password</h3><p>
 <input type="hidden" name="mode" value="forgot"/>
 <span>User Name:</span><input type="text" name="name"/><br/>

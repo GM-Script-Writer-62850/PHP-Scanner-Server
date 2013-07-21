@@ -10,12 +10,12 @@ function ageSeconds2Human($t){
 	$t5=$t3-($t4*60);
 	return "$t0 day(s), $t2 hour(s), $t4 minute(s), and $t5 second(s) ago.";
 }
-echo '<script type="text/javascript" src="inc/writescripts/imgur-box.js" id="imgur-box-setup"></script>';
+echo '<script type="text/javascript" src="res/writeScripts/imgur-box.js" id="imgur-box-setup"></script>';
 if(count(scandir("scans"))==2){
 	Print_Message("No Images","All files have been removed. There are no scanned images to display.",'center');
 }
 else{
-	$html='type="text" size="3" value="0" onkeypress="return validateKey(this,event,null);" onchange="this.value=this.value==\'\'?0:this.value;"';
+	$html='type="text" size="3" value="0" onkeypress="return validateKey(this,event,null);" onchange="this.value=Number(this.value)||0;"';
 	$html='<button class="largeButton" type="submit"><span>Filter</span></button>'.
 		'<span>Year(s) ago:</span><input name="y" '.$html.'/><br/>'.
 		'<span>Day(s) ago:</span><input name="d" '.$html.'/><br/>'.

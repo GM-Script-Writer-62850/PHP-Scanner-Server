@@ -55,11 +55,14 @@ if($del!=null){
 	Print_Message("Deleted:","The paper size $del has been deleted.","center");
 }
 if($add!=null&&$N_width!=null&&$N_height!=null){
+	$add=html($add);
 	if(!$message){
 		Print_Message("Added:","The paper size $add has been created.","center");
 	}
 	else{
 		if(!is_numeric($N_width)||!is_numeric($N_height)){
+			$N_width=html($N_width);
+			$N_height=html($N_height);
 			Print_Message("Error:","One or more of these is not a number:<br/><code>$N_width</code><br/><code>$N_height</code>.","center");
 		}
 		else{

@@ -23,6 +23,8 @@ function get_Type($ext){
 		case "pdf": return "pdf";
 		case "tiff": return "image";
 		case "tar": return "archive";
+		case "7z": return "archive";
+		case "rar": return "archive";
 		case "bz2": return "archive";
 		case "gz": return "archive";
 		case "lzma": return "archive";

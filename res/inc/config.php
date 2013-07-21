@@ -83,37 +83,37 @@ If you want to save a setting for your own use, right-click it and save it to yo
 
 <div class="box">
 <h2>Color Scheme</h2>
-<p><span style="margin-right:30px;">Theme Picker:</span><select onchange="if(this.value!='void')changeColor(this.value,true);">
+<p><span style="margin-right:30px;">Theme Picker:</span><select onchange="if(this.value!='void')changeColor(this.value,true);this.selectedIndex=0;">
 <option value="void">Please Select</option>
-<option value="3C9642.3C7796.3C9642.FFFFFF.3C9642.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#3c9642;color:#3c7796;">Green</option>
-<option value="3C7796.963C8F.3C7796.FFFFFF.3C7796.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#3c7796;color:#963c8f;">Blue</option>
-<option value="963C8f.3C7796.963C8f.FFFFFF.963C8f.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#963c8f;color:#3c7796;">Purple</option>
-<option value="663366.3C7796.663366.FFFFFF.663366.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#663366;color:#3c7796;">Dark Purple</option>
-<option value="000000.999999.000000.FFFFFF.000000.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#000000;color:#999999;">Black</option>
-<option value="996633.BFBFBF.996633.FFFFFF.996633.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#996633;color:#bfbfbf;">Light Brown</option>
-<option value="848484.BFBFBF.848484.FFFFFF.848484.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#848484;color:#bfbfbf;">Gray</option>
-<option value="383838.838383.383838.FFFFFF.383838.FFFFFF.000000.000000.FFFFFF.FF0000.FFFFFF" style="background-color:#383838;color:#838383;">Dark Gray</option>
-<option value="FF007E.BB045E.FF007E.FFFFFF.FF007E.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#ff007e;color:#bb045e;">Pink</option>
+<option value="3C9642.3C7796.3C9642.FFFFFF.3C9642.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#3c9642;color:#3c9642;">Green</option>
+<option value="3C7796.963C8F.3C7796.FFFFFF.3C7796.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#3c7796;color:#3c7796;">Blue</option>
+<option value="963C8f.3C7796.963C8f.FFFFFF.963C8f.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#963c8f;color:#963c8f;">Purple</option>
+<option value="663366.3C7796.663366.FFFFFF.663366.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#663366;color:#663366;">Dark Purple</option>
+<option value="000000.999999.000000.FFFFFF.000000.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#000000;color:#000000;">Black</option>
+<option value="996633.BFBFBF.996633.FFFFFF.996633.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#996633;color:#996633;">Light Brown</option>
+<option value="848484.BFBFBF.848484.FFFFFF.848484.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#848484;color:#848484;">Gray</option>
+<option value="383838.838383.383838.FFFFFF.383838.FFFFFF.000000.000000.FFFFFF.FF0000.FFFFFF" style="background-color:#383838;color:#383838;">Dark Gray</option>
+<option value="FF007E.BB045E.FF007E.FFFFFF.FF007E.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#ff007e;color:#ff007e;">Pink</option>
+<option value="<?php echo $CurrentTheme; ?>">Restore</option>
 </select></p>
-<?php $Theme=explode('.',$Theme);$attrs='class="colorPicker" readonly="readonly" onchange="changeColor(this,false);"'; ?>
-<div class="footer"><form name="theme" onsubmit="try{changeColor(null,true);}catch(e){alert(e)}return false" action="#"><p style="line-height:23px;">
-<span>Background Color:</span>			<input name="BG_COLOR" style="background-color:#<?php echo $Theme[0]; ?>" value="<?php echo $Theme[0]; ?>" <?php echo $attrs; ?>/>
-<span>Page Background:</span>			<input name="PB_COLOR" style="background-color:#<?php echo $Theme[3]; ?>" value="<?php echo $Theme[3]; ?>" <?php echo $attrs; ?>/>
-<span>Page Text:</span>					<input name="PT_COLOR" style="background-color:#<?php echo $Theme[6]; ?>" value="<?php echo $Theme[6]; ?>" <?php echo $attrs; ?>/>
-<span>Header Background:</span>			<input name="HB_COLOR" style="background-color:#<?php echo $Theme[4]; ?>" value="<?php echo $Theme[4]; ?>" <?php echo $attrs; ?>/>
-<span>Header Text:</span>				<input name="HT_COLOR" style="background-color:#<?php echo $Theme[5]; ?>" value="<?php echo $Theme[5]; ?>" <?php echo $attrs; ?>/>
-<span>Link Color:</span>				<input name="LC_COLOR" style="background-color:#<?php echo $Theme[2]; ?>" value="<?php echo $Theme[2]; ?>" <?php echo $attrs; ?>/>
-<span>Link Color (Mouse Over):</span>	<input name="LK_COLOR" style="background-color:#<?php echo $Theme[1]; ?>" value="<?php echo $Theme[1]; ?>" <?php echo $attrs; ?>/>
-<span>Alert Header Background:</span>	<input name="AH_COLOR" style="background-color:#<?php echo $Theme[9]; ?>" value="<?php echo $Theme[9]; ?>" <?php echo $attrs; ?>/>
-<span>Alert Header Text:</span>			<input name="AT_COLOR" style="background-color:#<?php echo $Theme[10]; ?>" value="<?php echo $Theme[10]; ?>" <?php echo $attrs; ?>/>
-<span>Debug Background:</span>			<input name="BB_COLOR" style="background-color:#<?php echo $Theme[7]; ?>" value="<?php echo $Theme[7]; ?>" <?php echo $attrs; ?>/>
-<span>Debug Text:</span>				<input name="BT_COLOR" style="background-color:#<?php echo $Theme[8]; ?>" value="<?php echo $Theme[8]; ?>" <?php echo $attrs; ?>/>
+<?php $CurrentTheme=explode('.',$CurrentTheme);$attrs='class="colorPicker" readonly="readonly" onchange="changeColor(this,false);"'; ?>
+<div class="footer"><form name="theme" onsubmit="return changeColor(null,true);" action="#"><p style="line-height:23px;">
+<span>Background Color:</span>			<input name="BG_COLOR" style="background-color:#<?php echo $CurrentTheme[0]; ?>" value="<?php echo $CurrentTheme[0]; ?>" <?php echo $attrs; ?>/>
+<span>Page Background:</span>			<input name="PB_COLOR" style="background-color:#<?php echo $CurrentTheme[3]; ?>" value="<?php echo $CurrentTheme[3]; ?>" <?php echo $attrs; ?>/>
+<span>Page Text:</span>					<input name="PT_COLOR" style="background-color:#<?php echo $CurrentTheme[6]; ?>" value="<?php echo $CurrentTheme[6]; ?>" <?php echo $attrs; ?>/>
+<span>Header Background:</span>			<input name="HB_COLOR" style="background-color:#<?php echo $CurrentTheme[4]; ?>" value="<?php echo $CurrentTheme[4]; ?>" <?php echo $attrs; ?>/>
+<span>Header Text:</span>				<input name="HT_COLOR" style="background-color:#<?php echo $CurrentTheme[5]; ?>" value="<?php echo $CurrentTheme[5]; ?>" <?php echo $attrs; ?>/>
+<span>Link Color:</span>				<input name="LC_COLOR" style="background-color:#<?php echo $CurrentTheme[2]; ?>" value="<?php echo $CurrentTheme[2]; ?>" <?php echo $attrs; ?>/>
+<span>Link Color (Mouse Over):</span>	<input name="LK_COLOR" style="background-color:#<?php echo $CurrentTheme[1]; ?>" value="<?php echo $CurrentTheme[1]; ?>" <?php echo $attrs; ?>/>
+<span>Alert Header Background:</span>	<input name="AH_COLOR" style="background-color:#<?php echo $CurrentTheme[9]; ?>" value="<?php echo $CurrentTheme[9]; ?>" <?php echo $attrs; ?>/>
+<span>Alert Header Text:</span>			<input name="AT_COLOR" style="background-color:#<?php echo $CurrentTheme[10]; ?>" value="<?php echo $CurrentTheme[10]; ?>" <?php echo $attrs; ?>/>
+<span>Debug Background:</span>			<input name="BB_COLOR" style="background-color:#<?php echo $CurrentTheme[7]; ?>" value="<?php echo $CurrentTheme[7]; ?>" <?php echo $attrs; ?>/>
+<span>Debug Text:</span>				<input name="BT_COLOR" style="background-color:#<?php echo $CurrentTheme[8]; ?>" value="<?php echo $CurrentTheme[8]; ?>" <?php echo $attrs; ?>/>
 <br/>
-<input type="submit" value="Save"/></p></form></div>
-<div class="footer"><p><span style="margin-right:30px;">Color Picker Themer:</span>
-<select style="width:61px;" onchange="if(this.value==1){document.body.className='darkPicker';Set_Cookie('darkPicker',true,365.25*10,false,null,null);}else{document.body.removeAttribute('class');Delete_Cookie('darkPicker',false);};">
-<option value="0">Light</option>
-<option value="1"<?php echo isset($_COOKIE['darkPicker'])?' selected="selected"':''; ?>>Dark</option>
+<input type="Button" onclick="if(confirm('Are you sure, your current theme will be overwritten'))changeColor('<?php echo $Theme; ?>',true)" value="Restore Default"/> <input type="submit" value="Save"/></p></form></div>
+<div class="footer"><p><span style="margin-right:30px;">Color Picker Theme:</span>
+<select style="width:61px;" onchange="if(this.value==1)document.body.className='darkPicker';else document.body.removeAttribute('class');Set_Cookie('darkPicker',this.value==1,365.25*10,false,null,null);">
+<option value="0">Light</option><option value="1"<?php echo $DarkPicker?' selected="selected"':''; ?>>Dark</option>
 </select></p></div>
 </div>
 
