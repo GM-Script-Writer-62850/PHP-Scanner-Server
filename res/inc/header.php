@@ -1,4 +1,4 @@
-<?php 
+<?php
 $path=is_numeric($page)||$page=='Index Of'?substr($_SERVER['PHP_SELF'],0,strlen(end(explode('/',$_SERVER['PHP_SELF'])))*-1-4):'';
 $Theme=isset($_COOKIE["theme"])?url($_COOKIE["theme"]):$GLOBALS['Theme'];
 $GLOBALS['CurrentTheme']=$Theme;
@@ -11,7 +11,7 @@ $GLOBALS['CurrentTheme']=$Theme;
 <link rel="shortcut icon" href="<?php echo $path; ?>res/images/favicon.png"/>
 <link rel="stylesheet" href="<?php echo $path; ?>res/style.php?theme=<?php echo $Theme; ?>" type="text/css"/>
 <script type="text/javascript" src="<?php echo $path; ?>jquery/jquery.min.js"></script>
-<?php 
+<?php
 	if(in_array($page,Array("Scan","Edit")))
 		echo '<link rel="stylesheet" type="text/css" href="'.$path.'jquery/imgareaselect-0.9.10/css/imgareaselect-animated.css"/>'."\n".
 			'<script type="text/javascript" src="'.$path.'jquery/imgareaselect-0.9.10/scripts/jquery.imgareaselect.pack.js"></script>';
@@ -26,6 +26,7 @@ $GLOBALS['CurrentTheme']=$Theme;
 <script type="text/javascript" src="<?php echo $path; ?>res/cookie.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>res/main.js"></script>
 <!--[if lt IE 9]><script type="text/javascript">TC='innerText';var ie8=false;</script><link rel="stylesheet" type="text/css" href="<?php echo $path; ?>res/ie.css"/><![endif]-->
+<!--[if IE 9]><style type="text/css">#header>span{color:white;border-radius:5px;background-color:rgba(0,0,0,.65);padding:0 5px;}</style><![endif]-->
 </head>
 <body<?php echo $DarkPicker?' class="darkPicker"':''; ?>>
 <div id="blanket" style="display:none;background-color:transparent;"><div id="popUpDiv" style="opacity:0;"></div></div>

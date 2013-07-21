@@ -1,8 +1,11 @@
 /* This style sheet does not fix all issues, it just puts a dent in them */
+#header > span{
+	color:white;
+}
 .imgareaselect-handle,.imgareaselect-outer{
 	filter:alpha(opacity=50);
 }
-#blanket,.tool .tip{
+#blanket,.tool .tip,#header > span{
 	background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3QcLEiIwmZz/0gAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAANSURBVAjXY2BgYFgGAACrAKf/dVSlAAAAAElFTkSuQmCC");
 	background-repeat:repeat;
 }
