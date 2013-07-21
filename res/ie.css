@@ -27,6 +27,9 @@ p .icon{
 	filter:inherit;
 }
 /* IE 6 & 7 Hacks */
+header > span{
+	*background-color:black;
+}
 h2 .del{
 	*position:relative;
 	*top:-24px;

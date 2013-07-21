@@ -334,7 +334,8 @@ function printMsg(t,m,a,r){// if r is -1 message goes at the top of the message 
 		ele.insertBefore(div,ele.childNodes[0]);
 	else
 		ele.appendChild(div);
-	div.setAttribute('style','opacity:1;height:'+(TC=='textContent'?(div.scrollHeight+'px;'):'auto;'));
+	div.style.height=TC=='textContent'?(div.scrollHeight+'px;'):'auto';// Stoupid IE7 does not apply styles set using setAttribute
+	div.style.opacity=1;
 	setTimeout(function(){if(div)div.style.overflow='visible';},(TC=='textContent'?800:0));// 800ms is the animation duration in the css
 	return false;
 }
