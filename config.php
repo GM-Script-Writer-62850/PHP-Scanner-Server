@@ -10,7 +10,7 @@ $DarkPicker=true;// Use the dark color picker by default (It is part of the them
 // Do not edit stuff below this line 
 
 $NAME="PHP Scanner Server";
-$VER="1.3-8";
+$VER="1.3-8_dev";
 $SAE_VER="1.4"; // Scanner Access Enabler version
 
 // Login Stuff
