@@ -48,6 +48,8 @@
 	border-radius: 2px;
 	overflow: hidden;
 	background-image: url(../images/colorpicker_overlay.png);
+	background-image: -webkit-linear-gradient(bottom, #000, rgba(0,0,0,0)),-webkit-linear-gradient(left, #FFF, rgba(255,255,255,0));
+	background-image: linear-gradient(to top, #000, rgba(0,0,0,0)),linear-gradient(to right, #FFF, rgba(255,255,255,0));
 }
 .colorpicker_color > div {
 	position: absolute;
@@ -55,7 +57,11 @@
 	height: 11px;
 }
 .colorpicker_color > div > div{
-	background: url(../images/colorpicker_select.gif);
+	background-image: url(../images/colorpicker_select.gif);
+	background-image: -webkit-radial-gradient(50% 50%, transparent 40%, #000 50%, #FFF 65%, transparent 80%);
+	background-image: radial-gradient(circle at center, transparent 40%, #000 50%, #FFF 65%, transparent 80%);
+	background-position: center;
+	border-radius: 50%;
 	width: 100%;
 	height: 100%;
 	left: -50%;
@@ -66,23 +72,26 @@
 	position: absolute;
 	top: 6px;
 	left: 173px;
-	width: 17px;
+	width: 18px;
 	height: 150px;
-	cursor: ns-resize;
-	background: url(../images/colorpicker_hue.png) repeat-x scroll 0 0 #EBECEF;
+	cursor: pointer;
+	background: url(../images/colorpicker_hue.png) repeat-x;
+	background: -webkit-linear-gradient(top, #F00, #F0F, #00F, #0FF, #0F0, #FF0, #F00);
+	background: linear-gradient(to bottom, #F00, #F0F, #00F, #0FF, #0F0, #FF0, #F00);
 	border: 2px solid #bfc4ce;
 	border-radius: 2px;
 }
 .colorpicker_hue div {
-	position: absolute;
-	width: 35px;
-	height: 9px;
-	background: url(../images/colorpicker_indic_light.gif) left top;
 	margin-top: -4.5px;
-	left: -9px;
+	position: absolute;
+	width: 34px;
+	left: -8px;
+	height: 9px;
+	cursor: ns-resize;
+	background: url(../images/colorpicker_indic_light.gif) center no-repeat;
 }
 .darkPicker .colorpicker_hue div {
-	background-image: url(../images/colorpicker_indic_dark.gif)
+	background-image: url(../images/colorpicker_indic_dark.gif);
 }
 .colorpicker_new_color {
 	position: absolute;
@@ -101,6 +110,7 @@
 	top: 6px;
 	border: 2px solid #bfc4ce;
 	border-radius: 2px;
+	cursor: pointer;
 }
 .darkPicker .colorpicker_color, .darkPicker .colorpicker_hue, .darkPicker .colorpicker_new_color, .darkPicker .colorpicker_current_color {
 	border-color: #474848;

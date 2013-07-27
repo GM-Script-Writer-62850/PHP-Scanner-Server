@@ -1,16 +1,19 @@
 /* This style sheet does not fix all issues, it just puts a dent in them */
-#header > span{
-	color:white;
-}
 .imgareaselect-handle,.imgareaselect-outer{
 	filter:alpha(opacity=50);
 }
-#blanket,.tool .tip,#header > span{
+.imgareaselect-border1{
+	background-position:left top;
+}
+.imgareaselect-border4 {
+	background-position:left bottom;
+}
+#header span{
+	padding-left:4px;
+}
+#blanket,.tool .tip{
 	background-image:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAABmJLR0QA/wD/AP+gvaeTAAAACXBIWXMAAAsTAAALEwEAmpwYAAAAB3RJTUUH3QcLEiIwmZz/0gAAABl0RVh0Q29tbWVudABDcmVhdGVkIHdpdGggR0lNUFeBDhcAAAANSURBVAjXY2BgYFgGAACrAKf/dVSlAAAAAElFTkSuQmCC");
 	background-repeat:repeat;
-}
-p .icon{
-	margin-right:3px;
 }
 .dualForm .largeButton span{
 	font-size:33pt;
@@ -27,27 +30,49 @@ p .icon{
 	filter:inherit;
 }
 /* IE 6 & 7 Hacks */
-header > span{
-	*background-color:black;
-}
 h2 .del{
 	*position:relative;
-	*top:-24px;
+	*top:-21px;
 	*left:-2px;
 }
-#blanket,.tool .tip{
+#blanket,.tool .tip,#header span{
 	*background-color:black;
 }
 /* IE 6 Hacks */
+#header{
+	_border-bottom:none;
+	_height:76px;
+}
+#header span{
+	_display: block;
+	_width: 138px;
+	_position:absolute;
+	_left:71px;
+	_height: 75px;
+	_overflow:hidden;
+	_line-height:29.5px;
+	_font-size:25px;
+}
+#header span span{
+	_left:15px;
+}
 h2 .del{
 	_float:right;
 }
 .tab div{  
 	_display:none;
 }
-.icon {
+.icon{
 	_height:0;
 }
 .control select{
 	_width:150px;
+}
+.column .box .footer form p input{
+	_cursor:pointer;
+}
+.column .box .footer form p span{
+	_width:180px;
+	_display:inline-block;
+	_text-align:left;
 }

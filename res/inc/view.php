@@ -10,23 +10,23 @@ $icons='<a class="tool icon download" href="download.php?file='.url($file).'"><s
 	'<a href="#" onclick="return emailManager(\''.html(js($file)).'\');" class="tool icon email"><span class="tip">Email</span></a>';
 if(file_exists("scans/$file")){
 	if(substr($file,-3)=='txt'){
-		echo "<div class=\"box box-full\"><h2>".html($file)."</h2>";
-		echo "<p>$icons</p>";
-		echo "<pre class=\"border\" id=\"text-file-".html($file)."\">".html(file_get_contents("scans/$file"))."</pre></div>";
-		echo '<script type="text/javascript" src="data:text/javascript;charset=utf-8,'.
-			url('e=getID("text-file-'.js($file).'");if(e.offsetHeight==2)e.innerHTML=\'Tesseract was unable to find any text in the scan.\';').
+		echo "<div class=\"box box-full\"><h2>".html($file)."</h2>".
+			"<p>$icons</p>".
+			"<pre class=\"border\" id=\"text-file-".html($file)."\">".html(file_get_contents("scans/$file"))."</pre></div>".
+			'<script type="text/javascript" src="data:text/javascript;charset=utf-8,'.
+			url('(function(e){if(e.offsetHeight==2)e[TC]="Tesseract was unable to find any text in the scan.";})(getID("text-file-'.js($file).'"));').
 			'"></script>';// Using Data URI as a dirty trick for security (don't want a separate file for this)
 	}
 	else{
-		echo "<div class=\"box box-full\"><h2>".html($file)."</h2>";
-		echo "<p>$icons<br/>";
-		echo "<a class=\"tool\" href=\"scans/".url($file)."\" target=\"_blank\"><img src=\"scans/".url($file)."\"/><span class=\"tip\">View raw image</span></a></p></div>";
+		echo '<div class="box box-full"><h2>'.html($file).'</h2>'.
+			"<p>$icons<br/>".
+			'<a class="tool" href="scans/'.url($file).'" target="_blank"><img src="scans/'.url($file).'"/><span class="tip">View raw image</span></a></p></div>';
 	}
 }
 else{
-	echo ' <br/>';
-	echo "<div class=\"box box-full\"><h2>404 Scan Not Found</h2>";
-	echo "<p>".str_replace('" href', '-off" href', $icons)."</p>";
-	echo "<pre class=\"border\">".html($file)." was not found, it was probally deleted</pre></div>";
+	echo '<br/>'.
+		'<div class="box box-full"><h2>404 Scan Not Found</h2>'.
+		'<p>'.str_replace('" href', '-off" href', $icons).'</p>'.
+		'<pre class="border">'.html($file).' was not found, it was probally deleted</pre></div>';
 }
 ?>

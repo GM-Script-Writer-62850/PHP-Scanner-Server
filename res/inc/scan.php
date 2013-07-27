@@ -111,12 +111,8 @@ echo file_exists("config/paper.json")?file_get_contents("config/paper.json"):'{"
 <div class="label">
 <span class="tool">File Type<span class="tip">Format</span></span>:
 </div>
-<div class="control">
-<select name="filetype" onchange="fileChange(this.value)">
-<option value="png">Portable Network Graphic: *.png</option>
-<option value="jpg">Joint Photography Group: *.jpg</option>
-<option value="tiff">Tagged Image File Format: *.tiff</option>
-<option value="txt">Text File: *.txt</option>
+<div class="control"><!-- No line breaks makes it easier for JS to work with -->
+<select name="filetype" onchange="fileChange(this.value)"><option value="png">Portable Network Graphic: *.png</option><option value="jpg">Joint Photography Group: *.jpg</option><option value="tiff">Tagged Image File Format: *.tiff</option><option value="txt">Text File: *.txt</option>
 </select>
 </div>
 
@@ -125,9 +121,7 @@ echo file_exists("config/paper.json")?file_get_contents("config/paper.json"):'{"
 <span class="tool">Language<span class="tip">Relating to the document</span></span>:
 </div>
 <div class="control">
-<select name="lang">
-<?php include('res/inc/langs.php'); ?>
-</select>
+<select name="lang"><?php include('res/inc/langs.php'); ?></select>
 </div>
 </div>
 
@@ -167,7 +161,9 @@ Scan Image
 <div class="side_box">
 <h2>Settings</h2>
 <p>
-<input name="set_save" type="text" size="15" onkeypress="if(event.which==13||event.keyCode==13){this.nextSibling.click();return false;}"/><input onclick="if(this.previousSibling.value==''){return false;}else{document.scanning.removeAttribute('onsubmit');}" type="submit" name="saveas" value="Save" style="margin-left:5px;"/>
+<input name="set_save" type="text" size="12" onkeypress="if(event.which==13||event.keyCode==13){document.scanning.saveas.click();return false;}"/>
+<input onclick="if(document.scanning.set_save.value==''){return false;}else{document.scanning.removeAttribute('onsubmit');}" type="submit" name="saveas" value="Save"/>
+<input type="button" value="Set Default" onclick="setDefault(document.scanning)"/>
 </p>
 <p class="center">
 <?php
@@ -200,30 +196,7 @@ Scan Image
 <div id="preview">
 <div id="preview_links">
 <h2>Preview Pane</h2>
-<p>
-<span class="tool icon download-off"><span class="tip">Download (Disabled)</span></span>
-<span class="tool icon zip-off"><span class="tip">Download Zip (Disabled)</span></span>
-<span class="tool icon pdf-off"><span class="tip">Download PDF (Disabled)</span></span>
-<span class="tool icon print-off"><span class="tip">Print (Disabled)</span></span>
-<span class="tool icon del-off"><span class="tip">Delete (Disabled)</span></span>
-<span class="tool icon edit-off"><span class="tip">Edit (Disabled)</span></span>
-<span class="tool icon view-off"><span class="tip">View (Disabled)</span></span>
-<span class="tool icon upload-off"><span class="tip">Upload to Imgur (Disabled)</span></span>
-<span class="tool icon email-off"><span class="tip">Email (Disabled)</span></span>
-<?php
-$ls='<span class="tool icon recent-off"><span class="tip">Last Scan (Disabled)</span></span>';
-if(isset($_COOKIE["lastScan"])){
-	$cookie=json_decode($_COOKIE['lastScan']);
-	if(file_exists("scans/".$cookie->{"raw"})&&file_exists("scans/".$cookie->{"preview"}))
-		echo "<a class=\"tool icon recent\" onclick=\"lastScan(".html(json_encode($cookie)).",this);\" href=\"javascript:void(null)\"><span class=\"tip\">Last Scan</span></a>";
-	else{
-		echo $ls;
-		setcookie ("lastScan", "", 0);
-	}
-}
-else
-	echo $ls;
-?>
+<p><?php echo genIconLinks((object)array('download'=>0,'zip'=>0,'pdf'=>0,'print'=>0,'del'=>0,'edit'=>0,'view'=>0,'upload'=>0,'email'=>0),null,false); ?>
 </p></div><!-- there are no line breaks on the next line to make the javascript ever so slightly faster -->
 <div id="preview_img"><p><img src="res/images/blank.gif" title="Preview" alt="Preview"/><img alt="" src="res/images/blank.gif" title="Scanning" style="z-index:-1;"/></p></div>
 </div>

@@ -50,8 +50,11 @@ function Get_Values($name){
 				return intval($name);
 			else
 				return floatval($name);
-		else
-			return $name;
+		else if(strtolower($name)==='true')
+			return true;
+		else if(strtolower($name)==='false')
+			return false;
+		return $name;
 	}
 	else
 		return null;
@@ -61,23 +64,23 @@ function shell($X){
 	return escapeshellarg($X);
 }
 
-function Put_Values() { # Update values back to form (There is no redo for croping)
-	echo '<script type="text/javascript">'.
-	"config({'scanner':".js($GLOBALS['SCANNER']).
-		",'source':'".js($GLOBALS['SOURCE'])."'".
-		",'quality':".js($GLOBALS['QUALITY']).
-		",'duplex':".js($GLOBALS['DUPLEX']).
-		",'size':'".js($GLOBALS['SIZE'])."'".
-		",'ornt':'".js($GLOBALS['ORNT'])."'".
-		",'mode':'".js($GLOBALS['MODE'])."'".
-		",'bright':".js($GLOBALS['BRIGHT']).
-		",'contrast':".js($GLOBALS['CONTRAST']).
-		",'rotate':".js($GLOBALS['ROTATE']).
-		",'scale':".js($GLOBALS['SCALE']).
-		",'filetype':'".js($GLOBALS['FILETYPE'])."'".
-		",'lang':'".js($GLOBALS['LANG'])."'".
-		",'set_save':'".js($GLOBALS['SET_SAVE'])."'".
-	"});</script>";
+function Put_Values() { # Update values back to form (There is no redo for cropping)
+	echo '<script type="text/javascript">config('.json_encode((object)array(
+		'scanner'=>$GLOBALS['SCANNER'],
+		'source'=>$GLOBALS['SOURCE'],
+		'quality'=>$GLOBALS['QUALITY'],
+		'duplex'=>$GLOBALS['DUPLEX'],
+		'size'=>$GLOBALS['SIZE'],
+		'ornt'=>$GLOBALS['ORNT'],
+		'mode'=>$GLOBALS['MODE'],
+		'bright'=>$GLOBALS['BRIGHT'],
+		'contrast'=>$GLOBALS['CONTRAST'],
+		'rotate'=>$GLOBALS['ROTATE'],
+		'scale'=>$GLOBALS['SCALE'],
+		'filetype'=>$GLOBALS['FILETYPE'],
+		'lang'=>$GLOBALS['LANG'],
+		'set_save'=>$GLOBALS['SET_SAVE']
+	)).');</script>';
 }
 
 function Print_Message($TITLE,$MESSAGE,$ALIGN) { # Add a Message div after the page has loaded
@@ -88,22 +91,129 @@ function Print_Message($TITLE,$MESSAGE,$ALIGN) { # Add a Message div after the p
 }
 
 function Update_Preview($l) { # Change the Preview Pane image via JavaScript
-	echo '<script type="text/javascript">';
-	echo 'document.getElementById("preview_img").childNodes[0].childNodes[0].src="'.js($l).'";';
-	echo '</script>';
+	echo '<script type="text/javascript">'.
+		'getID("preview_img").childNodes[0].childNodes[0].src="'.js($l).'";'.
+		'</script>';
+}
+
+function genIconLinks($config,$file,$isBulk){
+	// The Last Scan button is unique to the scan page, it is in res/main.js and res/inc/scan.php
+	if($config===null)
+		$config=(object)array();
+	$sURL=url(substr($file,5));
+	$sJS=html(js(substr($file,5)));
+	$URL=url($file);
+	$JS=html(js($file));
+	$icons=(object)array(
+		'download'=>(object)array(
+			'href'=>"download.php?file=$URL",
+			'disable'=>isset($config->{'download'}),
+			'tip'=>'Download'
+		),
+		'zip'=>(object)array(
+			'href'=>"download.php?file=$URL&amp;compress",
+			'disable'=>isset($config->{'zip'}),
+			'tip'=>'Download Zip',
+			'bulk'=>"bulkDownload(this,'zip')"
+		)
+		,
+		'pdf'=>(object)array(
+			'href'=>'#',
+			'onclick'=>"return PDF_popup('$sJS');",
+			'disable'=>isset($config->{'pdf'}),
+			'tip'=>'Download PDF',
+			'bulk'=>"PDF_popup(filesLst)"
+		),
+		'print'=>(object)array(
+			'href'=>"print.php?file=$URL",
+			'target'=>'_blank',
+			'disable'=>isset($config->{'print'}),
+			'tip'=>'Print',
+			'bulk'=>"bulkPrint(this)"
+		),
+		'del'=>(object)array(
+			'href'=>"index.php?page=Scans&amp;delete=Remove&amp;file=$sURL",
+			'onclick'=>"return delScan('$sJS',true)",
+			'disable'=>isset($config->{'del'}),
+			'tip'=>'Delete',
+			'bulk'=>"bulkDel()"
+		),
+		'edit'=>(object)array(
+			'href'=>"index.php?page=Edit&amp;file=$sURL",
+			'disable'=>isset($config->{'edit'}),
+			'tip'=>'Edit'
+		),
+		'view'=>(object)array(
+			'href'=>"index.php?page=Edit&amp;file=$sURL",
+			'disable'=>isset($config->{'view'}),
+			'tip'=>'View',
+			'bulk'=>"bulkView(this)"
+		),
+		'upload'=>(object)array(
+			'href'=>'#',
+			'onclick'=>"return upload('$JS');",
+			'disable'=>isset($config->{'upload'}),
+			'tip'=>'Upload to Imgur',
+			'bulk'=>"bulkUpload()"
+		),
+		'email'=>(object)array(
+			'href'=>'#',
+			'onclick'=>"return emailManager('$JS');",
+			'disable'=>isset($config->{'email'}),
+			'tip'=>'Email',
+			'bulk'=>"emailManager('Scan_Compilation')"
+		)
+	);
+	if($GLOBALS['PAGE']=='Scan'){
+		$click=false;
+		if(isset($_COOKIE['lastScan'])&&!isset($config->{'recent'})){
+			$cookie=json_decode($_COOKIE['lastScan']);
+			if(file_exists("scans/".$cookie->{"raw"})&&file_exists("scans/".$cookie->{"preview"}))
+				$click="return lastScan(".html(json_encode($cookie)).",this,'".html(js(genIconLinks((object)array('recent'=>0),$cookie->{'raw'},false)))."')";
+			else
+				setcookie('lastScan','',0);
+		}
+		$icons->{'recent'}=(object)array(
+			'href'=>'#',
+			'onclick'=>(is_bool($click)?'false':$click),
+			'disable'=>is_bool($click),
+			'tip'=>'Last Scan'
+		);
+	}
+	$html='';
+	foreach($icons as $icon => $link){
+		if($link->{'disable'})
+			$html.='<span class="tool icon '.$icon.'-off"><span class="tip">'.$link->{"tip"}.' (Disabled)</span></span>';
+		else{
+			$html.='<a class="tool icon '.$icon.'"';
+			if($isBulk)
+				$html.=" onclick=\"return ".$link->{"bulk"}."\"";
+			else{
+				foreach($link as $attr => $val){
+					if($attr=='disable')
+						break;
+					$html.=" $attr=\"$val\"";
+				}
+			}
+			$html.='><span class="tip">'.$link->{"tip"}.'</span></a>';
+		}
+	}
+	return $html;
 }
 
 function Update_Links($l,$p) { # Change the Preview Pane image links via JavaScript
-	echo '<script type="text/javascript" src="inc/previewlinks.php?file='.url($l).'&page='.url($p).'"></script>';
-}// main.js, previewlinks.php, scan.php, scans.php, view.php, and edit.php conatain icon links
+	echo '<script type="text/javascript">'.
+		'getID("preview_links").innerHTML="<h2>'.html($l).'</h2><p>'.
+		js(genIconLinks($p=="Edit"?(object)array('edit'=>'disable'):null,$l,false)).
+		'</p>";</script>';
+}
 
 function SaveFile($file,$content){// @ Suppresses any warnings
 	$file=@fopen($file,'w+');
 	@fwrite($file,$content);
 	@fclose($file);
-	if(is_bool($file)){
+	if(is_bool($file))
 		return $file;
-	}
 	return true;
 }
 
@@ -296,17 +406,21 @@ else if($PAGE=="Config"){
 		$val=Get_Values('value');
 		if($val==null){
 			if(file_exists("config/settings.json")){
-				unlink("config/settings.json");
+				if(@unlink("config/settings.json"))
+					Print_Message("Deleted","All saved scan settings have been removed!","center");
+				else
+					Print_Message("Error","Unable to delete <code>".getcwd()."config/settings.json</code>","center");
 			}
-			else{
+			else
 				Print_Message("Unable to remove saved scanner settings:","There are no settings to remove, therefore that action can not be completed","center");
-			}
 		}
 		else{
 			$file=json_decode(file_get_contents("config/settings.json"));
 			unset($file->{$val});
 			if(!SaveFile("config/settings.json",json_encode($file)))
 				Print_Message("Permission Error:","<code>$user</code> does not have permission to write files to the <code>".getcwd()."/config</code> folder.<br/>$notes",'center');
+			else
+				Print_Message("Deleted","<code>".html($val)."</code> has been deleted!","center");
 		}
 	}
 	else if($ACTION=="Detect-Paper"){
@@ -332,12 +446,10 @@ else if($PAGE=="Config"){
 		}
 	}
 	else if($ACTION=="Delete-Paper"){
-		if(@unlink("config/paper.json")){
+		if(@unlink("config/paper.json"))
 			Print_Message("Paper:","Paper configuration has been deleted","center");
-		}
-		else{
+		else
 			Print_Message("Paper:","Failed to delete paper configuration","center");
-		}
 	}
 
 	if(file_exists("config/settings.json"))
@@ -504,9 +616,8 @@ else if($PAGE=="Parallel-Form"){
 	else if($name!=null&&$device!=null){
 		$can=scandir('config/parallel');
 		$int=0;
-		while(in_array($int.'.json',$can)){
+		while(in_array($int.'.json',$can))
 			$int++;
-		}
 		$save=SaveFile('config/parallel/'.$int.'.json',json_encode(array("NAME"=>$name,"DEVICE"=>$device)));
 	}
 	$scan=scandir('config/parallel');
@@ -804,7 +915,7 @@ else{
 				SaveFile("config/settings.json",json_encode($file));
 			}
 			else{
-				if(!SaveFile("config/settings.json",$json_encode(array($SET_SAVE => $setting)))){
+				if(!SaveFile("config/settings.json",json_encode(array($SET_SAVE => $setting)))){
 					Print_Message("Permission Error:","<code>$user</code> does not have permission to write files to the <code>".getcwd()."/config</code> folder.<br/>$notes",'center');
 				}
 			}
@@ -866,7 +977,7 @@ else{
 		   (count($sizes)!=2&&$SIZE!=='full')||
 		   (!in_array($MODE,explode('|',$CANNERS[$SCANNER]->{"MODE-$SOURCE"})))||
 		   (!in_array($SOURCE,explode('|',$CANNERS[$SCANNER]->{"SOURCE"})))||
-		   (!in_array($DUPLEX,explode('|',(is_bool($CANNERS[$SCANNER]->{"DUPLEX-$SOURCE"})?'true|false':$CANNERS[$SCANNER]->{"DUPLEX-$SOURCE"}))))||
+		   (!in_array($DUPLEX,is_bool($CANNERS[$SCANNER]->{"DUPLEX-$SOURCE"})?array(true,false):explode('|',$CANNERS[$SCANNER]->{"DUPLEX-$SOURCE"})))||
 		   ($FILETYPE!=="txt"&&$FILETYPE!=="png"&&$FILETYPE!=="tiff"&&$FILETYPE!=="jpg")){
 			Print_Message("No, you can not do that","Input data is invalid and most likely an attempt to run malicious code on the server. <i>Denied</i>",'center');
 			quit();
@@ -957,7 +1068,7 @@ else{
 			$DUPLEX="--adf-mode $DUPLEX";
 		}
 		else if($CANNERS[$SCANNER]->{"DUPLEX-$SOURCE"}===true){
-			if($DUPLEX=='true')
+			if($DUPLEX==true)
 				$DUPLEX='--duplex=yes ';
 			else
 				$DUPLEX='--duplex=no ';
@@ -1040,10 +1151,8 @@ else{
 		$endTime=time();
 
 		# Remove Crop Option / set lastScan
-		echo '<script type="text/javascript">';
-		if(($WIDTH!="0"&&$HEIGHT!="0")||$ROTATE!="0"){
-			echo '$(document).ready(function(){stripSelect();});';
-		}
+		if(($WIDTH!="0"&&$HEIGHT!="0")||$ROTATE!="0")
+			$strip=true;
 		else{
 			setcookie('lastScan',json_encode(Array(
 				"raw"=>$S_FILENAME,"preview"=>$P_FILENAME,"fields"=>Array(
@@ -1055,10 +1164,9 @@ else{
 			)),time()+86400,substr($_SERVER['PHP_SELF'],0,strlen(end(explode('/',$_SERVER['PHP_SELF'])))*-1),$_SERVER['SERVER_NAME']);
 		}
 		$ORNT=($ORNT==''?'vert':$ORNT);
-		echo "var ornt=document.createElement('input');ornt.name='ornt0';ornt.value='$ORNT';ornt.type='hidden';document.scanning.appendChild(ornt);".
-			($ROTATE!="0"?"var p=document.createElement('p');p.innerHTML='<small>Changing orientation will void select region.</small>';":'').
-			"document.getElementById('opt').appendChild(p);document.scanning.scanner.disabled=true</script>";
-
+		echo "<script type=\"text/javascript\">var ornt=document.createElement('input');ornt.name='ornt0';ornt.value='$ORNT';ornt.type='hidden';document.scanning.appendChild(ornt);".
+			($ROTATE!="0"?"var p=document.createElement('p');p.innerHTML='<small>Changing orientation will void select region.</small>';getID('opt').appendChild(p);":'').
+			"$(document).ready(function(){document.scanning.scanner.disabled=true;".(isset($strip)?"stripSelect();":'')."});</script>";
 		# Check if image is empty and post error, otherwise post image to page
 		if(!file_exists("scans/$P_FILENAME")){
 			Print_Message("Could not scan",'<p style="text-align:left;margin:0;">This is can be cauesed by one or more of the following:</p>'.
@@ -1072,10 +1180,10 @@ else{
 			Update_Links($S_FILENAME,$PAGE);
 			Update_Preview("scans/$P_FILENAME");
 		}
+		echo '<script type="text/javascript">if(document.scanning.scanner.childNodes.length>1)document.scanning.reset.disabled=true;</script>';
 		if($ct>3)
 			Print_Message("Info",'Multiple scans made, only displaying last one, go to <a href="index.php?page=Scans&amp;filter=3&amp;T2='.($startTime-1).'&T1='.($endTime+1).'">Scanned Files</a> for the rest','center');
 	}
-	echo '<script type="text/javascript">if(document.scanning)document.scanning.action.disabled=false;</script>';
 	checkFreeSpace($FreeSpaceWarn);
 }
 quit();

@@ -12,21 +12,20 @@ $GLOBALS['CurrentTheme']=$Theme;
 <link rel="stylesheet" href="<?php echo $path; ?>res/style.php?theme=<?php echo $Theme; ?>" type="text/css"/>
 <script type="text/javascript" src="<?php echo $path; ?>jquery/jquery.min.js"></script>
 <?php
-	if(in_array($page,Array("Scan","Edit")))
-		echo '<link rel="stylesheet" type="text/css" href="'.$path.'jquery/imgareaselect-0.9.10/css/imgareaselect-animated.css"/>'."\n".
-			'<script type="text/javascript" src="'.$path.'jquery/imgareaselect-0.9.10/scripts/jquery.imgareaselect.pack.js"></script>';
-	else if($page=='Config')
-		echo '<style id="style_old" type="text/css"></style><style id="style_new" type="text/css"></style>'."\n".
-			'<link rel="stylesheet" media="screen" type="text/css" href="'.$path.'jquery/colorpicker-custom/css/colorpicker.css"/>'."\n".
+if(in_array($page,Array("Scan","Edit")))
+	echo '<link rel="stylesheet" type="text/css" href="'.$path.'jquery/imgareaselect-0.9.10/css/imgareaselect-animated.css"/>'."\n".
+		'<script type="text/javascript" src="'.$path.'jquery/imgareaselect-0.9.10/scripts/jquery.imgareaselect.min.js"></script>';
+else if($page=='Config')
+	echo '<style id="style_old" type="text/css"></style><style id="style_new" type="text/css"></style>'."\n".
+		'<link rel="stylesheet" media="screen" type="text/css" href="'.$path.'jquery/colorpicker-custom/css/colorpicker.css"/>'."\n".
 			'<script type="text/javascript" src="'.$path.'jquery/colorpicker-custom/js/colorpicker.js"></script>';
-	else if($page=='Index Of')
-		echo '<link rel="stylesheet" type="text/css" href="'.$path.'res/indexOf.css"/>';
+else if($page=='Index Of')
+	echo '<link rel="stylesheet" type="text/css" href="'.$path.'res/indexOf.css"/>';
 ?>
 <script type="text/javascript" src="<?php echo $path; ?>res/model-dialog.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>res/cookie.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>res/main.js"></script>
 <!--[if lt IE 9]><script type="text/javascript">TC='innerText';var ie8=false;</script><link rel="stylesheet" type="text/css" href="<?php echo $path; ?>res/ie.css"/><![endif]-->
-<!--[if IE 9]><style type="text/css">#header>span{color:white;border-radius:5px;background-color:rgba(0,0,0,.65);padding:0 5px;}</style><![endif]-->
 </head>
 <body<?php echo $DarkPicker?' class="darkPicker"':''; ?>>
 <div id="blanket" style="display:none;background-color:transparent;"><div id="popUpDiv" style="opacity:0;"></div></div>
@@ -34,7 +33,7 @@ $GLOBALS['CurrentTheme']=$Theme;
 <div id="container">
 
 <div id="header">
-<span>Scanner<br/><span>Server</span></span>
+<span><span>Scanner<br/><span>Server</span></span></span>
 <div class="tab<?php echo in_array($page,Array("Config","About","Paper Manager","Access Enabler","Device Notes","Parallel-Form","PHP Information"))?' active':''; ?>">
 <a href="<?php echo $path; ?>index.php?page=Config">Configure</a>
 <div class="topleft top"></div>
@@ -60,7 +59,7 @@ $GLOBALS['CurrentTheme']=$Theme;
 </div>
 
 <div class="tab<?php echo in_array($page,Array("Index Of","Login"))||is_numeric($page)?' active':''; ?>">
-<a href="/"<?php echo $GLOBALS['RequireLogin']&&$GLOBALS['Auth']&&$page!='Login'?' onclick="Delete_Cookie(\'Authenticated\',false)">Logout':'>'.$_SERVER['SERVER_NAME']; ?></a>
+<a title="<?php echo html($_SERVER['SERVER_NAME']); ?>" href="/"<?php echo $GLOBALS['RequireLogin']&&$GLOBALS['Auth']&&$page!='Login'?' onclick="Delete_Cookie(\'Authenticated\',false)">Logout':'>'.$_SERVER['SERVER_NAME']; ?></a>
 <div class="topleft top"></div>
 <div class="bottomleft bottom"></div>
 <div class="topright top"></div>

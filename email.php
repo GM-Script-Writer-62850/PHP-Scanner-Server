@@ -53,14 +53,15 @@ if(isset($_POST['file'])||isset($_POST['json'])){
 	$mail->Subject = $_POST['title']; // set title
 	$mail->IsHTML(true);
 
-	$message='<h1>Scanned with <a href="https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server">PHP Scanner Server</a></h1>';
+	$message='<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>'.htmlspecialchars($_POST['title']).'</title></head><body style="text-align:center;">'.
+		'<h1>Scanned with <a href="https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server">PHP Scanner Server</a></h1>';
 	$altMsg="Scanned with PHP Scanner Server";
 	$image=false;
 	foreach($scans as $scan => $val){
-		$message.="<p><h3>$scan<h3/>";
+		$message.='<h3>'.htmlspecialchars($scan).'</h3><p>';
 		if(substr($scan,-3)!='txt'){
-			$mail->AddEmbeddedImage("scans/$prefix".$scan, $scan);
-			$message.="<img src=\"cid:".htmlspecialchars($scan)."\"/>";
+			$mail->AddEmbeddedImage("scans/$prefix$scan", $scan);
+			$message.='<img alt="'.$scan.'" src="cid:'.htmlspecialchars($scan).'"/>';
 			$image=true;
 		}
 		else{
@@ -72,7 +73,7 @@ if(isset($_POST['file'])||isset($_POST['json'])){
 		$message.="</p>";
 	}
 
-	$mail->Body=$message;
+	$mail->Body="$message</body></html>";
 	$mail->AltBody=($image?"Please view this in HTML instead of plain text.":$altMsg);
 
 	if(!$mail->Send()){

@@ -2,20 +2,18 @@
  * imgAreaSelect animated border style
  */
 
-.imgareaselect-border1 {
-	background: url(border-anim-v.gif) repeat-y left top;
-}
-
-.imgareaselect-border2 {
-	background: url(border-anim-h.gif) repeat-x left top;
-}
-
-.imgareaselect-border3 {
+.imgareaselect-border1, .imgareaselect-border3 {
 	background: url(border-anim-v.gif) repeat-y right top;
 }
 
-.imgareaselect-border4 {
-	background: url(border-anim-h.gif) repeat-x left bottom;
+.imgareaselect-border2, .imgareaselect-border4 {
+	background: url(border-anim-h.gif) repeat-x left top;
+}
+
+.imgareaselect-border1, .imgareaselect-border4 {
+	-webkit-transform: rotate(180deg);
+	-ms-transform: rotate(180deg);
+	transform: rotate(180deg);
 }
 
 .imgareaselect-border1, .imgareaselect-border2,

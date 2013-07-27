@@ -1,3 +1,4 @@
+"use strict";
 (function(){
 	var iframe=getID('phpinfo'),s,txt,content,ct;
 	iframe.onload=function(){

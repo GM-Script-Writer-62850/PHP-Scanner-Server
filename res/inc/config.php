@@ -75,7 +75,13 @@ else
 	}
 ?></ul><p>
 If you want to save a setting for your own use, right-click it and save it to your web browser's bookmarks.
-</p>
+</p><script type="text/javascript">
+if(typeof(localStorage)!='undefined'){
+	if(localStorage.getItem('default')!=null)
+		document.write('<div class="footer"><p><input type="button" value="Clear Default Settings" onclick="if(!confirm(\'Clear Default Settings\'))return;'+
+		'(function(e){localStorage.removeItem(\'default\');printMsg(\'Cleared\',\'Default settings have been deleted\',\'center\',-1);e.parentNode.removeChild(e);})(this.parentNode.parentNode);"/></p></div>');
+}
+</script>
 </div>
 
 </div>
@@ -83,20 +89,20 @@ If you want to save a setting for your own use, right-click it and save it to yo
 
 <div class="box">
 <h2>Color Scheme</h2>
-<p><span style="margin-right:30px;">Theme Picker:</span><select onchange="if(this.value!='void')changeColor(this.value,true);this.selectedIndex=0;">
+<p><span style="margin-right:30px;">Theme Picker:</span><select onchange="if(this.value!='void')changeColor(this.value,true);this.selectedIndex=0;" style="width:102px;">
 <option value="void">Please Select</option>
-<option value="3C9642.3C7796.3C9642.FFFFFF.3C9642.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#3c9642;color:#3c9642;">Green</option>
-<option value="3C7796.963C8F.3C7796.FFFFFF.3C7796.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#3c7796;color:#3c7796;">Blue</option>
-<option value="963C8f.3C7796.963C8f.FFFFFF.963C8f.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#963c8f;color:#963c8f;">Purple</option>
-<option value="663366.3C7796.663366.FFFFFF.663366.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#663366;color:#663366;">Dark Purple</option>
-<option value="000000.999999.000000.FFFFFF.000000.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#000000;color:#000000;">Black</option>
-<option value="996633.BFBFBF.996633.FFFFFF.996633.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#996633;color:#996633;">Light Brown</option>
-<option value="848484.BFBFBF.848484.FFFFFF.848484.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#848484;color:#848484;">Gray</option>
-<option value="383838.838383.383838.FFFFFF.383838.FFFFFF.000000.000000.FFFFFF.FF0000.FFFFFF" style="background-color:#383838;color:#383838;">Dark Gray</option>
-<option value="FF007E.BB045E.FF007E.FFFFFF.FF007E.FFFFFF.000000.383838.FFFFFF.FF0000.FFFFFF" style="background-color:#ff007e;color:#ff007e;">Pink</option>
+<option value="3C9642.3C7796.3C9642.FFF.3C9642.FFF.000.383838.FFF.F00.FFF" style="background-color:#3c9642;color:#3c9642;">Green</option>
+<option value="3C7796.963C8F.3C7796.FFF.3C7796.FFF.000.383838.FFF.F00.FFF" style="background-color:#3c7796;color:#3c7796;">Blue</option>
+<option value="963C8f.3C7796.963C8f.FFF.963C8f.FFF.000.383838.FFF.F00.FFF" style="background-color:#963c8f;color:#963c8f;">Purple</option>
+<option value="663366.3C7796.636.FFF.636.FFF.000.383838.FFF.F00.FFF" style="background-color:#636;color:#636;">Dark Purple</option>
+<option value="000.999.000.FFF.000.FFF.000.383838.FFF.F00.FFF" style="background-color:#000000;color:#000000;">Black</option>
+<option value="963.BFBFBF.963.FFF.963.FFF.000.383838.FFF.F00.FFF" style="background-color:#963;color:#963;">Light Brown</option>
+<option value="848484.BFBFBF.848484.FFF.848484.FFF.000.383838.FFF.F00.FFF" style="background-color:#848484;color:#848484;">Gray</option>
+<option value="383838.838383.383838.FFF.383838.FFF.000.000.FFF.F00.FFF" style="background-color:#383838;color:#383838;">Dark Gray</option>
+<option value="FF007E.BB045E.FF007E.FFF.FF007E.FFF.000.383838.FFF.F00.FFF" style="background-color:#ff007e;color:#ff007e;">Pink</option>
 <option value="<?php echo $CurrentTheme; ?>">Restore</option>
 </select></p>
-<?php $CurrentTheme=explode('.',$CurrentTheme);$attrs='class="colorPicker" readonly="readonly" onchange="changeColor(this,false);"'; ?>
+<?php $CurrentTheme=explode('.',$CurrentTheme);$attrs='class="colorPicker" readonly="readonly" onfocus="if(document.all)this.blur();" onchange="changeColor(this,false);"'; ?>
 <div class="footer"><form name="theme" onsubmit="return changeColor(null,true);" action="#"><p style="line-height:23px;">
 <span>Background Color:</span>			<input name="BG_COLOR" style="background-color:#<?php echo $CurrentTheme[0]; ?>" value="<?php echo $CurrentTheme[0]; ?>" <?php echo $attrs; ?>/>
 <span>Page Background:</span>			<input name="PB_COLOR" style="background-color:#<?php echo $CurrentTheme[3]; ?>" value="<?php echo $CurrentTheme[3]; ?>" <?php echo $attrs; ?>/>

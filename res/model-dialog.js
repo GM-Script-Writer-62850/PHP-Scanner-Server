@@ -1,4 +1,5 @@
 /* mod of http://www.pat-burt.com/csspopup.js */
+"use strict";
 function toggle(div_id){
 	var el = getID(div_id);
 	if( el.style.display == 'none' ){
@@ -15,6 +16,7 @@ function toggle(div_id){
 	}
 }
 function blanket_size(popUpDivVar){
+	var viewportheight,viewportheight,blanket_height,blanket,popUpDiv,popUpDiv_height;
 	if(typeof window.innerWidth != 'undefined'){
 		viewportheight = window.innerHeight;
 	}
@@ -32,13 +34,14 @@ function blanket_size(popUpDivVar){
 			blanket_height = document.body.parentNode.scrollHeight;
 		}
 	}
-	var blanket = getID(popUpDivVar);
+	blanket = getID(popUpDivVar);
 	blanket.style.height = blanket_height + 'px';
-	var popUpDiv = blanket.childNodes[0];
+	popUpDiv = blanket.childNodes[0];
 	popUpDiv_height=viewportheight/2-popUpDiv.offsetHeight/2;
 	popUpDiv.style.top = popUpDiv_height + 'px';
 }
 function window_pos(popUpDivVar,width){
+	var viewportwidth,window_width,popUpDiv;
 	if (typeof window.innerWidth != 'undefined'){
 		viewportwidth = window.innerHeight;
 	}
@@ -56,7 +59,7 @@ function window_pos(popUpDivVar,width){
 			window_width = document.body.parentNode.scrollWidth;
 		}
 	}
-	var popUpDiv = getID(popUpDivVar).childNodes[0];
+	popUpDiv = getID(popUpDivVar).childNodes[0];
 	window_width=window_width/2-width/2;
 	popUpDiv.style.left = window_width + 'px';
 	popUpDiv.style.width=width+'px';

@@ -27,17 +27,9 @@ else{
 		'</p></form><form id="filter1" class="m" action="index.php?filter=1" method="POST"><h3>Display Files Older Than</h3><p>'.$html.'</p></form>'.
 		'<div class="footer"><p><input type="button" value="Combine Both Filters" onclick="scanFilter(getID(\'filter2\'),getID(\'filter1\'))"/></p></div>'.
 		'<div class="footer">Tip: +/- can increase/decrease numbers.</div></div>'.
-		'<div class="box box-full"><h2>Bulk Operations</h2><p style="text-align:center;"><span>'.
-		'<a onclick="return false" class="tool icon download-off" href="#"><span class="tip">Download (Disabled)</span></a> '.
-		'<a onclick="return bulkDownload(this,\'zip\')" class="tool icon zip" href="#"><span class="tip">Download Zip</span></a> '.
-		'<a onclick="return PDF_popup(filesLst)" class="tool icon pdf" href="#"><span class="tip">Download PDF</span></a> '.
-		'<a onclick="return bulkPrint(this)" class="tool icon print" href="#"><span class="tip">Print</span></a> '.
-		'<a onclick="return bulkDel()" class="tool icon del" href="#"><span class="tip">Delete</span></a> '.
-		'<a onclick="return false" class="tool icon edit-off" href="#"><span class="tip">Edit (Disabled)</span></a> '.
-		'<a onclick="return bulkView(this)" class="tool icon view" href="#"><span class="tip">View</span></a> '.
-		'<a onclick="return bulkUpload()" class="tool icon upload" href="#"><span class="tip">Upload to Imgur</span></a> '.
-		'<a onclick="return emailManager(\'Scan_Compilation\')" class="tool icon email" href="#"><span class="tip">Email</span></a>'.
-		'</span><br/>Double Click a file name to select/deselect it<br/>'.
+		'<div class="box box-full"><h2>Bulk Operations</h2><p style="text-align:center;">'.
+		genIconLinks((object)array('download'=>0,'edit'=>0),null,true).
+		'<br/>Double Click a file name to select/deselect it<br/>'.
 		'The order they are selected determines the page order<br/>'.
 		'<button onclick="return selectScans(\'excluded\');">Select All</button> '.
 		'<button onclick="return selectScans(false);">Invert Selection</button> '.
@@ -95,16 +87,7 @@ else{
 		$IMAGE=$FILES[$i];
 		echo '<div class="box" id="'.html($FILE).'">'.
 			'<h2 ondblclick="toggleFile(this);" class="excluded">'.html($FILE).'</h2><p><span>'.
-			'<a class="tool icon download" href="download.php?file=Scan_'.url($FILE).'"><span class="tip">Download</span></a> '.
-			'<a class="tool icon zip" href="download.php?file=Scan_'. url($FILE).'&amp;compress"><span class="tip">Download Zip</span></a> '.
-			'<a class="tool icon pdf" href="#" onclick="return PDF_popup(\''.html(js($FILE)).'\');"><span class="tip">Download PDF</span></a> '.
-			'<a class="tool icon print" href="print.php?file=Scan_'.url($FILE).'" target="_blank"><span class="tip">Print</span></a> '.
-			'<a class="tool icon del" href="index.php?page=Scans&amp;delete=Remove&amp;file='.url($FILE).'" onclick="return delScan(\''.html(js($FILE)).'\',true)"><span class="tip">Delete</span></a> '.
-			'<a class="tool icon edit" href="index.php?page=Edit&amp;file='.url($FILE).'"><span class="tip">Edit</span></a> '.
-			'<a class="tool icon view" href="index.php?page=View&amp;file=Scan_'.url($FILE).'"><span class="tip">View</span></a> '.
-			'<a class="tool icon upload" href="#" onclick="return upload(\'Scan_'.html(js($FILE)).'\');"><span class="tip">Upload to Imgur</span></a> '.
-			'<a href="#" onclick="return emailManager(\'Scan_'.html(js($FILE)).'\');" class="tool icon email"><span class="tip">Email</span></a>'.
-			'</span><br/>'.
+			genIconLinks(null,"Scan_$FILE",false).'</span><br/>'.
 			'<a class="tool" target="_blank" href="scans/Scan_'.url($FILE).'" style="width:100%;"><img src="scans/'.url($IMAGE).'" alt="'.html($FILE).'" style="width:100%"/><span class="tip">View raw file</span></a>'.
 			'</p></div>';
 	}

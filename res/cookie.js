@@ -1,4 +1,5 @@
 // http://techpatterns.com/downloads/javascript_cookies.php
+"use strict";
 function Set_Cookie( name, value, expires, path, domain, secure ){
 	if(!path) path=window.location.pathname.substr(0,window.location.pathname.lastIndexOf('/')+1);// Added this line
 	var today = new Date();

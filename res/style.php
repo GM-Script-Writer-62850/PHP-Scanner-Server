@@ -2,14 +2,16 @@
 $expires=86400;//24 hrs
 header('Content-type: text/css; charset=UTF-8');
 header("Pragma: public");
-header("Cache-Control: ".(isset($_GET['save'])?"no-cache, must-revalidate":"maxage=$expires"));
+header("Cache-Control: ".(!isset($_GET['theme'])||isset($_GET['save'])?"no-cache, must-revalidate":"maxage=$expires"));
 header('Expires: '.gmdate('D, d M Y H:i:s',time()+$expires).' GMT');
-if(isset($_GET['save'])&&isset($_GET["theme"])){//10 years long enough for a cookie to stick arround?
-	setcookie("theme",$_GET['theme'],time()+(60*60*24*365.25*10),substr($_SERVER['PHP_SELF'],0,strlen(end(explode('/',$_SERVER['PHP_SELF'])))*-1-4),$_SERVER['SERVER_NAME']);
-	$C=explode('.',$_GET['theme']);
-}
+if(isset($_GET['save'])&&isset($_GET["theme"]))// 10 years long enough for a cookie to stick arround?
+	setcookie("theme",$_GET['theme'],time()+315576000,substr($_SERVER['PHP_SELF'],0,strlen(end(explode('/',$_SERVER['PHP_SELF'])))*-1-4),$_SERVER['SERVER_NAME']);
+if(isset($_GET["theme"]))
+	$C=explode('.',$_GET["theme"]);
+else if(isset($_COOKIE["theme"]))
+	$C=explode('.',$_COOKIE["theme"]);
 else
-	$C=isset($_GET["theme"])?explode('.',$_GET["theme"]):array('000',111,222,333,444,555,666,777,888,999,'AAA');
+	$C=array('000',111,222,333,444,555,666,777,888,999,'AAA');
 $BG_COLOR=$C[0]; // Page Background
 $LK_COLOR=$C[1]; // Link Color (hover)
 $LC_COLOR=$C[2]; // Link Color
@@ -22,6 +24,25 @@ $BT_COLOR=$C[8]; // Debug Console Text
 $AH_COLOR=$C[9]; // Alert Header Background
 $AT_COLOR=$C[10]; // Alert Header Text
 $transitionTime='0.8s'; // The rotateChange, setClipboard, and printMsg functions in main.js needs to be adjusted based on this value
+function hex2rgb($h){
+	$c=array();
+	$x=strlen($h)==3?1:2;
+	for($i=0,$s=$x*3;$i<$s;$i+=$x)
+		array_push($c,substr($h,$i,$x));
+	foreach($c as $k => $v)
+		$c[$k]=hexdec($x==1?$v.$v:$v);
+	return $c;
+}
+function getShadow($b,$t){
+	$b=hex2rgb($b);
+	$t=hex2rgb($t);
+	$c=array();
+	foreach($b as $k => $v){
+		$a=abs($t[$k]-$v);
+		array_push($c,abs($a-($a<16||$a>239?round($a/2):0)));
+	}
+	return 'rgb('.implode(',',$c).')';
+}
 ?>
 @-webkit-keyframes fadein { /* Chrome, Safari, and Opera */
 	from {
@@ -57,6 +78,9 @@ body {
 
 button, input[type="button"], input[type="submit"], input[type="reset"], select, a, #scans .box h2, .colorPicker {
 	cursor: pointer;
+}
+input[disabled], select[disabled]{
+	cursor: auto;
 }
 
 input[type="text"][size="3"]{
@@ -142,27 +166,37 @@ img{
 	height: 75px;
 	margin: 0 0 0.5em 0;
 	border: 1px solid #<?php echo $HB_COLOR; ?>;
-	background: url("images/logo.png") no-repeat scroll left center;
+	background: url("images/logo.png") no-repeat scroll 8px center;
 	background-color: #<?php echo $HB_COLOR; ?>;
 	border-radius: 5px 5px 0 0;
 	position: relative;
 }
-#header > span{
-	text-shadow: <?php echo "0 0 1px #$PB_COLOR, 0 0 2px #$PB_COLOR, 0 0 3px #$PB_COLOR, 0 0 4px #$PB_COLOR, 0 0 5px #$PB_COLOR" ?>;
-	color: #<?php echo $HB_COLOR; ?>;
-	font-size: 25px;
+#header > span {
 	display: block;
 	position: absolute;
-	top: 6px;
-    left: 71px;
+	left: 71px;
+	height: 75px;
+	overflow: hidden;
+	width: 152px;
+	color: #<?php echo $HT_COLOR; ?>;
+	color: rgba(<?php echo implode(',',hex2rgb($HT_COLOR)); ?>,.85);
+	line-height: 29.5px;
+	font-size: 25px;
+}
+#header > span > span {
+	text-shadow: <?php $S=getShadow($HB_COLOR,$HT_COLOR);echo "0 0 1px $S, 0 0 2px $S, 0 0 3px $S, 0 0 4px $S" ?>;
+	display: block;
 	width: 138px;
-	line-height: 30px;
 	-webkit-transition-property: color, text-shadow;
 	-webkit-transition-duration: <?php echo $transitionTime; ?>;
 	transition-property: color, text-shadow;
 	transition-duration: <?php echo $transitionTime; ?>;
+	-webkit-transform: rotate(-29deg);
+	-ms-transform: rotate(-29deg);
+	transform: rotate(-29deg);
+	margin-top: 12px;
 }
-#header > span span{
+#header span span span{
 	float: right;
 }
 
@@ -177,24 +211,21 @@ img{
 	text-transform: capitalize;
 	position: relative;
 }
-
 .tab.active {
 	padding-bottom: 27px;
 	border-radius: 5px 5px 0 0;
 }
-
 .tab a {
 	display: inline-block;
-	max-width: 175px;
+	max-width: 135px;
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+	margin: 0 3px;
 }
-
 .tab div {
 	display: none;
 }
-
 .tab.active div {
 	border-radius: 5px;
 	height: 10px;
@@ -202,31 +233,25 @@ img{
 	position: absolute;
 	display: block;
 }
-
 .tab.active div.top {
 	z-index: 2;
 	background-color: #<?php echo $HB_COLOR; ?>;
 }
-
 .tab.active div.bottom {
 	background-color: #<?php echo $PB_COLOR; ?>;
 }
-
 .tab.active div.topleft {
 	left: -10px;
 	bottom: 0;
 }
-
 .tab.active div.bottomleft {
 	left: -5px;
 	bottom: -5px;
 }
-
 .tab.active div.topright {
 	bottom: 0;
 	right: -10px;
 }
-
 .tab.active div.bottomright {
 	right: -5px;
 	bottom: -5px;
@@ -241,6 +266,9 @@ img{
 
 #nojs {
 	text-align: center;
+}
+#nojs .message {
+	opacity: 1;
 }
 
 h2 > .del {
@@ -283,6 +311,7 @@ h2 > .del {
 }
 .message h2 .del {
 	border-color: #<?php echo $AT_COLOR; ?>;
+	margin-top: -3px;
 }
 .message div {
 	text-align: center;
@@ -326,11 +355,15 @@ h2 > .del {
 	background-image: url("images/buttons.png");
 	border: 1px solid #<?php echo $HB_COLOR; ?>;
 }
-
-p .icon:not(:last-child){
-	margin-right: 3px;
+p span .icon{
+	margin-bottom: 3px;
 }
-
+p .icon {
+	margin-left: 7px;
+}
+p .icon:first-child {
+	margin-left: 0;
+}
 .zip-off {
 	background-position: 0 0;
 }
@@ -420,9 +453,10 @@ input.colorPicker{
 	font-size: 12px;
 	font-variant: small-caps;
 	color: #<?php echo $HT_COLOR; ?>;
-	margin: 0;
+	margin: 0 0 5px;
 	padding: 0.5em;
 	background-color: #<?php echo $HB_COLOR; ?>;
+	text-align: center;
 }
 
 .side_box input {
@@ -478,7 +512,7 @@ select.upper, select.upper option {
 }
 
 #preview p {
-	margin :5px;
+	margin: 5px;
 }
 
 #preview_links img, #preview_img p {
@@ -501,8 +535,8 @@ select.upper, select.upper option {
 
 #preview_img p {
 	position: relative;
-	overflow: hidden;
 	background-color: #FFF;
+	overflow: hidden;
 }
 
 img[src="res/images/blank.gif"] {
@@ -525,6 +559,7 @@ img[src="res/images/blank.gif"] {
 	margin: 0;
 	padding: 0.5em;
 	background-color: #<?php echo $HB_COLOR; ?>;
+	text-align: center;
 }
 
 #scans {
@@ -661,7 +696,6 @@ code {
 	width: 100%;
 	display: inline-block;
 }
-
 #paper-list .code {
 	float: right;
 	font-family: monospace;
@@ -706,27 +740,30 @@ code {
 	margin-top: 3px;
 	border: 1px solid #<?php echo $HB_COLOR; ?>;
 	cursor: pointer;
-	display: block;
 	overflow: hidden;
+	display: block; /* Chrome */
 	display: -webkit-box;
 	-webkit-box-pack: center;
 	-webkit-box-align: center;
-	display: -ms-flexbox;
+	-webkit-flex-wrap: wrap;
+	display: -ms-flexbox; /* IE */
 	-ms-flex-pack: center;
 	-ms-flex-align: center;
-	/*display: -moz-box; does not work in firefox as of writing this
+	-ms-flex-wrap: wrap; 
+/*	display: -moz-box; Firefox has issues as of writing this
 	-moz-box-pack: center;
-	-moz-box-align: center;*/
+	-moz-box-align: center;
+	-moz-flex-wrap: wrap;*/
 }
-
 #imgur-uploads .box .album img {
+	display: inline-block;
 	margin: 0;
 	border: none;
 	width: 80px;
 	height: 80px;
 }
 
-#imgur-codes,#imgur-scroller{
+#imgur-codes, #imgur-scroller{
 	width: 100%;
 }
 

@@ -111,15 +111,7 @@ Save Image
 <div id="preview_links">
 <h2><?php echo html($file); ?></h2>
 <p>
-<a class="tool icon download" href="download.php?file=Scan_<?php echo url($file); ?>"><span class="tip">Download</span></a>
-<a class="tool icon zip" href="download.php?file=Scan_<?php echo url($file); ?>&amp;compress"><span class="tip">Download Zip</span></a>
-<a class="tool icon pdf" href="#" onclick="PDF_popup('<?php echo html(js($file)); ?>');"><span class="tip">Download PDF</span></a>
-<a class="tool icon print" href="print.php?file=Scan_<?php echo url($file); ?>" target="_blank"><span class="tip">Print</span></a>
-<a class="tool icon del" href="index.php?page=Scans&amp;delete=Remove&amp;file=<?php echo url($file); ?>" onclick="return confirm('Delete this scan, This is NOT a do not save button')"><span class="tip">Delete</span></a>
-<span class="tool icon edit-off"><span class="tip">Edit (Disabled)</span></span>
-<a class="tool icon view" href="index.php?page=View&amp;file=Scan_<?php echo url($file); ?>"><span class="tip">View</span></a>
-<a class="tool icon upload" href="#" onclick="return upload('Scan_<?php echo html(js($file,5)); ?>')"><span class="tip">Upload to Imgur</span></a>
-<a href="#" onclick="return emailManager('Scan_<?php echo html(js($file)); ?>');" class="tool icon email"><span class="tip">Email</span></a>
+<?php echo genIconLinks((object)array('edit'=>0),"Scan_$file",false); ?>
 </p></div><!-- There are no line breaks on the next line to make the javascript ever so slightly faster -->
 <div id="preview_img"><p><img alt="Preview" src="scans/Preview_<?php echo url(substr($file,0,strrpos($file,'.'))); ?>.jpg" title="Preview"/><img style="z-index:-1;" src="res/images/blank.gif" title="Processing" alt=""/></p></div>
 </div>

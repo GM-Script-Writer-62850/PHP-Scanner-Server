@@ -1,7 +1,8 @@
+"use strict";
 var supportErrorA="Your browser does not support the ", supportErrorB="<br/>You have 3 choices: Ignore This, update your browser, and switch browsers.",
 	ias, previewIMG, scanners, checkTimeout, rotateTimer, paper, filesLst={}, TC='textContent';// TC can be changed to 'innerText' see header.php
 $(document).ready(function (){
-	e=$('img[title="Preview"]');
+	var e=$('img[title="Preview"]');
 	previewIMG=e[0];
 	if(previewIMG){
 		ias=e.imgAreaSelect({
@@ -25,7 +26,7 @@ $(document).ready(function (){
 	else if(typeof($().ColorPicker)=="function"){
 		var pickers=$('.colorPicker').ColorPicker({
 			onSubmit:function(hsb,hex,rgb,el){
-				$(el).val(hex);
+				el.value=hex;
 				$(el).ColorPickerHide();
 				sendE(el,'change');
 			},
@@ -39,7 +40,7 @@ $(document).ready(function (){
 			}
 		});
 		document.theme.reset();
-		for(var i=0;i<11;i++)// 11 is the total number of color inputs
+		for(var i=0;i<11;i++)// 11 is the total number of color input fields
 			$(pickers[i]).ColorPickerSetColor(pickers[i].value);
 	}
 });
@@ -73,9 +74,8 @@ function changeColor(x,save){
 		x.style.backgroundColor='#'+x.value;
 	for(var i in fields)
 		str+=document.theme[fields[i]+'_COLOR'].value+'.';
-	var O=getID('style_old');
-	var N=getID('style_new');
-	T=TC;
+	var O=getID('style_old'),
+		N=getID('style_new'),T=TC;
 	if(TC=='innerText'){// Stoupid IE
 		O=O.styleSheet;
 		N=N.styleSheet;
@@ -108,16 +108,17 @@ function pre_scan(form,ias){
 	previewIMG.parentNode.style.height=previewIMG.offsetHeight+3+'px';
 	form.loc_maxW.value=previewIMG.offsetWidth;
 	form.loc_maxH.value=previewIMG.offsetHeight;
-	ele=getID('select');
+	var ele=getID('select');
 	if(ele)
 		ele.style.display='none';
 	if(!document.scanning.scanner)
-		return;
+		return true;
 	if(document.scanning.scanner.disabled){
 		document.scanning.scanner.removeAttribute('disabled');
 		setTimeout(function(){document.scanning.scanner.setAttribute('disabled','disabled');},250);
 	}
 	clearTimeout(checkTimeout);
+	checkTimeout=false;
 	return true;
 }
 function sendE(ele,e){
@@ -230,24 +231,18 @@ function validateKey(ele,e,ias){
 	// anything else (mostly letters)
 	return false;
 }
-function lastScan(data,ele){
-	generic=data.raw.slice(5);
-	scan=data.scan;
+function lastScan(data,ele,html){
+	var generic=data.raw.slice(5),
+		scan=data.scan;
 	previewIMG.src='scans/'+data.preview;
 	ias.setOptions({'enable': true });
 	ias.update();
 	getID('sel').removeAttribute('style');
 	config(data.fields);
-	ele.parentNode.parentNode.innerHTML='<h2>'+generic+'</h2><p><a class="tool icon download" href="download.php?file='+scan+'"><span class="tip">Download</span></a> '+
-		'<a class="tool icon zip" href="download.php?file='+scan+'&amp;compress"><span class="tip">Download Zip</span></a> '+
-		'<a class="tool icon pdf" href="#" onclick="PDF_popup(\''+generic+'\');"><span class="tip">Download PDF</span></a> '+
-		'<a class="tool icon print" href="print.php?file='+scan+'" target="_blank"><span class="tip">Print</span></a> '+
-		'<a class="tool icon del" href="index.php?page=Scans&amp;delete=Remove&amp;file='+generic+'" onclick="return confirm(\'Delete this scan\')"><span class="tip">Delete</span></a> '+
-		'<a class="tool icon edit" href="index.php?page=Edit&amp;file='+generic+'"><span class="tip">Edit</span></a> '+
-		'<a class="tool icon view" href="index.php?page=View&amp;file='+scan+'"><span class="tip">View</span></a> '+
-		'<a class="tool icon upload" href="#" onclick="return upload(\''+scan+'\')"><span class="tip">Upload to Imgur</span></a> '+
-		'<a href="#" onclick="return emailManager(\''+scan+'\');" class="tool icon email"><span class=\"tip\">Email</span></a> '+
-		'<span class="tool icon recent-off"><span class="tip">Last Scan (Disabled)</span></span></p>';
+	ele.parentNode.parentNode.innerHTML='<h2>'+generic+'</h2><p>'+html+'</p>';
+	document.scanning.scanner.disabled=true;
+	document.scanning.reset.disabled=true;
+	return false;
 }
 function buildScannerOptions(json){
 	var str='',id,name,loc,sel=0;
@@ -317,7 +312,8 @@ function checkScanners(){
 						printMsg('Information',"The scanner currently selected is being used by someone right now",'center',-1);
 				}
 			}
-			checkTimeout=setTimeout(checkScanners,5000);
+			if(checkTimeout!==false)
+				checkTimeout=setTimeout(checkScanners,5000);
 		}
 	};
 	httpRequest.open('GET', 'config/scanners.json?cacheBust='+new Date().getTime(), true);
@@ -351,7 +347,7 @@ function parseJSON(jsonTXT){
 			return eval('('+jsonTXT+')');
 	}
 	catch(e){
-		printMsg('Invald Javascript Object Notation:','<textarea onclick="this.select()" style="width:100%;height:80px;">'+encodeHTML(jsonTXT)+'</textarea><br/>If you are reading this please report it as a bug. Please copy/paste the above, something as simple as a line break can cause errors here. If want to read this I suggest pasting it onto <a target="_blank" href="http://jsonlint.com/">jsonlint.com</a>.','center',0);
+		return printMsg('Invald Javascript Object Notation:','<textarea onclick="this.select()" style="width:100%;height:80px;">'+encodeHTML(jsonTXT)+'</textarea><br/>If you are reading this please report it as a bug. Please copy/paste the above, something as simple as a line break can cause errors here. If want to read this I suggest pasting it onto <a target="_blank" href="http://jsonlint.com/">jsonlint.com</a>.','center',0);
 	}
 }
 function inArray(arr,val){
@@ -363,33 +359,65 @@ function inArray(arr,val){
 	return false;
 }
 function scannerChange(ele){
-	var info=scanners[ele.selectedIndex];
-	var html='',text,val=document.scanning.source.value;
-	sources=info['SOURCE'].split('|');
-	for(i=0,s=sources.length;i<s;i++){
+	var form=document.scanning, val=form.source.value, def=false, settings={};
+	if(typeof(localStorage)!='undefined'){
+		settings=localStorage.getItem('default');
+		def=settings!=null;
+		settings=def?parseJSON(settings):{};
+		if(val==''&&def){// JS about to populate the select menus
+			if(form.scanner.value!=settings.scanner){
+				form.scanner.value=settings.scanner;
+				for(var i=0,s=form.scanner.childNodes.length;i<s;i++){
+					def=form.scanner.childNodes[i];
+					if(def.value==settings.scanner)
+						def.setAttribute('selected','selected');
+					else
+						def.removeAttribute('selected');
+				}
+				return scannerChange(ele);
+			}
+			config({
+				'bright':settings.bright,
+				'contrast':settings.contrast,
+				'rotate':settings.rotate,
+				'scale':settings.scale,
+				'filetype':settings.filetype,
+				'lang':settings.lang
+				
+			});
+		}
+	}
+	var info=scanners[ele.selectedIndex],
+		html='',text,sources=info['SOURCE'].split('|');
+	for(var i=0,s=sources.length;i<s;i++){
 		switch(sources[i]){
 			case 'ADF': text='Automatic Document Feeder';break;
 			case 'Auto': text='Automatic';break;
 			default: text=sources[i];
 		}
-		html+='<option value="'+sources[i]+'">'+text+'</option>';
+		html+='<option value="'+sources[i]+'"'+(def?(settings.source==sources[i]?' selected="selected"':''):'')+'>'+text+'</option>';
 	}
 	if(document.all)// http://support.microsoft.com/kb/276228	
-		document.scanning.source.parentNode.innerHTML='<select name="source" class="title" onchange="sourceChange(this)">'+html+'</select>';
+		form.source.parentNode.innerHTML='<select name="source" class="title" onchange="sourceChange(this)">'+html+'</select>';
 	else
-		document.scanning.source.innerHTML=html;
+		form.source.innerHTML=html;
 	if(inArray(sources,val))
-		document.scanning.source.value=val;
-	if(document.scanning.source.value=='Inactive')
-		document.scanning.source.setAttribute('disabled','disabled');
+		form.source.value=val;
+	if(form.source.value=='Inactive')
+		form.source.setAttribute('disabled','disabled');
 	else
-		document.scanning.source.removeAttribute('disabled');
-	sourceChange(document.scanning.source);
+		form.source.removeAttribute('disabled');
+	sourceChange(form.source);
 }
 function sourceChange(ele){
-	var info,text,html1,html2,html3,dpi,modes,valA,valB,valC,duplex;
-	info=document.scanning.scanner;
+	var i,max,text,html1,html2,html3,html4,dpi,modes,valA,valB,valC,valD,duplex,papers,size,width,height,
+		info=document.scanning.scanner,settings,def=false;
 	info=scanners[info.selectedIndex];
+	if(typeof(localStorage)!='undefined'){
+		settings=localStorage.getItem('default');
+		def=settings!=null;
+		settings=def?parseJSON(settings):{};
+	}
 	// Change Mode
 	html1='';
 	modes=info['MODE-'+ele.value].split('|');
@@ -402,32 +430,33 @@ function sourceChange(ele){
 			default:
 				text=modes[i];
 		}
-		html1+='<option value="'+modes[i]+'">'+text+'</option>';
+		html1+='<option value="'+modes[i]+'"'+(def?(settings.mode==modes[i]?' selected="selected"':''):'')+'>'+text+'</option>';
 	}
 	// Change Paper Size
 	papers=Array();
 	width=info['WIDTH-'+ele.value];
 	height=info['HEIGHT-'+ele.value];
 	html2='<option value="full" title="'+width+' mm x '+height+' mm">Full Scan: '+roundNumber(width/25.4,2)+'" x '+roundNumber(height/25.4,2)+'"</option>';
-	for(var i in paper){// Similar stuff in PDF_popup function
+	for(i in paper){// Similar stuff in PDF_popup function
 		if(width>=paper[i]['width']&&height>=paper[i]['height']){
-			html2+='<option value="'+paper[i]['width']+'-'+paper[i]['height']+'" title="'+paper[i]['width']+' mm x '+paper[i]['height']+' mm"'+(i=='Letter'?' selected="selected"':'')+'>'+i+': '+
-				roundNumber(paper[i]['width']/25.4,2)+'" x '+roundNumber(paper[i]['height']/25.4,2)+'"</option>';
-			papers.push(paper[i]['width']+'-'+paper[i]['height']);
+			size=paper[i]['width']+'-'+paper[i]['height'];
+			html2+='<option value="'+size+'" title="'+paper[i]['width']+' mm x '+paper[i]['height']+' mm"'+
+				(def?(settings.size==size?' selected="selected"'+(settings.size=''):''):(i=='Letter'?' selected="selected"':''))+'>'
+				+i+': '+roundNumber(paper[i]['width']/25.4,2)+'" x '+roundNumber(paper[i]['height']/25.4,2)+'"</option>';
+			papers.push(size);
 		}
 	}
 	// Change Quality
 	html3='';
 	dpi=info['DPI-'+ele.value].split('|');
-	for(var i=0,max=dpi.length;i<max;i++)
-		html3+='<option value="'+dpi[i]+'">'+dpi[i]+' '+(isNaN(dpi[i])?'':'DPI')+'</option>';
+	for(i=0,max=dpi.length;i<max;i++)
+		html3+='<option value="'+dpi[i]+'"'+(def?(settings.quality==dpi[i]?' selected="selected"':''):'')+'>'+dpi[i]+' '+(isNaN(dpi[i])?'':'DPI')+'</option>';
 	// Change Duplex
 	duplex=typeof(info['DUPLEX-'+ele.value])=='boolean'?'false|true':info['DUPLEX-'+ele.value];
 	duplex=duplex.split('|');
 	html4='';
-	for(i in duplex){
-		html4+='<option value="'+duplex[i]+'">'+(typeof(duplex[i])=='boolean'?(duplex[i]?'Yes':'No'):duplex[i])+'</option>';
-	}
+	for(i in duplex)
+		html4+='<option value="'+duplex[i]+'"'+(def?(settings.duplex==duplex[i]?' selected="selected"':''):'')+'>'+(typeof(duplex[i])=='boolean'?(duplex[i]?'Yes':'No'):duplex[i])+'</option>';
 	// Apply Changes
 	valA=document.scanning.mode.value;
 	valB=document.scanning.size.value;
@@ -476,10 +505,20 @@ function paperChange(ele){
 		document.scanning.ornt.selectedIndex=0;
 		document.scanning.ornt.disabled='disabled';
 	}
-	else
+	else{
 		document.scanning.ornt.removeAttribute('disabled');
+		if(typeof(localStorage)!='undefined'){
+			var settings=localStorage.getItem('default');
+			if(settings!=null){
+				settings=parseJSON(settings);
+				document.scanning.ornt.value=settings.ornt;
+			}
+		}
+	}
 }
 function rotateChange(ele){
+	if(!previewIMG)
+		return;
 	var val=Number(ele.value);
 	ele.nextSibling[TC]=(val==180?'Upside-down':(val<0?'Counterclockwise':'Clockwise'));
 	var prefixes = 't WebkitT MozT OT msT'.split(' ');
@@ -508,7 +547,7 @@ function rotateChange(ele){
 		})(val,ele.offsetHeight,ele.offsetWidth)+')';
 	rotateTimer=setTimeout(function(){// We can not leave it rotated, it brutally screws up cropping
 		ele.style[prefix]='';
-		setTimeout(function(){
+		rotateTimer=setTimeout(function(){
 			ias.setOptions({ "hide": false, "disable": false, "fadeSpeed": 850, "rotating": false });
 			if(document.scanning.loc_width.value>0&&document.scanning.loc_height.value>0)
 				setRegion(ias);
@@ -566,7 +605,7 @@ function toggleFortune(e){
 	return e;
 }
 function scanReset(){
-	sendE(document.scanning.scanner,'change');
+	scannerChange(document.scanning.scanner);
 	sendE(document.scanning.filetype,'change');
 }
 /*function lastCordsChange(json,state){
@@ -843,6 +882,8 @@ function bulkUpload(){
 		if(httpRequest.readyState==4){
 			if(httpRequest.status==200){//printMsg('Debug',encodeHTML(httpRequest.responseText),'center',0);			
 				var json=parseJSON(httpRequest.responseText),ids=false,c=0;
+				if(!json)
+					return false;
 				if(json['success'])
 					ids=Array();
 				else{
@@ -910,7 +951,7 @@ function upload(file){
 		popup('blanket',365);
 		return false;
 	}
-	var test=true;
+	var test=true,json;
 	if(typeof(localStorage)=='object'){
 		json=localStorage.getItem('imgur');
 		json=(json==null?{}:parseJSON(json));
@@ -931,6 +972,8 @@ function upload(file){
 		if(httpRequest.readyState==4){
 			if(httpRequest.status==200){//printMsg('Debug',encodeHTML(httpRequest.responseText),'center',0);
 				var json=parseJSON(httpRequest.responseText);
+				if(!json)
+					return false;
 				if(!json['images'][0])
 					printMsg('Upload Error','Failed to connect to imgur'+(json["error"]?'<br/>'+json["error"]:''),'center',0);
 				else if(json['images'][0]['data']['error'])
@@ -1069,7 +1112,7 @@ function imgurDel(id,img){
 	}
 	else if(confirm("Are you sure you want to hide that image?\nThis only deletes the image from this page,\nnot imgur.")===false)
 		return false;
-	e=getID(id);
+	var e=getID(id);
 	if(e)
 		e.parentNode.removeChild(e);
 	e=localStorage.getItem('imgur');
@@ -1302,8 +1345,8 @@ function delScan(file,prompt){
 					var del=getID(file);
 					if(filesLst[file])
 						delete(filesLst[file]);
-					del.parentNode.removeChild(del);
-					
+					if(del)
+						del.parentNode.removeChild(del);
 				}
 				else
 					printMsg('Error 404',"Unable to find "+data['file']+" in the scans folder or permission is denied",'center',0);
@@ -1431,6 +1474,27 @@ function scanFilter(f2,f1){
 	if(f1Total>f2Total)
 		return alert("That combination can't have any results");
 	document.location.href="index.php?page=Scans&filter=3&t1="+f1Total+"&t2="+f2Total;
+}
+function setDefault(form){
+	if(typeof(localStorage)=='undefined'||typeof(JSON)!='object')
+		return printMsg('Sorry',supportErrorA+"localStorage and/or the JSON object so you can't set a default."+supportErrorB,'center',0);
+	localStorage.setItem('default',JSON.stringify({
+		"scanner":form.scanner.value,
+		"source":form.source.value,
+		"duplex":form.duplex.value,
+		"quality":form.quality.value,
+		"size":form.size.value,
+		"ornt":form.ornt.value,
+		"mode":form.mode.value,
+		"bright":form.bright.value,
+		"contrast":form.contrast.value,
+		"rotate":form.rotate.value,
+		"scale":form.scale.value,
+		"filetype":form.filetype.value,
+		"lang":form.lang.value
+	}));
+	printMsg('Saved','Your current scanning options (excluding select region) will now be used by default on this browser,<br/>'+
+		'you can delete them from the <a href="index.php?page=Config">Configure tab</a>','center',-1)
 }
 document.onkeyup=function(event){
 	if(!event)

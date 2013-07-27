@@ -1,7 +1,7 @@
 <?php
 if(isset($_POST['json'])&&!isset($PAGE)){
 	header('Content-type: application/json; charset=UTF-8');
-	$file='../config/.htaccess';
+	$file='../../config/.htaccess';
 	if(!is_file($file)){// For security reasons
 		$file=@fopen($file,'w+');
 		@fwrite($file,"<files \"accounts.json\">\n\tDeny from all\n</files>\n");// Options All -Indexes\n
@@ -10,7 +10,7 @@ if(isset($_POST['json'])&&!isset($PAGE)){
 	function Allow(){
 		setcookie("Authenticated",time(),0,"/",$_SERVER['SERVER_NAME']);
 	}
-	$file="../config/accounts.json";
+	$file="../../config/accounts.json";
 	$json=json_decode(is_file($file)?file_get_contents($file):'{}');
 
 	$mode=$_POST["mode"];
