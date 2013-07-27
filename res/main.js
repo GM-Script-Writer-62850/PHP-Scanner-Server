@@ -207,7 +207,7 @@ function setRegion(ias){
 	storeRegion(null, ias.getSelection());
 }
 function validateKey(ele,e,ias){
-	if(e.keyCode)
+	if(!e.which)
 		e.which=e.keyCode;// Stoupid IE needs to follow the standards
 	if(e.which==13){// Enter
 		if(ias!=null)
