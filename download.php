@@ -148,7 +148,7 @@ else if(isset($_GET['json'])){
 	if(strlen($FILES)>0 && is_string($type)){
 		$type=$_GET['type'];
 		if($type=='pdf'){
-			$name=$ct==1?$file:'Compilation.pdf';
+			$name=$ct==1?substr($file,0,strrpos($file,'.')).'.pdf':'Compilation.pdf';
 			$file='/tmp/'.md5(time().rand()).'.pdf';
 			$type='pdf';
 			$cmd="convert $FILES+repage '$file'";
@@ -168,7 +168,7 @@ else if(isset($_GET['json'])){
 		}
 		if(is_file($file)){
 			if(filesize($file)>0)
-				returnFile($file,$name.'---'.filesize($file),$type);
+				returnFile($file,$name,$type);
 			else
 				returnFile(debug($cmd,$output),'Error.txt','txt');
 			@unlink($file);
