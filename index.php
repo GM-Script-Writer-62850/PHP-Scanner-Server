@@ -96,6 +96,10 @@ function Update_Preview($l) { # Change the Preview Pane image via JavaScript
 		'</script>';
 }
 
+function addRuler(){
+	echo '<script type="text/javascript">addRuler();</script>';
+}
+
 function genIconLinks($config,$file,$isBulk){
 	// The Last Scan button is unique to the scan page, it is in res/main.js and res/inc/scan.php
 	if($config===null)
@@ -573,13 +577,19 @@ else if($PAGE=="Config"){
 			$dev=strpos($OP[$i]->{"DEVICE"},"libusb:");
 			if(is_bool($dev))
 				$OP[$i]->{"UUID"}=NULL;
+			else if(substr($OP[$i]->{"DEVICE"},0,4)=='net:'){
+				$OP[$i]->{"UUID"}=NULL;
+				Print_Message('Warning','You have a networked scanner that uses <code>libusb<code>, the device string for this scanner can change over time.<br/>'.
+					'If you connect <code>'.html($OP[$i]->{"NAME"}).'</code> to <code>'.$_SERVER['SERVER_NAME'].'</code> this string can be auto updated so you will not '.
+					'have to rescan for scanners after a change.<br/>Things such as reboots and disconnecting the the scanner can change the device string.','center');
+			}
 			else{
 				$dev=substr($OP[$i]->{"DEVICE"},$dev+7,7);
 				$dev=exe("lsusb -s ".shell($dev),true);
 				$OP[$i]->{"UUID"}=substr($dev,strpos($dev,"ID ")+3,9);
 			}
 			// Lamp on/off
-			//$OP[$i]->{"LAMP"}=(!is_bool(strpos($help,'--lamp-switch[=(yes|no)]'))&&!is_bool(strpos($help,'--lamp-off-at-exit[=(yes|no)]')))?true:false;
+			//$OP[$i]->{"LAMP"}=!is_bool(strpos($help,'--lamp-switch[=(yes|no)]'))&&!is_bool(strpos($help,'--lamp-off-at-exit[=(yes|no)]'));
 		}
 		$save=SaveFile("config/scanners.json",json_encode($OP));
 		$CANNERS='<table border="1" align="center"><tbody><tr><th>Name</th><th>Device</th></tr>';
@@ -932,11 +942,6 @@ else{
 			$file='{}';
 		include "res/inc/scan.php";
 	}
-	if(strlen($ACTION)>0) # Only update values back to form if they aren't empty
-		Put_Values();
-	else
-		echo '<script type="text/javascript">scanReset();</script>';
-	Footer('');
 
 	if($ACTION=="Scan Image"){# Check to see if scanner is in use
 		$SCAN_IN_USE=$CANNERS[$SCANNER]->{"INUSE"};
@@ -944,7 +949,15 @@ else{
 			Print_Message("Scanner in Use","The scanner you are trying to use is currently in use. Please try again later...",'center');
 			$ACTION="Do Not Scan";
 		}
+		else if($WIDTH===0&&$HEIGHT===0&&$ROTATE===0)
+			addRuler();
 	}
+	else if(strlen($ACTION)==0)
+		echo '<script type="text/javascript">addRuler();scanReset();</script>';
+
+	if(strlen($ACTION)>0) # Only update values back to form if they aren't empty
+		Put_Values();
+	Footer('');
 
 	if($ACTION=="Scan Image"){ # Scan Image!
 		if(is_nan($SCANNER)){
@@ -1003,11 +1016,11 @@ else{
 
 		$lastORNT=Get_Values('ornt0');
 		if($lastORNT!=$ORNT&&$lastORNT!=null&&$SIZE!="full"){
-			$WIDTH="0";
-			$HEIGHT="0";
+			$WIDTH=0;
+			$HEIGHT=0;
 		}
 		# Set size & orientation of scan
-		if($WIDTH!="0"&&$HEIGHT!="0"){// Selected scan
+		if($WIDTH!==0&&$HEIGHT!==0){// Selected scan
 			if($SIZE=="full"){
 				$TRUE_W=$scanner_w;
 				$TRUE_H=$scanner_h;
@@ -1151,7 +1164,7 @@ else{
 		$endTime=time();
 
 		# Remove Crop Option / set lastScan
-		if(($WIDTH!="0"&&$HEIGHT!="0")||$ROTATE!="0")
+		if(($WIDTH!==0&&$HEIGHT!==0)||$ROTATE!==0)
 			$strip=true;
 		else{
 			setcookie('lastScan',json_encode(Array(

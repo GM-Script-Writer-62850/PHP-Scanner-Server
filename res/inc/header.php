@@ -21,6 +21,7 @@ else if($page=='Config')
 			'<script type="text/javascript" src="'.$path.'jquery/colorpicker-custom/js/colorpicker.js"></script>';
 else if($page=='Index Of')
 	echo '<link rel="stylesheet" type="text/css" href="'.$path.'res/indexOf.css"/>';
+echo '<script type="text/javascript">var I='.$GLOBALS['RulerIncrement'].';</script>';
 ?>
 <script type="text/javascript" src="<?php echo $path; ?>res/model-dialog.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>res/cookie.js"></script>

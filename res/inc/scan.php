@@ -198,5 +198,5 @@ Scan Image
 <h2>Preview Pane</h2>
 <p><?php echo genIconLinks((object)array('download'=>0,'zip'=>0,'pdf'=>0,'print'=>0,'del'=>0,'edit'=>0,'view'=>0,'upload'=>0,'email'=>0),null,false); ?>
 </p></div><!-- there are no line breaks on the next line to make the javascript ever so slightly faster -->
-<div id="preview_img"><p><img src="res/images/blank.gif" title="Preview" alt="Preview"/><img alt="" src="res/images/blank.gif" title="Scanning" style="z-index:-1;"/></p></div>
+<div id="preview_img"><p><img src="res/images/blank.gif" title="Preview" alt="Preview"/><img alt="Scanning" src="res/images/blank.gif" title="Scanning" style="z-index:-1;"/></p></div>
 </div>

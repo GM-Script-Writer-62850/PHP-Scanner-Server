@@ -519,7 +519,18 @@ select.upper, select.upper option {
 	border: 1px solid #<?php echo $HB_COLOR; ?>;
 	text-align: center;
 }
-
+#preview_img.tool{
+	margin-top: -5px;
+}
+#preview_img .rule{
+	top: -70px;
+	left: 0;
+}
+#preview_img .rule:last-child{
+	top: 0;
+	left: -70px;
+	height: 471px;
+}
 #preview_img img {
 	height: 471px;
 	width: 450px;
@@ -532,7 +543,9 @@ select.upper, select.upper option {
 	-webkit-transform: rotate(0) scale(1);
 	/*-webkit-filter: brightness(100%) contrast(100%);*/
 }
-
+#preview_img #select{/* For imgAreaSelect when using the HTML5 ruler*/
+	position:relative;
+}
 #preview_img p {
 	position: relative;
 	background-color: #FFF;

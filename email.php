@@ -72,7 +72,7 @@ if(isset($_POST['file'])||isset($_POST['json'])){
 		}
 		$message.="</p>";
 	}
-
+	$mail->CharSet="UTF-8";
 	$mail->Body="$message</body></html>";
 	$mail->AltBody=($image?"Please view this in HTML instead of plain text.":$altMsg);
 

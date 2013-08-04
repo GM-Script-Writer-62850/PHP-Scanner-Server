@@ -5,8 +5,8 @@ Based on Linux Scanner Server 1.2 Beta
 
 Released under the GPL 2.0
 
-Last Update: 07/25/2013 (Month/Day/Year)
-For Version: 1.3-9
+Last Update: 07/30/2013 (Month/Day/Year)
+For Version: 1.3-10
 
 Change Log:
 	https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server/wiki/Change-Log
@@ -21,6 +21,7 @@ The following packages need to be installed:
 * apache2                - a web server
 * php5                   - For running php
 * coreutils              - For various puropses, not having this would probally result in a unusable system
+* php5-json              - For storing/transfering/parsing data (If this package is not advailable it is for you system it is part of php5)
 + php5-curl              - For uploading scans to imgur.com
 + tar                    - For downloading a copy of PHP Linux Scanner Server in .tar.bz2 format (link in footer)
 + zip                    - For downloading a compressed scan
@@ -103,7 +104,7 @@ _ cowsay                 - For wrapping fortunes in ASCII art
 	+ Recommended for full functionality
 	_ Optional
 
-	Some of these will likely already be installed
+	Some of these will likely already be installed, some newer distros (ubuntu 13.10) will require php5-json
 
 	sudo apt-get install imagemagick sane-utils usbutils apache2 php5 php5-curl tesseract-ocr tar zip php-fpdf libpaper-utils grep sed coreutils
 
@@ -162,6 +163,8 @@ Frequently asked questions/issues:
 			Open up /etc/php5/apache2/php.ini as root and change the number
 			I am not sure how high you will need it, I have had issues with files under 60MB hitting the 128MB limit (total usage was under 45% of the limit)
 			I set mine to 1024 (1 GiB) if you need more memory than you have ram be sure your swap partition is large enough to cover the overdraw
+	What is bug 13, it is mentioned in the debug console
+		https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server/issues/13
 	Why don't you have a .deb .rpm etc file I an install
 		This more like a addon than a program so I am note sure if one of thoes would be approate, I have written bash
 		scripts to install and update this, if you look they are on the Downloads page in the Wiki
@@ -288,6 +291,8 @@ Installation Notes:
 	This command will give you a easy to remember URL for the scanner (I remember this not working on Windows XP clients)
 		echo http://$(uname -n).local/
 	Be sure to check http://www.canyouseeme.org/ so you know if people can use your scanner on the Internet, I suggest using a firewall to prevent this, or putting a password on it.
+	I recommended enabling .htaccess
+		See next section, this will enable faster data transfer over the network, fancy error pages, fancy Index Of pages, cache control, and proper content types
 	If you don't have a /etc/apache2/mods-enabled/headers.load file run this command, this enables catch control and defines mime types via .htaccess
 		sudo ln -s ../mods-available/headers.load /etc/apache2/mods-enabled/ && sudo service apache2 restart
 

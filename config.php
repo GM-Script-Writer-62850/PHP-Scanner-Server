@@ -7,10 +7,11 @@ $RequireLogin=false;// Require user to login (A 'geek' could bypass this without
 $SessionDuration=86400;// Max time (in seconds) signed in is 24hrs (irrelevant with the above off)
 $Theme='383838.B84E40.407EB4.202020.408080.FF0.FFF.3B133B.FFF.F00.FFF'; // Default Color Scheme
 $DarkPicker=true;// Use the dark color picker by default (It is part of the theme manager)
-// Do not edit stuff below this line 
+$RulerIncrement=25.4;// Controls the rulers number increments relative to millimeters [25.4=inches (25.4 mm = 1 in), 10=centimeters (10 mm = 1 cm)]
+// Do not edit stuff below this line
 
 $NAME="PHP Scanner Server";
-$VER="1.3-9";
+$VER="1.3-10";
 $SAE_VER="1.4"; // Scanner Access Enabler version
 
 // Login Stuff

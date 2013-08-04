@@ -1,6 +1,6 @@
 "use strict";
 var supportErrorA="Your browser does not support the ", supportErrorB="<br/>You have 3 choices: Ignore This, update your browser, and switch browsers.",
-	ias, previewIMG, scanners, checkTimeout, rotateTimer, paper, filesLst={}, TC='textContent';// TC can be changed to 'innerText' see header.php
+	ias, previewIMG, scanners, checkTimeout, rotateTimer, paper, ruler=false, ctxA, ctxB, filesLst={}, TC='textContent';// TC can be changed to 'innerText' see header.php
 $(document).ready(function (){
 	var e=$('img[title="Preview"]');
 	previewIMG=e[0];
@@ -10,14 +10,14 @@ $(document).ready(function (){
 			onSelectEnd: storeRegion,
 			instance: true,
 			enable: true,
-			disable: ((previewIMG.src.indexOf('res/images/blank.gif')>-1)?true:false),
+			disable: (!ruler&&(previewIMG.src.indexOf('res/images/blank.gif')>-1)?true:false),
 			fadeSpeed: 850,
 			parent: 'div#select',
 			zIndex: 1,
-			rotating: false
+			rotating: false,
 		});
 		if(previewIMG){
-			if(previewIMG.src.indexOf('res/images/blank.gif')>-1){
+			if(previewIMG.src.indexOf('res/images/blank.gif')>-1&&!ruler){
 				getID('sel').style.display='none';
 				document.scanning.rotate.title="If you plan to crop do this on the final scan";
 			}
@@ -101,7 +101,6 @@ function changeColor(x,save){
 	document.body.setAttribute('onbeforeunload',save?"if(!document.cookie)return confirm('The color theme was not saved because you have cookies disabled\\nPress OK to leave or Cancel to stay')":"if(!confirm('You did not save your color scheme\\nPress OK to leave or Cancel to stay'))return false");
 	return false;
 }
-
 function pre_scan(form,ias){
 	previewIMG.style.zIndex=-1;
 	previewIMG.nextSibling.removeAttribute('style');
@@ -120,6 +119,100 @@ function pre_scan(form,ias){
 	clearTimeout(checkTimeout);
 	checkTimeout=false;
 	return true;
+}
+function addRuler(){
+	var container,span;
+	ctxA=document.createElement('canvas');
+	if(!ctxA.getContext)
+		return canvas=null;
+	container=getID('preview_img');
+	container.className='tool';
+	container.appendChild(getID('select'));
+	span=document.createElement('span');
+	span.className="tip center";
+	if(I==10||I==25.4)
+		span[TC]=(I==10?'Centimeters':'Inches');
+	else
+		span.innerHTML="Millimeters<hr/>"+I;
+	container.appendChild(span);
+	span.style.left=-1-$(span).outerWidth()+'px';
+	span=document.createElement('span');
+	ctxA.width=450;
+	ctxA.height=60;
+	span.appendChild(ctxA);
+	span.className='tip rule';
+	container.appendChild(span);
+	span=span.cloneNode(true);
+	ctxB=span.childNodes[0];
+	ctxB.width=60;
+	ctxB.height=471;
+	container.appendChild(span);
+	ruler=true;
+}
+function updateRulers(XY){
+	if(!ruler) return;
+	function drawLine(ctx,xStart,yStart,xEnd,yEnd){
+		ctx.beginPath();
+		ctx.moveTo(xStart,yStart);
+		ctx.lineTo(xEnd,yEnd);
+		ctx.stroke();
+		ctx.closePath();
+	}
+	function drawRuler(ctx,size){
+		var width=ctx.width,
+			height=ctx.height,
+			i,I,p,px,dec,big=false;
+		ctx=ctx.getContext('2d');
+		ctx.clearRect(0,0,width,height);
+		ctx.fillStyle='#FFF';
+		ctx.strokeStyle='#FFF';
+		ctx.lineWidth=1;
+		ctx.font="10px Arial";
+		if(width>height){
+			if(width/size<20)
+				big=true;
+			p=size<6?.125:(size<35?.25:(size>54?4:.5));
+			for(i=0;i<=size;i+=p){
+				px=parseInt(i/size*width)+.5;
+				px=px>width?width-.5:px;
+				I=parseInt(i);
+				if(i==I){
+					drawLine(ctx,px,height,px,height-40);
+					if(!big||i/2==parseInt(i/2)){
+						if(i>9)
+							ctx.fillText(i,px+7>width?width-11:px-7,height-50);
+						else
+							ctx.fillText(i,i==0?0:(px+2.5>width?width-5:px-2.5),height-50);
+					}
+				}
+				else{
+					dec=i-I;
+					drawLine(ctx,px,height,px,height-(dec==.5?20:(dec==.25||dec==.75?10:5)));
+				}
+			}
+		}
+		else{
+			if(height/size<12)
+				big=true;
+			p=size<7?.125:(size<45?.25:(size>64?4:.5));
+			for(i=0;i<=size;i+=p){
+				px=parseInt(i/size*height)+.5;
+				px=px>height?height-.5:px;
+				I=parseInt(i);
+				if(i==I){
+					drawLine(ctx,width,px,width-40,px);
+					if(!big||i/2==parseInt(i/2))
+						ctx.fillText(i,i<10?3:0,i==0?6.5:(px+6>height?height:px+3));
+				}
+				else{
+					dec=i-I;
+					drawLine(ctx,width,px,width-(dec==.5?20:(dec==.25||dec==.75?10:5)),px);
+				}
+			}
+		}
+	}
+	drawRuler(ctxA,XY[0]/I);
+	drawRuler(ctxB,XY[1]/I);
 }
 function sendE(ele,e){
 	try{
@@ -235,9 +328,11 @@ function lastScan(data,ele,html){
 	var generic=data.raw.slice(5),
 		scan=data.scan;
 	previewIMG.src='scans/'+data.preview;
-	ias.setOptions({'enable': true });
-	ias.update();
-	getID('sel').removeAttribute('style');
+	if(!ruler){
+		ias.setOptions({'enable': true });
+		ias.update();
+		getID('sel').removeAttribute('style');
+	}
 	config(data.fields);
 	ele.parentNode.parentNode.innerHTML='<h2>'+generic+'</h2><p>'+html+'</p>';
 	document.scanning.scanner.disabled=true;
@@ -247,13 +342,7 @@ function lastScan(data,ele,html){
 function buildScannerOptions(json){
 	var str='',id,name,loc,sel=0;
 	for(var i=0,m=json.length;i<m;i++){
-		if(json[i]["DEVICE"].substr(0,4)=="net:"){
-			loc=json[i]["DEVICE"].split(':');
-			loc=json[1];
-		}
-		else{
-			loc=document.domain;
-		}
+		loc = json[i]["DEVICE"].substr(0,4)=="net:" ? json[i]["DEVICE"].split(':')[1] : document.domain;
 		if(json[i]["SELECTED"])
 			sel=i;
 		str+='<option'+(json[i]["INUSE"]==1?' disabled="disabled"':'')+(json[i]["SELECTED"]?' selected="selected"':'')+' value="'+json[i]["ID"]+'">'+json[i]["NAME"]+' on '+loc+'</option>';
@@ -491,17 +580,18 @@ function sourceChange(ele){
 }
 function paperChange(ele){
 	ele.parentNode.nextSibling[TC]=ele.childNodes[ele.selectedIndex].title;
+	var json=scanners[document.scanning.scanner.selectedIndex],
+		width=json['WIDTH-'+document.scanning.source.value],
+		height=json['HEIGHT-'+document.scanning.source.value];
 	if(ele.value=='full'){
 		document.scanning.ornt.selectedIndex=0;
 		document.scanning.ornt.disabled='disabled';
+			updateRulers(Array(width,height));
 		return;
 	}
-	var json=scanners[document.scanning.scanner.selectedIndex];
-	var width=json['WIDTH-'+document.scanning.source.value];
-	var height=json['HEIGHT-'+document.scanning.source.value];
+	var sheet=ele.value.split('-');
 	// Set Orientation
-	var paper=ele.value.split('-');
-	if(Number(paper[0])>height||Number(paper[1])>width){
+	if(Number(sheet[0])>height||Number(sheet[1])>width){
 		document.scanning.ornt.selectedIndex=0;
 		document.scanning.ornt.disabled='disabled';
 	}
@@ -515,6 +605,7 @@ function paperChange(ele){
 			}
 		}
 	}
+	updateRulers(sheet);
 }
 function rotateChange(ele){
 	if(!previewIMG)
