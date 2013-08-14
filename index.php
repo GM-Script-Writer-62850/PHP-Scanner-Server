@@ -148,7 +148,7 @@ function genIconLinks($config,$file,$isBulk){
 			'tip'=>'Edit'
 		),
 		'view'=>(object)array(
-			'href'=>"index.php?page=Edit&amp;file=$sURL",
+			'href'=>"index.php?page=View&amp;file=$URL",
 			'disable'=>isset($config->{'view'}),
 			'tip'=>'View',
 			'bulk'=>"bulkView(this)"
