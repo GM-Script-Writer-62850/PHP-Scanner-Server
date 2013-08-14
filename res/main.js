@@ -605,7 +605,14 @@ function paperChange(ele){
 			}
 		}
 	}
-	updateRulers(sheet);
+	updateRulers(document.scanning.ornt.value=='vert'?sheet:sheet.reverse());
+}
+function layoutChange(b){
+	var sheet=document.scanning.size.value.split('-');
+	if(b)
+		updateRulers(sheet);
+	else
+		updateRulers(sheet.reverse());
 }
 function rotateChange(ele){
 	if(!previewIMG)

@@ -54,7 +54,7 @@ echo file_exists("config/paper.json")?file_get_contents("config/paper.json"):'{"
 <span class="tool">Orientation<span class="tip">Layout</span></span>:
 </div>
 <div class="control">
-<select name="ornt" disabled="disabled">
+<select name="ornt" onchange="layoutChange(this.value=='vert')">
 <option value="vert">Portrait</option>
 <option value="horz">Landscape</option>
 </select>
