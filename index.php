@@ -791,7 +791,7 @@ else if($PAGE=="Edit"){
 					if(!validNum(Array($WIDTH,$HEIGHT,$X_1,$Y_1,$BRIGHT,$CONTRAST,$SCALE,$ROTATE))||
 					  ($FILETYPE!=="txt"&&$FILETYPE!=="png"&&$FILETYPE!=="tiff"&&$FILETYPE!=="jpg")||
 					  !in_array($LANG,$langs)){
-						Print_Message("No, you can not do that","Input data is invalid and most likely an attempt to run malicious code on the server <i>denied</i>",'center');
+						Print_Message("No, you can not do that","Input data is invalid and most likely an attempt to run malicious code on the server, <i>denied</i>",'center');
 						Footer('');
 						quit();
 					}
@@ -910,7 +910,7 @@ else{
 	if(strlen($SAVEAS)>0||$ACTION=="Scan Image"){
 		$langs=findLangs();
 		if(!validNum(Array($SCANNER,$BRIGHT,$CONTRAST,$SCALE,$ROTATE))||!in_array($LANG,$langs)||!in_array($QUALITY,explode("|",$CANNERS[$SCANNER]->{"DPI-$SOURCE"}))){//security check
-			Print_Message("No, you can not do that","Input data is invalid and most likely an attempt to run malicious code on the server <i>denied</i>",'center');
+			Print_Message("No, you can not do that","Input data is invalid and most likely an attempt to run malicious code on the server, <i>denied</i>",'center');
 			Footer('');
 			quit();
 		}
