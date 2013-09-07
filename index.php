@@ -579,7 +579,7 @@ else if($PAGE=="Config"){
 				$OP[$i]->{"UUID"}=NULL;
 			else if(substr($OP[$i]->{"DEVICE"},0,4)=='net:'){
 				$OP[$i]->{"UUID"}=NULL;
-				Print_Message('Warning','You have a networked scanner that uses <code>libusb<code>, the device string for this scanner can change over time.<br/>'.
+				Print_Message('Warning','You have a networked scanner that uses <code>libusb</code>, the device string for this scanner can change over time.<br/>'.
 					'If you connect <code>'.html($OP[$i]->{"NAME"}).'</code> to <code>'.$_SERVER['SERVER_NAME'].'</code> this string can be auto updated so you will not '.
 					'have to rescan for scanners after a change.<br/>Things such as reboots and disconnecting the the scanner can change the device string.','center');
 			}
