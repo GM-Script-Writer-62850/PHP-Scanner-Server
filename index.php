@@ -347,6 +347,15 @@ if($PAGE==NULL)
 # Verify Install (For anyone who installs from git and does not read the notes written in several places)
 # ****************
 
+if(!function_exists("json_decode")){
+	$here=getcwd();
+	$PAGE="Incomplete Installation";
+	InsertHeader($PAGE);
+	Print_Message("Missing Dependancy","<i>php5-json</i> does not appear to be installed, or you forgot to restart <i>apache2</i> after installing it.","center");
+	Footer('');
+	quit();
+}
+
 $dirs=Array('scans','config','config/parallel');
 foreach($dirs as $dir){
 	if(!is_dir($dir)){
