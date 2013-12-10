@@ -12,7 +12,7 @@ $TimeZone='';// Time zone override (used with scan file names) List of settings 
 // Do not edit stuff below this line
 
 $NAME="PHP Scanner Server";
-$VER="1.3-10";
+$VER="1.3-11";
 $SAE_VER="1.4"; // Scanner Access Enabler version
 
 // Login Stuff
