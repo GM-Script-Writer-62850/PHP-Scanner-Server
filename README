@@ -5,8 +5,8 @@ Based on Linux Scanner Server 1.2 Beta
 
 Released under the GPL 2.0
 
-Last Update: 07/30/2013 (Month/Day/Year)
-For Version: 1.3-10
+Last Update: 12/10/2013 (Month/Day/Year)
+For Version: 1.3-11
 
 Change Log:
 	https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server/wiki/Change-Log
@@ -247,11 +247,18 @@ Internal Configuration Options:
 	Dark Picker
 		Tells the page whether or not to use the dark color picker theme by default
 		This is set on line 9 of config.php
+	Ruler Increment
+		This tells the ruler what measurement system to use 
+		This is set on line 10 of config.php
+	Time Zone
+		This overrides the system time zone that is set in php.ini as well as auto detect
+		This may not be of use for PHP versions older than 5.1
+		This is set on line 11 of config.php
 	
 Credit where credit is due:
 	PHiLLIP KLiEWER
 		Original CGI script
-	pqwoerituytrueiwoq (at) ubuntuforums.org
+	pqwoerituytrueiwoq (at) ubuntuforums.org AKA GM-Script-Writer-62850 (at) github.com
 		Conversion/upgrade/security/fixes/cleanup/upgrades
 	jhansonxi (at) ubuntuforums.org
 		Original CGI cleanup prior to conversion and scanner-access-enabler-*.tar.bz2

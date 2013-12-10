@@ -398,7 +398,7 @@ function checkScanners(){
 						}
 					}
 					if(inUse)
-						printMsg('Information',"The scanner currently selected is being used by someone right now",'center',-1);
+						printMsg('Information',"The scanner currently selected is being used by someone right now.",'center',-1);
 				}
 			}
 			if(checkTimeout!==false)

@@ -31,7 +31,6 @@ $Y_1=Get_Values('loc_y1');
 $SOURCE=Get_Values('source');
 $SOURCE=(strlen($SOURCE)==0?'Inactive':$SOURCE);
 
-
 $notes='Please read the <a href="index.php?page=About">release notes</a> for more information.';
 $user=posix_getpwuid(posix_geteuid());
 $user=$user['name'];
@@ -588,7 +587,7 @@ else if($PAGE=="Config"){
 				$OP[$i]->{"UUID"}=NULL;
 			else if(substr($OP[$i]->{"DEVICE"},0,4)=='net:'){
 				$OP[$i]->{"UUID"}=NULL;
-				Print_Message('Warning','You have a networked scanner that uses <code>libusb</code>, the device string for this scanner can change over time.<br/>'.
+				Print_Message('Warning','You have a networked scanner that uses <code>libusb<code>, the device string for this scanner can change over time.<br/>'.
 					'If you connect <code>'.html($OP[$i]->{"NAME"}).'</code> to <code>'.$_SERVER['SERVER_NAME'].'</code> this string can be auto updated so you will not '.
 					'have to rescan for scanners after a change.<br/>Things such as reboots and disconnecting the the scanner can change the device string.','center');
 			}
@@ -800,7 +799,7 @@ else if($PAGE=="Edit"){
 					if(!validNum(Array($WIDTH,$HEIGHT,$X_1,$Y_1,$BRIGHT,$CONTRAST,$SCALE,$ROTATE))||
 					  ($FILETYPE!=="txt"&&$FILETYPE!=="png"&&$FILETYPE!=="tiff"&&$FILETYPE!=="jpg")||
 					  !in_array($LANG,$langs)){
-						Print_Message("No, you can not do that","Input data is invalid and most likely an attempt to run malicious code on the server, <i>denied</i>",'center');
+						Print_Message("No, you can not do that","Input data is invalid and most likely an attempt to run malicious code on the server <i>denied</i>",'center');
 						Footer('');
 						quit();
 					}
@@ -919,7 +918,7 @@ else{
 	if(strlen($SAVEAS)>0||$ACTION=="Scan Image"){
 		$langs=findLangs();
 		if(!validNum(Array($SCANNER,$BRIGHT,$CONTRAST,$SCALE,$ROTATE))||!in_array($LANG,$langs)||!in_array($QUALITY,explode("|",$CANNERS[$SCANNER]->{"DPI-$SOURCE"}))){//security check
-			Print_Message("No, you can not do that","Input data is invalid and most likely an attempt to run malicious code on the server, <i>denied</i>",'center');
+			Print_Message("No, you can not do that","Input data is invalid and most likely an attempt to run malicious code on the server <i>denied</i>",'center');
 			Footer('');
 			quit();
 		}
@@ -1129,11 +1128,20 @@ else{
 
 		$startTime=time();
 		$files=scandir($CANDIR);
+		$GMT=0;
+		if(strlen($TimeZone)>0){
+			date_default_timezone_set($TimeZone);
+		}
+		else if(ini_get('date.timezone')==='' && version_compare(phpversion(), '5.1', '>=')){
+			date_default_timezone_set('UTC');
+			$GMT=intval(exe('date +%z',true))*36;
+			exe('echo "Warning, Guessing Time Zone:\n\tGuessed as GMT '.($GMT/60/60).'.\n\tdate.timezone is not set in your /etc/php5/apache2/php.ini file.\n\tIt is probally set on line 880.\n\tThere is also a override in '.getcwd().'/config.php on line 11."',true);
+		}
 		for($i=2,$ct=count($files);$i<$ct;$i++){
 			$SCAN=shell("$CANDIR/".$files[$i]);
 
 			# Dated Filename for scan image & preview image
-			$FILENAME=date("M_j_Y~G-i-s",filemtime("$CANDIR/".$files[$i]));
+			$FILENAME=date("M_j_Y~G-i-s",filemtime("$CANDIR/".$files[$i])+$GMT);
 			$S_FILENAME="Scan_$SCANNER"."_"."$FILENAME.$FILETYPE";
 			$P_FILENAME="Preview_$SCANNER"."_"."$FILENAME.jpg";
 
