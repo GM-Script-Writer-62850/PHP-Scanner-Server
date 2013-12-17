@@ -5,7 +5,7 @@ Based on Linux Scanner Server 1.2 Beta
 
 Released under the GPL 2.0
 
-Last Update: 12/10/2013 (Month/Day/Year)
+Last Update: 12/17/2013 (Month/Day/Year)
 For Version: 1.3-11
 
 Change Log:
@@ -165,7 +165,7 @@ Frequently asked questions/issues:
 			I set mine to 1024 (1 GiB) if you need more memory than you have ram be sure your swap partition is large enough to cover the overdraw
 	What is bug 13, it is mentioned in the debug console
 		https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server/issues/13
-	Why don't you have a .deb .rpm etc file I can install
+	Why don't you have a .deb, .rpm, etc file I can install
 		This more like an addon than a program so I am not sure if one of those would be appropriate, I have written bash
 		scripts to install and update this, you can find them on the Downloads page in the Wiki
 			https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server/wiki/Downloads
@@ -276,6 +276,8 @@ Credit where credit is due:
 		ColorPicker (www.eyecon.ro/colorpicker/)
 			Does not get full credit, it had lots of issues
 	There are a few others, there are comments in the source code for them
+	jamesfu
+		Proof reading (see issue #18)
 
 Installation Notes:
 	Extract files to /var/www (or wherever your web pages are visible from)
