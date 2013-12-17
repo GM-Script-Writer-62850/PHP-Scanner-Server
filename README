@@ -16,12 +16,12 @@ PHP Linux Scanner Server is a PHP web application that allows you to share multi
 The following packages need to be installed:
 * imagemagick (6.5.9+)   - For image conversion
 * sane-utils             - For accessing scanners
-* usbutils               - For updating the device path for scanners using libusb
+* usbutils               - For updating the device path of scanners using libusb
 * tesseract-ocr          - For image to text conversion
-* apache2                - a web server
+* apache2                - A web server
 * php5                   - For running php
-* coreutils              - For various puropses, not having this would probally result in a unusable system
-* php5-json              - For storing/transfering/parsing data (If this package is not advailable it is for you system it is part of php5)
+* coreutils              - For various purposes, not having this would probably result in an unusable system
+* php5-json              - For storing/transferring/parsing data (If this package is not available, it may already be part of php5)
 + php5-curl              - For uploading scans to imgur.com
 + tar                    - For downloading a copy of PHP Linux Scanner Server in .tar.bz2 format (link in footer)
 + zip                    - For downloading a compressed scan
@@ -165,9 +165,9 @@ Frequently asked questions/issues:
 			I set mine to 1024 (1 GiB) if you need more memory than you have ram be sure your swap partition is large enough to cover the overdraw
 	What is bug 13, it is mentioned in the debug console
 		https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server/issues/13
-	Why don't you have a .deb .rpm etc file I an install
-		This more like a addon than a program so I am note sure if one of thoes would be approate, I have written bash
-		scripts to install and update this, if you look they are on the Downloads page in the Wiki
+	Why don't you have a .deb .rpm etc file I can install
+		This more like an addon than a program so I am not sure if one of those would be appropriate, I have written bash
+		scripts to install and update this, you can find them on the Downloads page in the Wiki
 			https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server/wiki/Downloads
 	The brightness and contrast options do not work on lucid lynx.
 		This is because lucid has ImageMagick 6.5.7-8 and the brightness-contrast option was added in version 6.5.9
@@ -186,7 +186,7 @@ Frequently asked questions/issues:
 	What does EOL stand for 
 		End Of Life, meaning it will no longer receive updates
 	Every time I load a page it is blank.
-		Somehow there is a error somewhere check your apache error log for
+		Somehow there is an error somewhere, check your apache error log
 			for me the file was located at
 				/var/log/apache2/error.log
 			You can set php to show the error in the browser by editing your php.ini
@@ -195,11 +195,11 @@ Frequently asked questions/issues:
 			then find this line
 				display_errors = Off
 			and set it to On (it was on line 531 for me) 
-			at this point apache will need a restart (sudo service apache2 restart)
+			at this point apache will need a reload (sudo service apache2 reload)
 		If the error was not caused by you not reading the instructions please file a bug report
 	The conversion to text was very poor/blank
 		Try making the image larger the text is probably too small for tesseract-ocr to read
-	How can I change the amount of free disk space to warn at
+	How can I change the low disk space warning threshold
 		It is set on line 3 of index.php
 	How can I turn the auto update checker off
 		It is set on line 6 of index.php
@@ -215,12 +215,12 @@ Frequently asked questions/issues:
 			scanner-access-enabler-1.2.tar.bz2 (http://www.mediafire.com/?p1plimo2yf31kl3)
 			scanner-access-enabler-1.4.tar.bz2 (http://www.mediafire.com/?4r1aw9ix9ayb0u0)
 	Why can't I change the orientation on the scan page
-		because the selected paper size will olny fit in the scanner one way
+		because the selected paper size will only fit in the scanner one way
 	Why is the pdf download (single page) not working I keep getting a file with a error in it
 		The script assumes fpdf.php is located in /usr/share/php/fpdf/ this is set on line 2 of download.php
 Internal Configuration Options:
 	Free Space Warning
-		This puts a warning on the page if you are low in disk space
+		This puts a warning on the page if you are low on disk space
 		low is defined on line 2 of config.php
 	Fortunes
 		This setting is on line 3 of config.php
@@ -239,7 +239,7 @@ Internal Configuration Options:
 		Look under apache tricks for the secure one
 		The pretty one is enabled on line 6 of config.php
 	Session Duration
-		This defines the maximum amount of time a user can stay logged in
+		This defines the maximum duration a user stays logged in
 		This is set on line 7 of config.php
 	Default Theme
 		The default theme is set on line 8 of config.php, you can get the theme code on the 'Configure' page
@@ -278,7 +278,7 @@ Credit where credit is due:
 	There are a few others, there are comments in the source code for them
 
 Installation Notes:
-	Extract files to /var/www (or where ever your web pages are visible from)
+	Extract files to /var/www (or wherever your web pages are visible from)
 	Install the dependencies (you may use curl instead of php5-cli if you do not want auto delete you do not need either)
 		sudo apt-get install tar apache2 php5 php5-cli imagemagick sane-utils tesseract-ocr
 	Add www-data to the lp group
@@ -315,8 +315,8 @@ Apache Tricks:
 			</Directory>
 		you will see "AllowOverride None" change "None" to "All"
 		make the change and save it
-		now restart apache 
-			sudo service apache2 restart
+		now reload apache 
+			sudo service apache2 reload
 
 	Password protecting your scanner
 		using .htaccess
@@ -355,8 +355,8 @@ Apache Tricks:
 				</Directory>
 			now you need to make a login with this command
 				sudo htpasswd -c /etc/apache2/users Bob
-			now you need to restart apache
-			        sudo service apache2 restart
+			now you need to reload apache
+			        sudo service apache2 reload
 			
 	Setting a server name
 		Open /etc/apache2/sites-available/default
@@ -365,7 +365,7 @@ Apache Tricks:
 			ServerName www.scanner.com
 		www.scanner.com and be anything you want
 		now run this command
-			sudo service apache2 restart
+			sudo service apache2 reload
 		now apache will not fuss about there not being a server name
 
 	Running apache on a another port
@@ -379,7 +379,7 @@ Apache Tricks:
 		so we will add these to lines
 			NameVirtualHost *:81
 			Listen 81
-		not we need to set a path to run on this port
+		now we need to set a path to run on this port
 		open /etc/apache2/sites-available/default
 		go to the bottom of the file and add this 
 			<VirtualHost *:81>
@@ -392,4 +392,4 @@ Apache Tricks:
 				</Directory>
 			</VirtualHost>
 		now save and run this command
-			sudo service apache2 restart
+			sudo service apache2 reload
