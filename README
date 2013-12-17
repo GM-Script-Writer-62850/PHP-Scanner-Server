@@ -278,7 +278,7 @@ Credit where credit is due:
 	There are a few others, there are comments in the source code for them
 
 Installation Notes:
-	Extract files to /var/www (or whereever your web pages are visible from)
+	Extract files to /var/www (or wherever your web pages are visible from)
 	Install the dependencies (you may use curl instead of php5-cli if you do not want auto delete you do not need either)
 		sudo apt-get install tar apache2 php5 php5-cli imagemagick sane-utils tesseract-ocr
 	Add www-data to the lp group
