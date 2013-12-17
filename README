@@ -316,7 +316,7 @@ Apache Tricks:
 		you will see "AllowOverride None" change "None" to "All"
 		make the change and save it
 		now reload apache 
-			sudo service apache2 reloac
+			sudo service apache2 reload
 
 	Password protecting your scanner
 		using .htaccess
