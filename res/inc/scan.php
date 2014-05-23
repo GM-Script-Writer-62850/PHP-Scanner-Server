@@ -161,7 +161,7 @@ Scan Image
 <div class="side_box">
 <h2>Settings</h2>
 <p>
-<input name="set_save" type="text" size="12" onkeypress="if(event.which==13||event.keyCode==13){document.scanning.saveas.click();return false;}"/>
+<input name="set_save" type="text" size="11" onkeypress="if(event.which==13||event.keyCode==13){document.scanning.saveas.click();return false;}"/>
 <input onclick="if(document.scanning.set_save.value==''){return false;}else{document.scanning.removeAttribute('onsubmit');}" type="submit" name="saveas" value="Save"/>
 <input type="button" value="Set Default" onclick="setDefault(document.scanning)"/>
 </p>
