@@ -1,20 +1,19 @@
-<?php // Global Varables
-$FreeSpaceWarn=2048;// In Megabytes, Warning is displayed if there is less then the amount specified
-$Fortune=true;// Enable/disable fortunes in the debug console
-$ExtraScanners=false;// Adds sample scanners from ./inc/scanhelp/
-$CheckForUpdates=true;// Enables auto update checking
-$RequireLogin=false;// Require user to login (A 'geek' could bypass this without too much trouble using JavaScript); Create the user 'root' 1st, also Authorization is root's password
-$SessionDuration=86400;// Max time (in seconds) signed in is 24hrs (irrelevant with the above off)
-$Theme='383838.B84E40.407EB4.202020.408080.FF0.FFF.3B133B.FFF.F00.FFF'; // Default Color Scheme
-$DarkPicker=true;// Use the dark color picker by default (It is part of the theme manager)
-$RulerIncrement=25.4;// Controls the rulers number increments relative to millimeters [25.4=inches (25.4 mm = 1 in), 10=centimeters (10 mm = 1 cm)]
-$TimeZone='';// Time zone override (used with scan file names) List of settings is on this page: http://www.php.net/manual/en/datetime.configuration.php#ini.date.timezone
-$Printer=0;// 0 mean printing is disabled, 1 means integrated printer, 2 means upload printer, 3 means upload/integrated printing
-// Do not edit stuff below this line
-
-$NAME="PHP Scanner Server";
-$VER="1.4-11_dev";
-$SAE_VER="1.4"; // Scanner Access Enabler version
+<?php // Global Variables are now stored in config.ini
+$cfg=parse_ini_file('config.ini');
+$FreeSpaceWarn=(integer)$cfg['FreeSpaceWarn'];
+$Fortune=(bool)$cfg['Fortune'];
+$ExtraScanners=(bool)$cfg['ExtraScanners'];
+$CheckForUpdates=(bool)$cfg['CheckForUpdates'];
+$RequireLogin=(bool)$cfg['RequireLogin'];
+$SessionDuration=(integer)$cfg['SessionDuration'];
+$Theme=(string)$cfg['Theme'];
+$DarkPicker=(bool)$cfg['DarkPicker'];
+$RulerIncrement=(double)$cfg['RulerIncrement'];
+$TimeZone=(string)$cfg['TimeZone'];
+$Printer=(integer)$cfg['Printer'];
+$NAME=(string)$cfg['NAME'];
+$VER=(string)$cfg['VER'];
+$SAE_VER=(string)$cfg['SAE_VER'];
 
 // Login Stuff
 $Auth=true;

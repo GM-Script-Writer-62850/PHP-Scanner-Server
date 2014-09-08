@@ -1,7 +1,41 @@
 <?php
-# This file is used to get a list of printers via AJAX
-# The printer.php file in the inc folder does the printer tab
-# The download.php in the parent folder does the integrated printing
-header('Content-type: plain/txt; charset=UTF-8');
-echo str_replace("\n",",",substr(shell_exec('lpstat -a|awk \'{print $1}\''),0,-1));
+# This file is used to handle all the print commands
+# This file runs all the print commands, ../download.php and inc/printer.php call this page via include
+$lpstat='lpstat -a | awk \'{print $1}\'';// command used to find printers
+if(function_exists('exe')){// internal call via inc/printer.php
+	if(isset($file))
+		
+		Print_Message(
+			$_POST['printer'],
+			'Your document is being processed:<br/><pre>'.html(
+				exe('lp -d '.shell($_POST['printer'])." $file",true) // Print via Printer page
+			).'</pre>',
+			'center'
+		);
+	else
+		$printers=explode("\n",exe($lpstat,true));
+}
+else if(isset($Printer)){ // internal call via include from ../download.php
+	header('Content-type: application/json; charset=UTF-8');
+	echo json_encode((object)array(
+		'printer'=>$_GET['printer'],
+		'message'=>shell_exec('lp -d '.escapeshellarg($_GET['printer'])." $file")// This line makes it print using the integrated printer
+	));
+}
+else{
+	$Printer=parse_ini_file(file_exists('res')?'config.ini':'../config.ini');
+	$Printer=(integer)$Printer['Printer'];
+	if(!function_exists('ext2mime')){// external call via browser
+		if($Printer==0){// Check if printer service  is enabled
+			header('Content-type: application/json; charset=UTF-8');
+			echo '{"error":"Printer service is disabled"}';
+		}
+		else if(isset($_GET['list'])){// Return list of printers
+			header('Content-type: plain/txt; charset=UTF-8');
+			echo str_replace("\n",",",substr(shell_exec($lpstat),0,-1));
+		}
+		else
+			echo "Todo: Don't reload printer page, use AJAX";
+	}
+}
 ?>

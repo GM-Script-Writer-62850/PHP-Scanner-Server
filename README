@@ -221,39 +221,39 @@ Frequently asked questions/issues:
 Internal Configuration Options:
 	Free Space Warning
 		This puts a warning on the page if you are low on disk space
-		low is defined on line 2 of config.php
+		low is defined on line 2 of config.ini
 	Fortunes
-		This setting is on line 3 of config.php
+		This setting is on line 3 of config.ini
 		This setting is ignored if the program fortune is not installed
 		If it is not working and fortune is installed you may need to update line 201 of index.php with the correct path
 	Extra Scanners
 		This is a developer tool used for simulating scanners
 		This is just for testing the search for scanners feature
-		This is set on line 4 of config.php
+		This is set on line 4 of config.ini
 	Check For Updates
 		Every 24 hours the scanner will check for updates, This is checked on page load
 		It only checks the Internet if the last check was over 24 hours ago
-		This is set on line 5 of config.php
+		This is set on line 5 of config.ini
 	Enable Login
 		There are 2 ways, one is pretty and one is not, but the not so pretty one is more secure
 		Look under apache tricks for the secure one
-		The pretty one is enabled on line 6 of config.php
+		The pretty one is enabled on line 6 of config.ini
 	Session Duration
 		This defines the maximum duration a user stays logged in
-		This is set on line 7 of config.php
+		This is set on line 7 of config.ini
 	Default Theme
-		The default theme is set on line 8 of config.php, you can get the theme code on the 'Configure' page
+		The default theme is set on line 8 of config.ini, you can get the theme code on the 'Configure' page
 		by clicking the 'Save' button under 'Color Scheme'
 	Dark Picker
 		Tells the page whether or not to use the dark color picker theme by default
-		This is set on line 9 of config.php
+		This is set on line 9 of config.ini
 	Ruler Increment
 		This tells the ruler what measurement system to use 
-		This is set on line 10 of config.php
+		This is set on line 10 of config.ini
 	Time Zone
 		This overrides the system time zone that is set in php.ini as well as auto detect
 		This may not be of use for PHP versions older than 5.1
-		This is set on line 11 of config.php
+		This is set on line 11 of config.ini
 	
 Credit where credit is due:
 	PHiLLIP KLiEWER

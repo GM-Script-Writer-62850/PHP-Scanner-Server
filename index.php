@@ -1144,7 +1144,7 @@ else{
 		else if(ini_get('date.timezone')==='' && version_compare(phpversion(), '5.1', '>=')){
 			date_default_timezone_set('UTC');
 			$GMT=intval(exe('date +%z',true))*36;
-			exe('echo "Warning, Guessing Time Zone:\n\tGuessed as GMT '.($GMT/60/60).'.\n\tdate.timezone is not set in your /etc/php5/apache2/php.ini file.\n\tIt is probally set on line 880.\n\tThere is also a override in '.getcwd().'/config.php on line 11."',true);
+			exe('echo "Warning, Guessing Time Zone:\n\tGuessed as GMT '.($GMT/60/60).'.\n\tdate.timezone is not set in your /etc/php5/apache2/php.ini file.\n\tIt is probably set on line 880.\n\tThere is also a override in '.getcwd().'/config.ini on line 11."',true);
 		}
 		for($i=2,$ct=count($files);$i<$ct;$i++){
 			$SCAN=shell("$CANDIR/".$files[$i]);

@@ -777,10 +777,26 @@ function PDF_popup(files,print){
 	if(typeof(files)=='string')
 		files='{"'+files.replace(/"/g,'\"')+'":1}';
 	else if(files.tagName=='form'||files.tagName=='FORM'){
-		alert(files.print.value);
-		// Apparently if I use the files.action property it sends format=files.format.value instead of files.format.value so I will just use window.open
-		window.open('download.php?type=pdf&json='+files.files.value+'&size='+files.size.value+'&'+files.format.value+
-			(files.print.value=='true'?'&printer='+encodeURIComponent(files.printer.value):''));
+		var url='download.php?type=pdf&json='+files.files.value+'&size='+files.size.value+'&'+files.format.value+
+				(files.print.value=='true'?'&printer='+encodeURIComponent(files.printer.value):'');
+		if(files.print.value=='true'){
+			var httpRequest = new XMLHttpRequest();
+			httpRequest.onreadystatechange = function(){
+				if(httpRequest.readyState==4){
+					if(httpRequest.status==200){
+						var json=parseJSON(httpRequest.responseText);
+						alert(httpRequest.responseText);
+						printMsg(encodeHTML(json['printer']),'Your document is being processed:<br/><pre>'+encodeHTML(json['message'])+'</pre>','center',0);
+					}
+					else
+						printMsg('Error','A '+httpRequest.status+' error was encountered.','center',0);
+				}
+			};
+			httpRequest.open('GET', url);
+			httpRequest.send(null);
+		}
+		else// Apparently if I use the files.action property it sends format=files.format.value instead of files.format.value so I will just use window.open
+			window.open(url);
 		toggle('blanket');
 		return false;
 	}
@@ -839,7 +855,7 @@ function PDF_popup(files,print){
 				}
 			}
 		};
-		httpRequest2.open('GET', 'res/printer.php?nocache='+new Date().getTime());
+		httpRequest2.open('GET', 'res/printer.php?list&nocache='+new Date().getTime());
 		httpRequest2.send(null);
 	}
 	popup('blanket',290);
