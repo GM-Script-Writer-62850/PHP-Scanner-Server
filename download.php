@@ -1,5 +1,6 @@
 <?php
 $Fpdf_loc="/usr/share/php/fpdf.php";
+# Print commands are on lines 129 and 170
 function debug($cmd,$output){
 	$here=posix_getpwuid(posix_geteuid());
 	$here=$here['name'].'@'.$_SERVER['SERVER_NAME'].':'.getcwd();
@@ -29,6 +30,9 @@ function returnFile($in,$out,$ext){
 		header('Content-Length: '.strlen($in));
 		echo $in;
 	}
+}
+if(isset($_GET['printer'])){// get printer setting from config file
+	$Printer=intval(substr(shell_exec('cat config.php | grep \'^$Printer\' | cut -d \';\' -f1 | cut -d \'=\' -f 2'),0,-1));
 }
 if(isset($_GET['file'])){
 	if(strpos($_GET['file'], "/")>-1)
@@ -118,8 +122,18 @@ else if((isset($_GET['type'])?$_GET['type']:'')=='pdf'&&!isset($_GET['raw'])){
 		}
 	}
 	if($pages>0){
-		$file=$pages>1?"Compilation.pdf":substr($file,0,strlen($ext)*-1)."pdf";
-		$pdf->Output($file,'I');
+		if($_GET['printer']&&($Printer % 2 != 0)){
+			$file='/tmp/'.md5(time().rand()).'.pdf';
+			$pdf->Output($file,'F');
+			echo '<html><head><title>Printing...</title></head><body>The document should be printing<br/>Debug:</br>';
+			echo shell_exec("lp -d ".escapeshellarg($_GET['printer'])." $file");// This line makes it print when a PDF format is used
+			echo '</body></html>';
+			unlink($file);
+		}
+		else{
+			$file=$pages>1?"Compilation.pdf":substr($file,0,strlen($ext)*-1)."pdf";
+			$pdf->Output($file,'I');
+		}
 	}
 	else{
 		$pdf->AddPage();
@@ -148,6 +162,15 @@ else if(isset($_GET['json'])){
 	if(strlen($FILES)>0 && is_string($type)){
 		$type=$_GET['type'];
 		if($type=='pdf'){
+			if(isset($_GET['printer'])&&($Printer % 2 == 1)){
+				$file='/tmp/'.md5(time().rand()).'.pdf';
+				$cmd="convert $FILES+repage '$file'";
+				$output=shell_exec("$cmd 2>&1");// -page Letter -gravity center
+				echo '<html><head><title>Printing...</title></head><body>The document should be printing<br/>Debug:</br>';
+				echo shell_exec('lp -d '.escapeshellarg($_GET['printer'])." $file");// This line makes it print via the I don't care button
+				unlink($file);
+				die('</body></html>');
+			}
 			$name=$ct==1?substr($file,0,strrpos($file,'.')).'.pdf':'Compilation.pdf';
 			$file='/tmp/'.md5(time().rand()).'.pdf';
 			$type='pdf';

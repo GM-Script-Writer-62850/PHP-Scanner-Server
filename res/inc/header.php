@@ -2,6 +2,7 @@
 $path=is_numeric($page)||$page=='Index Of'?substr($_SERVER['PHP_SELF'],0,strlen(end(explode('/',$_SERVER['PHP_SELF'])))*-1-4):'';
 $Theme=isset($_COOKIE["theme"])?url($_COOKIE["theme"]):$GLOBALS['Theme'];
 $GLOBALS['CurrentTheme']=$Theme;
+$Printer=$GLOBALS['Printer'];
 ?>
 <!DOCTYPE html><html>
 <head>
@@ -43,6 +44,14 @@ echo '<script type="text/javascript">var I='.$GLOBALS['RulerIncrement'].';</scri
 <div class="bottomright bottom"></div>
 </div>
 
+<div <?php echo $Printer==0||$Printer==1?'style="display:none;" ':'' ?>class="tab<?php echo $page=="Printer"?' active':''; ?>">
+<a href="<?php echo $path; ?>index.php?page=Printer">Printer</a>
+<div class="topleft top"></div>
+<div class="bottomleft bottom"></div>
+<div class="topright top"></div>
+<div class="bottomright right bottom"></div>
+</div>
+
 <div class="tab<?php echo in_array($page,Array("Scans","View","Edit"))?' active':''; ?>">
 <a href="<?php echo $path; ?>index.php?page=Scans">Scanned Files</a>
 <div class="topleft top"></div>
@@ -52,7 +61,7 @@ echo '<script type="text/javascript">var I='.$GLOBALS['RulerIncrement'].';</scri
 </div>
 
 <div class="tab<?php echo $page=="Scan"?' active':''; ?>">
-<a href="<?php echo $path; ?>index.php?page=Scan">Use Scanner</a>
+<a href="<?php echo $path; ?>index.php?page=Scan">Scanner</a>
 <div class="topleft top"></div>
 <div class="bottomleft bottom"></div>
 <div class="topright top"></div>

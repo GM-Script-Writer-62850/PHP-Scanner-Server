@@ -756,7 +756,11 @@ function disableIcons(){// Converts disabled icons to act like disabled icons
 		}
 	}
 }
-function PDF_popup(files){
+function PDF_popup(files,print){
+	if(print===true){
+		if(confirm("Press OK to use your system's printer.\nPress Cancel to open the Server Print Dialog."))
+			return true;
+	}
 	function populateSelect(ele){
 		var opt,ele=getID('PDF_PAPER');
 		ele.removeChild(ele.childNodes[0]);
@@ -773,8 +777,10 @@ function PDF_popup(files){
 	if(typeof(files)=='string')
 		files='{"'+files.replace(/"/g,'\"')+'":1}';
 	else if(files.tagName=='form'||files.tagName=='FORM'){
+		alert(files.print.value);
 		// Apparently if I use the files.action property it sends format=files.format.value instead of files.format.value so I will just use window.open
-		window.open('download.php?type=pdf&json='+files.files.value+'&size='+files.size.value+'&'+files.format.value);
+		window.open('download.php?type=pdf&json='+files.files.value+'&size='+files.size.value+'&'+files.format.value+
+			(files.print.value=='true'?'&printer='+encodeURIComponent(files.printer.value):''));
 		toggle('blanket');
 		return false;
 	}
@@ -791,13 +797,15 @@ function PDF_popup(files){
 		files=JSON.stringify(files);
 	}
 	files=encodeURIComponent(files);
-	getID("blanket").childNodes[0].innerHTML='<form onsubmit="return PDF_popup(this)" target="_blank" action="#" method="GET">How would you prefer for your PDF download?<br/>\
+	getID("blanket").childNodes[0].innerHTML=
+		'<form onsubmit="return PDF_popup(this,false)" target="_blank" action="#" method="GET">How would you prefer for your PDF '+(print?'<b>printed</b>':'download')+'?<br/>\
 		A scan placed on the page with a title or<br/><input type="hidden" name="files" value="'+files+'"/><input type="hidden" name="format" value=""/>\
-		a would you prefer the scan as the page.<br/>Paper Type: <select id="PDF_PAPER" name="size" style="width:190px;"><option value="">Loading...</option></select>\
-		<button type="submit"><img src="res/images/pdf-scaled.png" width="106" height="128" alt="With title"/></button>\
+		a would you prefer the scan as the page.<br/>'+(print?'Printer: <select id="printer_name" name="printer" style="width:190px;"><option value="">Loading...</option></select><br/>':'')+
+		'Paper Type: <select id="PDF_PAPER" name="size" style="width:190px;"><option value="">Loading...</option></select>'+
+		'<button type="submit"><img src="res/images/pdf-scaled.png" width="106" height="128" alt="With title"/></button>\
 		<button type="submit" onclick="this.parentNode.format.value=\'full\';"><img src="res/images/pdf-full.png" width="106" height="128" alt="Fill page with scan"/></button>\
-		<br/><input type="submit" onclick="this.parentNode.format.value=\'raw\';" value="I don\'t care just give me a PDF" style="width:261px"/>\
-		<br/><input type="button" value="Cancel" style="width:261px;" onclick="toggle(\'blanket\')"/></form>';
+		<br/><input type="submit" onclick="this.parentNode.format.value=\'raw\';" value="I don\'t care just '+(print?'print it':'give me a PDF')+'" style="width:261px"/>\
+		<br/><input type="button" value="Cancel" style="width:261px;" onclick="toggle(\'blanket\')"/><input type="hidden" name="print" value="'+print+'"/></form>';
 	if(paper==null){
 		var httpRequest = new XMLHttpRequest();
 		httpRequest.onreadystatechange = function(){
@@ -811,6 +819,29 @@ function PDF_popup(files){
 	}
 	else
 		populateSelect();
+	if(print){
+		var httpRequest2 = new XMLHttpRequest();
+		httpRequest2.onreadystatechange = function(){
+			if(httpRequest2.readyState==4){
+				var ele=getID('printer_name'),i,opt;
+				if(httpRequest2.status==200){
+					ele.removeChild(ele.childNodes[0]);
+					print=httpRequest2.responseText.split(',');
+					for(i=0;i<print.length;i++){
+						opt=document.createElement('option');
+						opt.value=print[i];
+						opt[TC]=print[i];
+						ele.appendChild(opt);
+					}
+				}
+				else{
+					ele.childNodes[0][TC]="Error getting list";
+				}
+			}
+		};
+		httpRequest2.open('GET', 'res/printer.php?nocache='+new Date().getTime());
+		httpRequest2.send(null);
+	}
 	popup('blanket',290);
 	return false;
 }

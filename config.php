@@ -9,10 +9,11 @@ $Theme='383838.B84E40.407EB4.202020.408080.FF0.FFF.3B133B.FFF.F00.FFF'; // Defau
 $DarkPicker=true;// Use the dark color picker by default (It is part of the theme manager)
 $RulerIncrement=25.4;// Controls the rulers number increments relative to millimeters [25.4=inches (25.4 mm = 1 in), 10=centimeters (10 mm = 1 cm)]
 $TimeZone='';// Time zone override (used with scan file names) List of settings is on this page: http://www.php.net/manual/en/datetime.configuration.php#ini.date.timezone
+$Printer=0;// 0 mean printing is disabled, 1 means integrated printer, 2 means upload printer, 3 means upload/integrated printing
 // Do not edit stuff below this line
 
 $NAME="PHP Scanner Server";
-$VER="1.3-11";
+$VER="1.4-11_dev";
 $SAE_VER="1.4"; // Scanner Access Enabler version
 
 // Login Stuff

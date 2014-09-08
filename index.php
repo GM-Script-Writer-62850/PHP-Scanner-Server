@@ -122,13 +122,14 @@ function genIconLinks($config,$file,$isBulk){
 		,
 		'pdf'=>(object)array(
 			'href'=>'#',
-			'onclick'=>"return PDF_popup('$sJS');",
+			'onclick'=>"return PDF_popup('$sJS',false);",
 			'disable'=>isset($config->{'pdf'}),
 			'tip'=>'Download PDF',
 			'bulk'=>"PDF_popup(filesLst)"
 		),
 		'print'=>(object)array(
 			'href'=>"print.php?file=$URL",
+			'onclick'=>$GLOBALS['Printer'] % 2 == 0?'return true':"return PDF_popup('$sJS',true)",
 			'target'=>'_blank',
 			'disable'=>isset($config->{'print'}),
 			'tip'=>'Print',
@@ -377,6 +378,14 @@ if($RequireLogin&&!$Auth||$PAGE=='Login'){
 	$PAGE='Login';
 	InsertHeader('Authenticate Required');
 	include('res/inc/login.php');
+	Footer('');
+}
+# ****************
+# Printer Page
+# ****************
+else if($PAGE=="Printer"){
+	InsertHeader('Printer');
+	include('res/inc/printer.php');
 	Footer('');
 }
 # ****************
