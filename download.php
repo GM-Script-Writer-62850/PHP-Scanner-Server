@@ -223,14 +223,20 @@ else if(isset($_GET['file'])){
 		returnFile("The file ".$_GET['file']." was not found in the scans folder.",'404.txt','txt');
 }
 else if(isset($_GET['update'])){
-	$file=@file_get_contents("https://raw.github.com/GM-Script-Writer-62850/PHP-Scanner-Server/master/README");
-	if($file){
-		$file=substr($file,strpos($file,'For Version: ')+13);
-		$file=substr($file,0,strpos($file,PHP_EOL));
-		$vs=version_compare($file,$_GET['update']);// -1 = older, 0 = same, 1 = newer
-		echo "{\"state\":\"$vs\",\"version\":\"$file\"}";
+	header('Content-type: application/json; charset=UTF-8');
+	$content=@file_get_contents("https://raw.github.com/GM-Script-Writer-62850/PHP-Scanner-Server/master/config.ini");
+	if($content){
+		$fname='/tmp/'.md5(time().rand()).'.ini';
+		$file=@fopen($fname,'w+');
+		@fwrite($file,$content);
+		@fclose($file);
+		$content=parse_ini_file($fname);
+		$content=(string)$content['VER'];
+		unlink($fname);
+		$vs=version_compare($content,$_GET['update']);// -1 = older, 0 = same, 1 = newer
+		echo "{\"state\":\"$vs\",\"version\":\"$content\"}";
 		$f=@fopen("config/gitVersion.txt",'w+');
-		@fwrite($f,$file);
+		@fwrite($f,$content);
 		@fclose($f);
 	}
 	else

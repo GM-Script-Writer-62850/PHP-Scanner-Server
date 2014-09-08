@@ -778,14 +778,13 @@ function PDF_popup(files,print){
 		files='{"'+files.replace(/"/g,'\"')+'":1}';
 	else if(files.tagName=='form'||files.tagName=='FORM'){
 		var url='download.php?type=pdf&json='+files.files.value+'&size='+files.size.value+'&'+files.format.value+
-				(files.print.value=='true'?'&printer='+encodeURIComponent(files.printer.value):'');
+				(files.print.value=='true'?'&printer='+encodeURIComponent(files.printer.value)+'&side='+files.side.value:'');
 		if(files.print.value=='true'){
 			var httpRequest = new XMLHttpRequest();
 			httpRequest.onreadystatechange = function(){
 				if(httpRequest.readyState==4){
 					if(httpRequest.status==200){
 						var json=parseJSON(httpRequest.responseText);
-						alert(httpRequest.responseText);
 						printMsg(encodeHTML(json['printer']),'Your document is being processed:<br/><pre>'+encodeHTML(json['message'])+'</pre>','center',0);
 					}
 					else
@@ -816,7 +815,8 @@ function PDF_popup(files,print){
 	getID("blanket").childNodes[0].innerHTML=
 		'<form onsubmit="return PDF_popup(this,false)" target="_blank" action="#" method="GET">How would you prefer for your PDF '+(print?'<b>printed</b>':'download')+'?<br/>\
 		A scan placed on the page with a title or<br/><input type="hidden" name="files" value="'+files+'"/><input type="hidden" name="format" value=""/>\
-		a would you prefer the scan as the page.<br/>'+(print?'Printer: <select id="printer_name" name="printer" style="width:190px;"><option value="">Loading...</option></select><br/>':'')+
+		a would you prefer the scan as the page.<br/>'+(print?'Printer: <select id="printer_name" name="printer" style="width:214px;"><option value="">Loading...</option></select><br/>'+
+		'Sides: <select name="side" style="width:222px;"><option value="1">Single Sided</option><option value="2">Double Sided</option></select><br>':'')+
 		'Paper Type: <select id="PDF_PAPER" name="size" style="width:190px;"><option value="">Loading...</option></select>'+
 		'<button type="submit"><img src="res/images/pdf-scaled.png" width="106" height="128" alt="With title"/></button>\
 		<button type="submit" onclick="this.parentNode.format.value=\'full\';"><img src="res/images/pdf-full.png" width="106" height="128" alt="Fill page with scan"/></button>\
@@ -1509,7 +1509,12 @@ function updateCheck(vs,e){
 	if(typeof(XMLHttpRequest)=='undefined')
 		return printMsg('Error',supportErrorA+'XMLHttpRequest, so you can not check for updates.'+supportErrorB,'center',0);
 	if(e===true)
-		return printMsg('Update Available','Version '+vs+' is available for <a target="_blank" href="https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server/wiki/Change-Log">download</a>','center',-1);
+		return printMsg('Update Available',
+			'Version '+vs+' is available for <a target="_blank" href="https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server/wiki/Change-Log">download</a>'+
+				(data["version"].indexOf('_dev')>-1?'<br/>This is a developmental version, it may have some bugs, wanna try it?':''),
+			'center',
+			-1
+		);
 	if(e)
 		e.setAttribute('disabled','disabled');
 	var httpRequest = new XMLHttpRequest();
@@ -1520,7 +1525,12 @@ function updateCheck(vs,e){
 					e.removeAttribute('disabled');
 				var data=parseJSON(httpRequest.responseText);
 				if(data["state"]==1)
-					printMsg('Update Available','Version '+data["version"]+' is available for <a target="_blank" href="https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server/wiki/Change-Log">download</a>','center',-1);
+					printMsg('Update Available',
+						'Version '+data["version"]+' is available for <a target="_blank" href="https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server/wiki/Change-Log">download</a>'+
+							(data["version"].indexOf('_dev')>-1?'<br/>This is a developmental version, it may have some bugs, wanna try it?':''),
+						'center',
+						-1
+					);
 				else if(data["state"]==0&&e)
 					printMsg('Up to Date','Your current version of '+data["version"]+' is the latest available','center',-1);
 				else if(data["state"]==-1&&e)

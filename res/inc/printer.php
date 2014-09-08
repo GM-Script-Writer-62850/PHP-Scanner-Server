@@ -52,14 +52,14 @@ for($i=0;$i<count($printers);$i=$i+1){
 	if(strlen($printers[$i])>0)
 		$sel=$sel.'<option value="'.html($printers[$i]).'">'.html($printers[$i]).'</option>';
 }
-$sel="$sel</select>";
+$sel=$sel.'</select> using <select name="side"><option value="1">Single</option><option value="2">Double</option></select> Sided printing.';
+$upLimit=getMaximumFileUploadSize();
 ?>
-
 <div class="box box-full">
 	<h2>PDF Printing</h2>
-	<form action="index.php?page=Printer" method="post" enctype="multipart/form-data">
+	<form action="index.php?page=Printer" method="post" enctype="multipart/form-data" onsubmit="try{if(this.pdf.files[0].size>=<?php echo $upLimit; ?>){this.submit.value='Submit';alert(this.pdf.files[0].name+'\nis too big!');return false;}}catch(e){}">
 		<p class="center">
-			<input type="file" name="pdf"/> (<?php echo getMaximumFileUploadSize()/1024/1024; ?> Megabyte limit)<br/>
+			<input type="file" name="pdf"/> (<?php echo $upLimit/1024/1024; ?> Megabyte limit)<br/>
 			<input type="submit" name="submit" value="Submit" onclick="this.value='Uploading';"/> to <?php echo $sel; ?>
 		</p>
 	</form>
