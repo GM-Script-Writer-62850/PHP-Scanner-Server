@@ -904,7 +904,7 @@ function PDF_popup(files,print){
 				var ele=getID('p_config');
 				ele.style.maxHeight=ele.parentNode.offsetHeight+'px';
 				if(httpRequest2.status==200)
-					buildPrinterOptions(parseJSON(httpRequest2.responseText),ele,localStorage.getItem('lastPrinter');
+					buildPrinterOptions(parseJSON(httpRequest2.responseText),ele,localStorage.getItem('lastPrinter'));
 				else if(httpRequest2.status==404)
 					alert('Error:\nPrinter(s) have not been searched for, please visit the Configure page!');
 			}
