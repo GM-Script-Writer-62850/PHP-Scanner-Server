@@ -60,7 +60,7 @@ $upLimit=getMaximumFileUploadSize();
 						echo $f===false?'\'Printers have not been configured, please <a href="index.php?page=Config&action=Search-For-Printers">search for printers</a> on the <a href="index.php?page=Config">Configure</a> page.\'':$f;
 					?>;
 					if(typeof printers=="object"){
-						buildPrinterOptions(printers,getID('p_config'),false);
+						buildPrinterOptions(printers,getID('p_config'),localStorage.getItem('lastPrinter'));
 					}
 					else
 						document.write(printers);

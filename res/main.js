@@ -839,6 +839,7 @@ function PDF_popup(files,print){
 			for(i=p.length-1;i>0;i--)
 				opt.push(p[i].name+'='+p[i].value);
 			p=opt.join();
+			localStorage.setItem('lastPrinter',files.printer.value);
 		}
 		url='download.php?type=pdf&json='+files.files.value+'&size='+files.size.value+'&'+files.format.value+
 				(p?'&printer='+encodeURIComponent(files.printer.value)+'&options='+p:'');
@@ -903,7 +904,7 @@ function PDF_popup(files,print){
 				var ele=getID('p_config');
 				ele.style.maxHeight=ele.parentNode.offsetHeight+'px';
 				if(httpRequest2.status==200)
-					buildPrinterOptions(parseJSON(httpRequest2.responseText),ele,false);
+					buildPrinterOptions(parseJSON(httpRequest2.responseText),ele,localStorage.getItem('lastPrinter');
 				else if(httpRequest2.status==404)
 					alert('Error:\nPrinter(s) have not been searched for, please visit the Configure page!');
 			}

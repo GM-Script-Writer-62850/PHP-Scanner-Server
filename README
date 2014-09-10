@@ -254,7 +254,15 @@ Internal Configuration Options:
 		This overrides the system time zone that is set in php.ini as well as auto detect
 		This may not be of use for PHP versions older than 5.1
 		This is set on line 11 of config.ini
-	
+	Printer
+		This option enables the server side printering service, the printer must be configured in cups
+		This allows one to easily bybass all the crap involved with shaing printers and all the cross-platmorm nightmares involved!
+		Setting this option to 0 disables this feature
+		Setting this option to 1 enables it ONLY for printing documents made with the scanner software
+		Setting this option to 2 enables it ONLY for uploaded content via the Printer page
+		Setting this option to 3 enables it for both uploading documetns and printing scanned documents
+		This is set on line 12 of config.ini
+
 Credit where credit is due:
 	PHiLLIP KLiEWER
 		Original CGI script
