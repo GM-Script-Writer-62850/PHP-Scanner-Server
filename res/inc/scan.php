@@ -193,7 +193,7 @@ Scan Image
 </div>
 
 <!-- Preview Pane -->
-<div id="preview">
+<div id="preview" class="box-wide">
 <div id="preview_links">
 <h2>Preview Pane</h2>
 <p><?php echo genIconLinks((object)array('download'=>0,'zip'=>0,'pdf'=>0,'print'=>0,'del'=>0,'edit'=>0,'view'=>0,'upload'=>0,'email'=>0),null,false); ?>

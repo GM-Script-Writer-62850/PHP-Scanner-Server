@@ -31,9 +31,10 @@ function returnFile($in,$out,$ext){
 		echo $in;
 	}
 }
-if(isset($_GET['printer'])){// Get printer setting from config file
+if(isset($_GET['printer']))// Get printer setting from config file
 	include('res/printer.php');
-}
+else
+	$Printer=0;
 if(isset($_GET['file'])){
 	if(strpos($_GET['file'], "/")>-1)
 		$_GET['file']=substr($_GET['file'],strrpos($_GET['file'],"/")+1);
@@ -122,7 +123,7 @@ else if((isset($_GET['type'])?$_GET['type']:'')=='pdf'&&!isset($_GET['raw'])){
 		}
 	}
 	if($pages>0){
-		if($_GET['printer']&&($Printer % 2 != 0)){
+		if(isset($_GET['printer'])&&($Printer % 2 != 0)){
 			$file='/tmp/'.md5(time().rand()).'.pdf';
 			$pdf->Output($file,'F');
 			include('res/printer.php');

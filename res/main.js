@@ -408,6 +408,61 @@ function checkScanners(){
 	httpRequest.open('GET', 'config/scanners.json?cacheBust='+new Date().getTime(), true);
 	httpRequest.send(null);
 }
+function buildPrinterOptions(json,p,P){
+	var printer,i,opt,val,DIV,SEL,OPT;
+	p.innerHTML='';
+	DIV=document.createElement('div');
+	DIV.style.display='inline-block';
+	DIV.innerHTML='<div class="label">Printer: </div><div class="control"></div>';
+	SEL=document.createElement('select');
+	SEL.name="printer";
+	SEL.addEventListener('change',function(){
+			buildPrinterOptions(json,p,this.value);
+	},false);
+	DIV.childNodes[1].appendChild(SEL);
+	p.appendChild(DIV);
+	for(printer in json){
+		OPT=document.createElement('option');
+		OPT.value=printer;
+		OPT.textContent=printer;
+		if(printer==P)
+			OPT.setAttribute('selected','selected');
+		SEL.appendChild(OPT);
+	}
+	printer=P?P:SEL.value;
+	for(i in json[printer]){
+		DIV=document.createElement('div');
+		DIV.style.display='inline-block';
+		DIV.innerHTML='<div class="label">'+json[printer][i]['name']+':</div><div class="control"></div>';
+		SEL=document.createElement('select');
+		SEL.name=json[printer][i]['id'];
+		for(val in json[printer][i]['value']){
+			OPT=document.createElement('option');
+			OPT.value=json[printer][i]['value'][val];
+			OPT.textContent=json[printer][i]['value'][val];
+			if(json[printer][i]['default']==json[printer][i]['value'][val])
+				OPT.setAttribute('selected','selected');
+			SEL.appendChild(OPT);
+		}
+		DIV.childNodes[1].appendChild(SEL);
+		p.appendChild(DIV);
+	}
+}
+function submitPrint(o,limit,test){
+	if(o.format.value=='pdf'||test===true){
+		if(o.pdf.files[0].size>limit){
+			printMsg("Error",o.pdf.files[0].name+" is over the "+(limit/1024/1024)+' MB limit!','center',-1);
+			return false;
+		}
+		if(test===false)
+			return;
+	}
+	var p=getID('p_config').getElementsByTagName('select'),i,opt=Array();
+	for(i=p.length-1;i>0;i--)
+		opt.push(p[i].name+'='+p[i].value);
+	o.options.value=opt.join();
+	localStorage.setItem("lastPrinter", o.printer.value);
+}
 function printMsg(t,m,a,r){// if r is -1 message goes at the top of the message list
 	var div=document.createElement('div');
 	var ele=getID('new_mes');
@@ -777,9 +832,17 @@ function PDF_popup(files,print){
 	if(typeof(files)=='string')
 		files='{"'+files.replace(/"/g,'\"')+'":1}';
 	else if(files.tagName=='form'||files.tagName=='FORM'){
-		var url='download.php?type=pdf&json='+files.files.value+'&size='+files.size.value+'&'+files.format.value+
-				(files.print.value=='true'?'&printer='+encodeURIComponent(files.printer.value)+'&side='+files.side.value:'');
-		if(files.print.value=='true'){
+		var p=getID('p_config'),url,i,opt;
+		if(p){
+			p=p.getElementsByTagName('select');
+			opt=Array();
+			for(i=p.length-1;i>0;i--)
+				opt.push(p[i].name+'='+p[i].value);
+			p=opt.join();
+		}
+		url='download.php?type=pdf&json='+files.files.value+'&size='+files.size.value+'&'+files.format.value+
+				(p?'&printer='+encodeURIComponent(files.printer.value)+'&options='+p:'');
+		if(p){
 			var httpRequest = new XMLHttpRequest();
 			httpRequest.onreadystatechange = function(){
 				if(httpRequest.readyState==4){
@@ -812,16 +875,14 @@ function PDF_popup(files,print){
 		files=JSON.stringify(files);
 	}
 	files=encodeURIComponent(files);
-	getID("blanket").childNodes[0].innerHTML=
-		'<form onsubmit="return PDF_popup(this,false)" target="_blank" action="#" method="GET">How would you prefer for your PDF '+(print?'<b>printed</b>':'download')+'?<br/>\
-		A scan placed on the page with a title or<br/><input type="hidden" name="files" value="'+files+'"/><input type="hidden" name="format" value=""/>\
-		a would you prefer the scan as the page.<br/>'+(print?'Printer: <select id="printer_name" name="printer" style="width:214px;"><option value="">Loading...</option></select><br/>'+
-		'Sides: <select name="side" style="width:222px;"><option value="1">Single Sided</option><option value="2">Double Sided</option></select><br>':'')+
-		'Paper Type: <select id="PDF_PAPER" name="size" style="width:190px;"><option value="">Loading...</option></select>'+
-		'<button type="submit"><img src="res/images/pdf-scaled.png" width="106" height="128" alt="With title"/></button>\
+	getID("blanket").childNodes[0].innerHTML='<form onsubmit="return PDF_popup(this,false)" target="_blank" action="#" method="GET">'+
+		(print?'<div id="p_config" style="float:right;width:260px;text-align:left;overflow-y:auto;overflow-x:hidden;"></div>':'')+'How would you prefer for your PDF '+
+		(print?'<b>printed</b>':'download')+'?<br/>A scan placed on the page with a title or<br/><input type="hidden" name="files" value="'+files+'"/>\
+		<input type="hidden" name="format" value=""/>a would you prefer the scan as the page.<br/>Paper Type: <select id="PDF_PAPER" name="size" style="width:190px;">\
+		<option value="">Loading...</option></select><button type="submit"><img src="res/images/pdf-scaled.png" width="106" height="128" alt="With title"/></button>\
 		<button type="submit" onclick="this.parentNode.format.value=\'full\';"><img src="res/images/pdf-full.png" width="106" height="128" alt="Fill page with scan"/></button>\
 		<br/><input type="submit" onclick="this.parentNode.format.value=\'raw\';" value="I don\'t care just '+(print?'print it':'give me a PDF')+'" style="width:261px"/>\
-		<br/><input type="button" value="Cancel" style="width:261px;" onclick="toggle(\'blanket\')"/><input type="hidden" name="print" value="'+print+'"/></form>';
+		<br/><input type="button" value="Cancel" style="width:261px;" onclick="toggle(\'blanket\')"/></form>';
 	if(paper==null){
 		var httpRequest = new XMLHttpRequest();
 		httpRequest.onreadystatechange = function(){
@@ -839,26 +900,18 @@ function PDF_popup(files,print){
 		var httpRequest2 = new XMLHttpRequest();
 		httpRequest2.onreadystatechange = function(){
 			if(httpRequest2.readyState==4){
-				var ele=getID('printer_name'),i,opt;
-				if(httpRequest2.status==200){
-					ele.removeChild(ele.childNodes[0]);
-					print=httpRequest2.responseText.split(',');
-					for(i=0;i<print.length;i++){
-						opt=document.createElement('option');
-						opt.value=print[i];
-						opt[TC]=print[i];
-						ele.appendChild(opt);
-					}
-				}
-				else{
-					ele.childNodes[0][TC]="Error getting list";
-				}
+				var ele=getID('p_config');
+				ele.style.maxHeight=ele.parentNode.offsetHeight+'px';
+				if(httpRequest2.status==200)
+					buildPrinterOptions(parseJSON(httpRequest2.responseText),ele,false);
+				else if(httpRequest2.status==404)
+					alert('Error:\nPrinter(s) have not been searched for, please visit the Configure page!');
 			}
 		};
-		httpRequest2.open('GET', 'res/printer.php?list&nocache='+new Date().getTime());
+		httpRequest2.open('GET', 'config/printers.json?nocache='+new Date().getTime());
 		httpRequest2.send(null);
 	}
-	popup('blanket',290);
+	popup('blanket',print?540:290);
 	return false;
 }
 function toggleFile(file){

@@ -468,7 +468,7 @@ div.ie_276228 {/* http://support.microsoft.com/kb/276228 */
 	padding: 0;
 }
 
-.side_box select {
+.side_box select, #popUpDiv #p_config select {
 	font-size: 12px;
 	width: 157px;
 }
@@ -503,7 +503,6 @@ select.upper, select.upper option {
 }
 
 #preview {
-	width: 462px;
 	border: 1px solid #<?php echo $HB_COLOR; ?>;
 	float: left;
 	padding: 0;
@@ -623,6 +622,10 @@ img[src="res/images/blank.gif"] {
 
 .box {
 	width: 235px;
+}
+
+.box-wide {
+	width: 462px;
 }
 
 .box-full {

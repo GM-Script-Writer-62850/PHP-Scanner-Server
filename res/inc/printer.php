@@ -44,32 +44,42 @@ if( isset($_FILES['pdf']) || isset($_POST['raw']) ){
 			Print_Message('Error',html($_FILES['pdf']['name'].' does not look like a PDF'),$ALIGN);
 		}
 	}
-	unset($file);
 }
-include('res/printer.php');
-$sel='<select name="printer">';
-for($i=0;$i<count($printers);$i=$i+1){
-	if(strlen($printers[$i])>0)
-		$sel=$sel.'<option value="'.html($printers[$i]).'">'.html($printers[$i]).'</option>';
-}
-$sel=$sel.'</select> using <select name="side"><option value="1">Single</option><option value="2">Double</option></select> Sided printing.';
 $upLimit=getMaximumFileUploadSize();
 ?>
-<div class="box box-full">
-	<h2>PDF Printing</h2>
-	<form action="index.php?page=Printer" method="post" enctype="multipart/form-data" onsubmit="try{if(this.pdf.files[0].size>=<?php echo $upLimit; ?>){this.submit.value='Submit';alert(this.pdf.files[0].name+'\nis too big!');return false;}}catch(e){}">
+<form name="Printer" action="index.php?page=Printer" method="post" enctype="multipart/form-data" onsubmit="return submitPrint(this,<?php echo $upLimit; ?>,false);">
+	<input type="hidden" name="format"/>
+	<input type="hidden" name="options"/>
+	<div id="sidebar" style="min-height:100px;">
+		<div class="side_box">
+			<h2>Printer Configuration</h2>
+			<div id="p_config">
+				<script type="text/javascript">
+					var printers=<?php 
+						$f=file_get_contents('config/printers.json'); 
+						echo $f===false?'\'Printers have not been configured, please <a href="index.php?page=Config&action=Search-For-Printers">search for printers</a> on the <a href="index.php?page=Config">Configure</a> page.\'':$f;
+					?>;
+					if(typeof printers=="object"){
+						buildPrinterOptions(printers,getID('p_config'),false);
+					}
+					else
+						document.write(printers);
+				</script>
+			</div>
+		</div>
+	</div>
+	<div class="box box-wide">
+		<h2>PDF Printing</h2>
 		<p class="center">
-			<input type="file" name="pdf"/> (<?php echo $upLimit/1024/1024; ?> Megabyte limit)<br/>
-			<input type="submit" name="submit" value="Submit" onclick="this.value='Uploading';"/> to <?php echo $sel; ?>
+			<input type="file" name="pdf" onchange="submitPrint(Printer,<?php echo $upLimit; ?>,true)"/> (<?php echo $upLimit/1024/1024; ?> Megabyte limit)<br/>
+			<input type="submit" name="submit" value="Submit" onclick="Printer.format.value='pdf';this.value='Uploading';"/>
 		</p>
-	</form>
-</div>
-<div class="box box-full">
-	<h2>RAW Printing</h2>
-	<form action="index.php?page=Printer" method="post" enctype="multipart/form-data">
+	</div>
+	<div class="box box-wide">
+		<h2>RAW Printing</h2>
 		<p class="center">
 			<textarea name="raw" style="width:calc(100% - 10px);height:300px;"></textarea><br/>
-			<input type="submit" name="submit" value="Submit"/> to <?php echo $sel; ?>
+			<input type="submit" name="submit" value="Submit" onclick="Printer.format.value='raw';"/>
 		</p>
-	</form>
-</div>
+	</div>
+</form>

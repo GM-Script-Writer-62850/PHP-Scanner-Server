@@ -384,8 +384,31 @@ if($RequireLogin&&!$Auth||$PAGE=='Login'){
 # Printer Page
 # ****************
 else if($PAGE=="Printer"){
-	InsertHeader('Printer');
-	include('res/inc/printer.php');
+	if(isset($ACTION)&&$Printer>0){
+		InsertHeader('Printer List');
+		$json=file_get_contents('config/printers.json');
+		if(is_bool($json))
+			Print_Message("Error",'No printers have been <a href="index.php?page=Printer&action=List">searched for</a>.',"center");
+		else{
+			echo "<div class=\"box box-full\"><h2>$PAGE $ACTION</h2><p>";
+			$json=json_decode(file_get_contents('config/printers.json'));
+			echo "<ul>";
+			foreach($json as $key => $val){
+				echo "<li>$key<ul>";
+					for($i=count($val)-1;$i>-1;$i=$i-1){
+						echo "<li>".$val[$i]->{"name"}.
+								"<ul>".implode(", ",$val[$i]->{"value"})."</ul>".
+							"</li>";
+					}
+				echo "</ul></li>";
+			}
+			echo "<p/></div>";
+		}
+	}
+	else{
+		InsertHeader('Printer');
+		include('res/inc/printer.php');
+	}
 	Footer('');
 }
 # ****************
@@ -481,7 +504,47 @@ else if($PAGE=="Config"){
 
 	Footer('');
 
-	if($ACTION=="Search-For-Scanners"){ # Find avalible scanners on the system
+	if($ACTION=="Search-For-Printers"&&$Printer>0){ # Find avalible printers on the system
+		unset($file);
+		include('res/printer.php');
+		$json=(object)array();
+		$list=array();
+		for($x=count($printers)-1;$x>-1;$x=$x-1){
+			$opt=array_filter(explode("\n",exe('lpoptions -d '.escapeshellarg($printers[$x]).' -l',true)));
+			array_push($list,$printers[$x]);
+			$arr=array();
+			for($i=count($opt)-1;$i>-1;$i=$i-1){
+				$line=explode(": ",$opt[$i]);
+				$name=explode("/",$line[0]);
+				$values=explode(" ",$line[1]);
+				for($y=count($values)-1;$y>-1;$y=$y-1){
+					if(substr($values[$y],0,1)=='*'){
+						$values[$y]=substr($values[$y],1);
+						$default=$values[$y];
+						break;
+					}
+				}
+				array_push($arr,
+					(object)array(
+						"name"=>$name[1],
+						"id"=>$name[0],
+						"value"=>$values,
+						"default"=>$default
+					)
+				);
+			}
+			$json->{$printers[$x]}=$arr;
+		}
+		if(count($list)>0){
+			if(SaveFile("config/printers.json",json_encode($json)))
+				Print_Message('Success',count($list).' printer(s) have been found and configured.<br/>'.implode(", ",$list).' were found.','center');
+			else
+				Print_Message('Failure','Bad news: <code>'.$user.'</code> does not have permission to write files to the <code>'.html(getcwd()).'/config</code> folder.','cetner');
+		}
+		else
+			Print_Message('Error','No printers found!!!<br/>Please go to your <a href="http://'.$_SERVER['HTTP_HOST'].':631">CUPS</a> configuration to setup printers.','center');
+	}
+	else if($ACTION=="Search-For-Scanners"){ # Find avalible scanners on the system
 		$OP=json_decode(
 			"[".substr(
 				exe('scanimage -f "{\\"ID\\":%i,\\"INUSE\\":0,\\"DEVICE\\":\\"%d\\",\\"NAME\\":\\"%v %m %t\\"},"',true),
@@ -624,7 +687,7 @@ else if($PAGE=="Config"){
 			Print_Message("No Scanners Found","There were no scanners found on this server. Make sure the scanners are plugged in and turned on. The scanner must also be supported by SANE.<br/>".
 				"<a href=\"index.php?page=Parallel-Form\">[Click here for parallel-port scanners]</a><br/>".
 				"If it is supported by sane and still does not showup (usb) or does not work (parallel) you may need to use the <a href=\"index.php?page=Access%20Enabler\">Access Enabler</a>".
-				(in_array('lp',explode(' ',str_replace("\n",' ',exe("groups ".shell($user),true))))?'':"<br/>It appears $user is not in the lp group did you read the <a href=\"index.php?page=About\">Installation Notes</a>?"),'center');
+				(in_array('lp',explode(' ',str_replace("\n",' ',exe("groups ".shell($user),true))))?'':"<br/>It appears $user is not in the lp group! Did you read the <a href=\"index.php?page=About\">Installation Notes</a>?"),'center');
 		else
 			Print_Message("Scanners Found:",$CANNERS,'center');
 	}

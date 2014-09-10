@@ -107,7 +107,7 @@ Save Image
 </div>
 
 <!-- Preview Pane -->
-<div id="preview">
+<div id="preview" class="box-wide">
 <div id="preview_links">
 <h2><?php echo html($file); ?></h2>
 <p>
