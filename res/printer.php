@@ -11,7 +11,7 @@ if(function_exists('exe')){// internal call via inc/printer.php
 		Print_Message(
 			$_POST['printer'],
 			'Your document is being processed:<br/><pre>'.html(
-				exe('lp -d '.shell($_POST['printer'])." -o $o /tmp/test.pdf",true) // Print via Printer page
+				exe('lp -d '.shell($_POST['printer'])." -o $o $file",true) // Print via Printer page
 			).'</pre>',
 			'center'
 		);
@@ -24,7 +24,7 @@ else if(isset($Printer)){ // internal call via include from ../download.php
 	$o=escapeshellarg($_GET['options']);
 	echo json_encode((object)array(
 		'printer'=>$_GET['printer'],
-		'message'=>shell_exec('lp -d '.escapeshellarg($_GET['printer'])." -o $o /tmp/test.pdf")// This line makes it print using the integrated printer
+		'message'=>shell_exec('lp -d '.escapeshellarg($_GET['printer'])." -o $o $file")// This line makes it print using the integrated printer
 	));
 }
 else{
