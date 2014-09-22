@@ -581,9 +581,15 @@ else if($PAGE=="Config"){
 			else
 				$help=file_get_contents('res/scanhelp/'.$OP[$i]->{"NAME"});
 			// Get Source
-			$sources=substr($help,strpos($help,'--source ')+9);
-			$defSource=substr($sources,strpos($sources,' [')+2);
-			$defSource=substr($defSource,0,strpos($defSource,']'));
+			$sources=strpos($help,'--source ');
+			if(is_bool($sources)){
+				$defSource='Inactive';
+			}
+			else{
+				$sources=substr($help,strpos($help,'--source ')+9);
+				$defSource=substr($sources,strpos($sources,' [')+2);
+				$defSource=substr($defSource,0,strpos($defSource,']'));
+			}
 			$OP[$i]->{"SOURCE"}=strtolower($defSource)=='inactive'?'Inactive':substr($sources,0,strpos($sources,' ['));
 			$sources=explode('|',$OP[$i]->{"SOURCE"});
 
