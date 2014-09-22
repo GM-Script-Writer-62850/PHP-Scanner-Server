@@ -586,7 +586,7 @@ else if($PAGE=="Config"){
 				$defSource='Inactive';
 			}
 			else{
-				$sources=substr($help,strpos($help,'--source ')+9);
+				$sources=substr($help,$sources+9);
 				$defSource=substr($sources,strpos($sources,' [')+2);
 				$defSource=substr($defSource,0,strpos($defSource,']'));
 			}
