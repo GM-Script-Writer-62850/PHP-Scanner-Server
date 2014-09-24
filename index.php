@@ -582,9 +582,8 @@ else if($PAGE=="Config"){
 				$help=file_get_contents('res/scanhelp/'.$OP[$i]->{"NAME"});
 			// Get Source
 			$sources=strpos($help,'--source ');
-			if(is_bool($sources)){
+			if(is_bool($sources))
 				$defSource='Inactive';
-			}
 			else{
 				$sources=substr($help,$sources+9);
 				$defSource=substr($sources,strpos($sources,' [')+2);

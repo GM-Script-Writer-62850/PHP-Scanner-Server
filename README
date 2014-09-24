@@ -5,8 +5,8 @@ Based on Linux Scanner Server 1.2 Beta
 
 Released under the GPL 2.0
 
-Last Update: 9/8/2014 (Month/Day/Year)
-For Version: 1.4-11_dev
+Last Update: 9/22/2014 (Month/Day/Year)
+For Version: 1.4-12_dev
 
 Change Log:
 	https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server/wiki/Change-Log
@@ -29,6 +29,7 @@ The following packages need to be installed:
 + libpaper-utils         - For detecting paper sizes
 + sed                    - Used in the fallback method of detecting tesseract languages
 + grep                   - Used in the fallback method of detecting tesseract languages
+_ cups                   - Required if you want to use the printer service
 _ php5-cli               - For running php from command line
 _ curl                   - For making url request via command line through the network (alternative to php5-cli)
 _ tesseract-ocr-eng      - English language file for tesseract
@@ -218,6 +219,15 @@ Frequently asked questions/issues:
 		because the selected paper size will only fit in the scanner one way
 	Why is the pdf download (single page) not working I keep getting a file with a error in it
 		The script assumes fpdf.php is located in /usr/share/php/fpdf/ this is set on line 2 of download.php
+	Why is it hanging up when I search for printers
+		It assumes all found printers are connected to the computer, lpoptions seems to hang when the printer it is looking for is not there
+	How do I increase the max upload size for PDFs?
+		You need to edit your php.ini file
+			for me it was located in 
+				/etc/php5/apache2/php.ini
+			You will need to change the post_max_size and upload_max_filesize
+			For me theres were on lines 673 and 805
+			If post_max_size is the lower value it will limit the upload size, this value should in practive be the larger value by just a little
 Internal Configuration Options:
 	Free Space Warning
 		This puts a warning on the page if you are low on disk space

@@ -7,11 +7,13 @@
 $lpstat='lpstat -a | awk \'{print $1}\'';// command used to find printers
 if(function_exists('exe')){// internal call via inc/printer.php
 	if(isset($file)){
+		$_POST['quanity']=intval($_POST['quanity']);
+		$q=$_POST['quanity']>0?$_POST['quanity']:1;
 		$o=escapeshellarg($_POST['options']);
 		Print_Message(
 			$_POST['printer'],
 			'Your document is being processed:<br/><pre>'.html(
-				exe('lp -d '.shell($_POST['printer'])." -o $o $file",true) // Print via Printer page
+				exe('lp -d '.shell($_POST['printer'])." -n $q -o $o $file",true) // Print via Printer page
 			).'</pre>',
 			'center'
 		);
@@ -21,10 +23,12 @@ if(function_exists('exe')){// internal call via inc/printer.php
 }
 else if(isset($Printer)){ // internal call via include from ../download.php
 	header('Content-type: application/json; charset=UTF-8');
+	$_GET['quanity']=intval($_GET['quanity']);
+	$q=$_GET['quanity']>0?$_GET['quanity']:1;
 	$o=escapeshellarg($_GET['options']);
 	echo json_encode((object)array(
 		'printer'=>$_GET['printer'],
-		'message'=>shell_exec('lp -d '.escapeshellarg($_GET['printer'])." -o $o $file")// This line makes it print using the integrated printer
+		'message'=>shell_exec('lp -d '.escapeshellarg($_GET['printer'])." -n $q -o $o $file") // This line makes it print using the integrated printer
 	));
 }
 else{

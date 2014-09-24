@@ -1,0 +1,61 @@
+Usage: scanimage [OPTION]...
+
+Start image acquisition on a scanner device and write image data to
+standard output.
+
+Parameters are separated by a blank from single-character options (e.g.
+-d epson) and by a "=" from multi-character options (e.g. --device-name=epson).
+-d, --device-name=DEVICE   use a given scanner device (e.g. hp:/dev/scanner)
+    --format=pnm|tiff      file format of output file
+-i, --icc-profile=PROFILE  include this ICC profile into TIFF file
+-L, --list-devices         show available scanner devices
+-f, --formatted-device-list=FORMAT similar to -L, but the FORMAT of the output
+                           can be specified: %d (device name), %v (vendor),
+                           %m (model), %t (type), %i (index number), and
+                           %n (newline)
+-b, --batch[=FORMAT]       working in batch mode, FORMAT is `out%d.pnm' or
+                           `out%d.tif' by default depending on --format
+    --batch-start=#        page number to start naming files with
+    --batch-count=#        how many pages to scan in batch mode
+    --batch-increment=#    increase page number in filename by #
+    --batch-double         increment page number by two, same as
+                           --batch-increment=2
+    --batch-prompt         ask for pressing a key before scanning a page
+    --accept-md5-only      only accept authorization requests using md5
+-p, --progress             print progress messages
+-n, --dont-scan            only set options, don't actually scan
+-T, --test                 test backend thoroughly
+-A, --all-options          list all available backend options
+-h, --help                 display this help message and exit
+-v, --verbose              give even more status messages
+-B, --buffer-size=#        change input buffer size (in kB, default 32)
+-V, --version              print version information
+
+Options specific to device `niash:libusb:003:004':
+  Geometry:
+    -l 0..220mm (in steps of 1) [0]
+        Top-left x position of scan area.
+    -t 0..296mm (in steps of 1) [0]
+        Top-left y position of scan area.
+    -x 0..220mm (in steps of 1) [210]
+        Width of scan-area.
+    -y 0..296mm (in steps of 1) [290]
+        Height of scan-area.
+    --resolution 75|150|300|600dpi [150]
+        Sets the resolution of the scanned image.
+  Image:
+    --gamma-table 0..255,... (in steps of 1)
+        Gamma-correction table.  In color mode this option equally affects the
+        red, green, and blue channels simultaneously (i.e., it is an intensity
+        gamma table).
+  Scan Mode:
+    --mode Color|Gray|Lineart [Color]
+        Selects the scan mode (e.g., lineart, monochrome, or color).
+  Enhancement:
+    --threshold 0..100% (in steps of 1) [inactive]
+        Select minimum-brightness to get a white point
+
+Type ``scanimage --help -d DEVICE'' to get list of all options for DEVICE.
+
+List of available devices:
+    niash:libusb:003:004

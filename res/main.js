@@ -411,6 +411,7 @@ function checkScanners(){
 function buildPrinterOptions(json,p,P){
 	var printer,i,opt,val,DIV,SEL,OPT;
 	p.innerHTML='';
+
 	DIV=document.createElement('div');
 	DIV.style.display='inline-block';
 	DIV.innerHTML='<div class="label">Printer: </div><div class="control"></div>';
@@ -429,6 +430,21 @@ function buildPrinterOptions(json,p,P){
 			OPT.setAttribute('selected','selected');
 		SEL.appendChild(OPT);
 	}
+
+	DIV=document.createElement('div');
+	DIV.style.display='inline-block';
+	DIV.innerHTML='<div class="label">Quanity:</div><div class="control"></div>';
+	SEL=document.createElement('select');
+	SEL.name='quanity';
+	for(i=0;i<100;i++){
+		OPT=document.createElement('option');
+		OPT.value=i+1;
+		OPT.textContent=i+1;
+		SEL.appendChild(OPT);
+	}
+	DIV.childNodes[1].appendChild(SEL);
+	p.appendChild(DIV);
+
 	printer=P?P:SEL.value;
 	for(i in json[printer]){
 		DIV=document.createElement('div');
