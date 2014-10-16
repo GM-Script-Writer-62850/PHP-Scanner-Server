@@ -430,6 +430,7 @@ function buildPrinterOptions(json,p,P){
 			OPT.setAttribute('selected','selected');
 		SEL.appendChild(OPT);
 	}
+	printer=P?P:SEL.value;
 
 	DIV=document.createElement('div');
 	DIV.style.display='inline-block';
@@ -445,7 +446,6 @@ function buildPrinterOptions(json,p,P){
 	DIV.childNodes[1].appendChild(SEL);
 	p.appendChild(DIV);
 
-	printer=P?P:SEL.value;
 	for(i in json[printer]){
 		DIV=document.createElement('div');
 		DIV.style.display='inline-block';
