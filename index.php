@@ -1133,8 +1133,8 @@ else{
 		}
 		else if($sizes[0]<=$scanner_w&&$sizes[1]<=$scanner_h&&$sizes[1]<=$scanner_w&&$sizes[0]<=$scanner_h){// fits both ways
 			if($ORNT!="vert"){
-				$SIZE_X=$sizes[0];
-				$SIZE_Y=$sizes[1];
+				$SIZE_X=$sizes[1];
+				$SIZE_Y=$sizes[0];
 			}
 			else{
 				$SIZE_X=$sizes[0];
