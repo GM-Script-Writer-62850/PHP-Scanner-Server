@@ -577,7 +577,7 @@ else if($PAGE=="Config"){
 		}
 		for($i=0;$i<$ct;$i++){// Get scanner specific data
 			if($i<$ct-$FakeCt)
-				$help=exe("scanimage --help -d ".shell($OP[$i]->{"DEVICE"}),true);
+				$help=exe("scanimage -A -d ".shell($OP[$i]->{"DEVICE"}),true);
 			else
 				$help=file_get_contents('res/scanhelp/'.$OP[$i]->{"NAME"});
 			// Get Source
@@ -597,14 +597,19 @@ else if($PAGE=="Config"){
 					$help2=$help;
 				else{
 					if($i<$ct-$FakeCt)
-						$help2=exe("scanimage --help -d ".shell($OP[$i]->{"DEVICE"})." --source ".shell($val),true);
+						$help2=exe("scanimage -A -d ".shell($OP[$i]->{"DEVICE"})." --source ".shell($val),true);
 					else{
 						$help2=file_get_contents('res/scanhelp/'.$OP[$i]->{"NAME"});
-						exe("echo ".shell("scanimage --help -d 'SIMULATED_$i-$key' --source '$val'"),true);
+						exe("echo ".shell("scanimage -A -d 'SIMULATED_$i-$key' --source '$val'"),true);
 					}
 				}
 				if(!is_bool(strpos($help2,' (core dumped)')))
 					Print_Message("Warning: scanimage crashed",html($OP[$i]->{"NAME"})." may not be configured properly.<br/>Check the Debug Console for details.",'center');
+				if(!is_bool(strpos($help2,' failed: '))){
+					$err=substr($help2,strpos($help2,' failed: ')+9);
+					$err=substr($err,0,strpos($err,"\n"));
+					Print_Message('Failed: '.html($err),html($OP[$i]->{"NAME"})." is probably not configured properly.<br/>Check the Debug Console for details.",'center');
+				}
 				// Get DPI
 				$res=substr($help2,strpos($help2,'--resolution ')+13);
 				$res=substr($res,0,strpos($res,'dpi'));
@@ -627,7 +632,7 @@ else if($PAGE=="Config"){
 					$duplex=substr($help2,$duplex+21);
 					$duplex=substr($duplex,0,strpos($duplex,']'));
 					$duplex=strtolower($duplex)!=='inactive';
-					// TODO: add support for --adf-mode Simplex|Duplex [inactive]
+					// TODO: add support for --adf-mode Simplex|Duplex [inactive] (i thought i did this, did i not?)
 				}
 				else{
 					$duplex=strpos($help2,'--adf-mode ');
@@ -796,7 +801,7 @@ else if($PAGE=="Device Notes"){
 			$SOURCE='';
 		else
 			$SOURCE=' --source '.shell($SOURCE);
-		$help=exe("scanimage --help -d ".shell($ACTION).$SOURCE,true);
+		$help=exe("scanimage -A -d ".shell($ACTION).$SOURCE,true);
 		echo "<div class=\"box box-full\"><h2>$ACTION</h2><pre>".$help."</pre></div>";
 	}
 	else{// List Scanners
