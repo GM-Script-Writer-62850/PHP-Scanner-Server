@@ -422,10 +422,10 @@ function buildPrinterOptions(json,p,P){
 	},false);
 	DIV.childNodes[1].appendChild(SEL);
 	p.appendChild(DIV);
-	for(printer in json){
+	for(printer in json['printers']){
 		OPT=document.createElement('option');
 		OPT.value=printer;
-		OPT.textContent=printer;
+		OPT.textContent=printer+(json['locations'][printer]?' ('+json['locations'][printer]+')':'');
 		if(printer==P)
 			OPT.setAttribute('selected','selected');
 		SEL.appendChild(OPT);
@@ -446,17 +446,17 @@ function buildPrinterOptions(json,p,P){
 	DIV.childNodes[1].appendChild(SEL);
 	p.appendChild(DIV);
 
-	for(i in json[printer]){
+	for(i in json['printers'][printer]){
 		DIV=document.createElement('div');
 		DIV.style.display='inline-block';
-		DIV.innerHTML='<div class="label">'+json[printer][i]['name']+':</div><div class="control"></div>';
+		DIV.innerHTML='<div class="label">'+json['printers'][printer][i]['name']+':</div><div class="control"></div>';
 		SEL=document.createElement('select');
-		SEL.name=json[printer][i]['id'];
-		for(val in json[printer][i]['value']){
+		SEL.name=json['printers'][printer][i]['id'];
+		for(val in json['printers'][printer][i]['value']){
 			OPT=document.createElement('option');
-			OPT.value=json[printer][i]['value'][val];
-			OPT.textContent=json[printer][i]['value'][val];
-			if(json[printer][i]['default']==json[printer][i]['value'][val])
+			OPT.value=json['printers'][printer][i]['value'][val];
+			OPT.textContent=json['printers'][printer][i]['value'][val];
+			if(json['printers'][printer][i]['default']==json[printer][i]['value'][val])
 				OPT.setAttribute('selected','selected');
 			SEL.appendChild(OPT);
 		}

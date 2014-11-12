@@ -272,6 +272,10 @@ Internal Configuration Options:
 		Setting this option to 2 enables it ONLY for uploaded content via the Printer page
 		Setting this option to 3 enables it for both uploading documetns and printing scanned documents
 		This is set on line 12 of config.ini
+	HomePage
+		This option allows one to change the home page within the scanner server
+		While is supports a vast number of pages, the only options I consider usefull are Scan and Printer
+		This is set on line 13 of config.ini
 
 Credit where credit is due:
 	PHiLLIP KLiEWER

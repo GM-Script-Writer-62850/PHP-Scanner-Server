@@ -390,19 +390,33 @@ else if($PAGE=="Printer"){
 		if(is_bool($json))
 			Print_Message("Error",'No printers have been <a href="index.php?page=Printer&action=List">searched for</a>.',"center");
 		else{
-			echo "<div class=\"box box-full\"><h2>$PAGE $ACTION</h2><p>";
+			echo '<div class="box box-full"><h2>'."$PAGE $ACTION".'</h2><form action="index.php?page=Printer&action=List" method="POST">';
 			$json=json_decode(file_get_contents('config/printers.json'));
 			$DELETE=Get_Values('delete');
 			if($DELETE){
-				unset($json->{$DELETE});
+				unset($json->{'printers'}->{$DELETE});
+				if(isset($json->{'locations'}->{$DELETE}))
+					unset($json->{'locations'}->{$DELETE});
 				if(SaveFile('config/printers.json',json_encode($json)))
 					Print_Message("Printer has been remove",html($DELETE).' has been removed, It can be reacquired by <a href="index.php?page=Config&action=Search-For-Printers">searching for printers</a>',"center");
 				else
 					Print_Message("Access Denied","Failed to save changes, ".html($DELETE)." still exist, please contact your administrator. This can not happen unless they wanted it to. Well maybe if something has gone very very wrong.","center");
 			}
+			else if(count($_POST)>0){
+				foreach($_POST as $key => $val){
+					if(isset($json->{'printers'}->{$key})&&$val!=''){
+						$json->{'locations'}->{$key}=$val;
+					}
+				}
+				if(SaveFile('config/printers.json',json_encode($json)))
+					Print_Message("Saved","All printer locations have been stored","center");
+				else
+					Print_Message("Access Denied","Failed to save changes, ".html($DELETE)." still exist, please contact your administrator. This can not happen unless they wanted it to. Well maybe if something has gone very very wrong.","center");
+			}
 			echo "<ul>";
-			foreach($json as $key => $val){
-				echo '<li>'.$key.' <a href="index.php?page=Printer&action=List&delete='.html($key).'"><span class="del icon tool right"><span class="tip">Remove '.$key.'</span></span></a><ul>';
+			foreach($json->{"printers"} as $key => $val){
+				echo '<li>'.html($key).' <a href="index.php?page=Printer&action=List&delete='.html($key).'"><span class="del icon tool right"><span class="tip">Remove '.html($key).'</span></span></a><ul>';
+					echo '<li>Location<ul><input name="'.html($key).'" value="'.(isset($json->{"locations"}->{$key})?$json->{"locations"}->{$key}:'').'"/><input type="submit" value="Set"/></ul></li>';
 					for($i=count($val)-1;$i>-1;$i=$i-1){
 						echo "<li>".$val[$i]->{"name"}.
 								"<ul>".implode(", ",$val[$i]->{"value"})."</ul>".
@@ -410,7 +424,7 @@ else if($PAGE=="Printer"){
 					}
 				echo "</ul></li>";
 			}
-			echo "<p/></div>";
+			echo "</ul></form></div>";
 		}
 	}
 	else{
@@ -544,6 +558,7 @@ else if($PAGE=="Config"){
 			$json->{$printers[$x]}=$arr;
 		}
 		if(count($list)>0){
+			$json=(object)array("printers"=>$json,"locations"=>(object)array());
 			if(SaveFile("config/printers.json",json_encode($json)))
 				Print_Message('Success',count($list).' Printer(s) have been found and configured.<br/><ul style="text-align:left"><li>'.implode("</li><li>",$list).'</li></ul>','center');
 			else
