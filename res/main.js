@@ -477,7 +477,8 @@ function submitPrint(o,limit,test){
 	for(i=p.length-1;i>0;i--)
 		opt.push(p[i].name+'='+p[i].value);
 	o.options.value=opt.join();
-	localStorage.setItem("lastPrinter", o.printer.value);
+	if(localStorage)
+		localStorage.setItem("lastPrinter", o.printer.value);
 }
 function printMsg(t,m,a,r){// if r is -1 message goes at the top of the message list
 	var div=document.createElement('div');

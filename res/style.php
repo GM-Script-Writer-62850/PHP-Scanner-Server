@@ -355,6 +355,11 @@ h2 > .del {
 	background-image: url("images/buttons.png");
 	border: 1px solid #<?php echo $HB_COLOR; ?>;
 }
+.icon.right{
+	float: right;
+	margin-right: 3px;
+	border-radius: 3px;
+}
 p span .icon{
 	margin-bottom: 3px;
 }

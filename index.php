@@ -341,7 +341,7 @@ $PAGE=Get_Values('page');
 $ACTION=Get_Values('action');
 
 if($PAGE==NULL)
-	$PAGE="Scan";
+	$PAGE=$HomePage;
 
 # ****************
 # Verify Install (For anyone who installs from git and does not read the notes written in several places)
@@ -392,9 +392,17 @@ else if($PAGE=="Printer"){
 		else{
 			echo "<div class=\"box box-full\"><h2>$PAGE $ACTION</h2><p>";
 			$json=json_decode(file_get_contents('config/printers.json'));
+			$DELETE=Get_Values('delete');
+			if($DELETE){
+				unset($json->{$DELETE});
+				if(SaveFile('config/printers.json',json_encode($json)))
+					Print_Message("Printer has been remove",html($DELETE).' has been removed, It can be reacquired by <a href="index.php?page=Config&action=Search-For-Printers">searching for printers</a>',"center");
+				else
+					Print_Message("Access Denied","Failed to save changes, ".html($DELETE)." still exist, please contact your administrator. This can not happen unless they wanted it to. Well maybe if something has gone very very wrong.","center");
+			}
 			echo "<ul>";
 			foreach($json as $key => $val){
-				echo "<li>$key<ul>";
+				echo '<li>'.$key.' <a href="index.php?page=Printer&action=List&delete='.html($key).'"><span class="del icon tool right"><span class="tip">Remove '.$key.'</span></span></a><ul>';
 					for($i=count($val)-1;$i>-1;$i=$i-1){
 						echo "<li>".$val[$i]->{"name"}.
 								"<ul>".implode(", ",$val[$i]->{"value"})."</ul>".
@@ -537,7 +545,7 @@ else if($PAGE=="Config"){
 		}
 		if(count($list)>0){
 			if(SaveFile("config/printers.json",json_encode($json)))
-				Print_Message('Success',count($list).' printer(s) have been found and configured.<br/>'.implode(", ",$list).' were found.','center');
+				Print_Message('Success',count($list).' Printer(s) have been found and configured.<br/><ul style="text-align:left"><li>'.implode("</li><li>",$list).'</li></ul>','center');
 			else
 				Print_Message('Failure','Bad news: <code>'.$user.'</code> does not have permission to write files to the <code>'.html(getcwd()).'/config</code> folder.','cetner');
 		}

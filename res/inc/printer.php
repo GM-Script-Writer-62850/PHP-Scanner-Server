@@ -78,14 +78,15 @@ $upLimit=getMaximumFileUploadSize();
 		<h2>PDF Printing</h2>
 		<p class="center">
 			<input type="file" name="pdf" onchange="submitPrint(Printer,<?php echo $upLimit; ?>,true)"/> (<?php echo $upLimit/1024/1024; ?> Megabyte limit)<br/>
-			<input type="submit" name="submit" value="Submit" onclick="Printer.format.value='pdf';this.value='Uploading';"/>
+			<input type="submit" name="submit" value="Print PDF" onclick="Printer.format.value='pdf';this.value='Uploading';"/>
 		</p>
 	</div>
 	<div class="box box-wide">
-		<h2>RAW Printing</h2>
+		<h2>RAW Printing (Plain Text)</h2>
 		<p class="center">
+			Please paste or type your text in the space below.<br/>
 			<textarea name="raw" style="width:calc(100% - 10px);height:300px;"></textarea><br/>
-			<input type="submit" name="submit" value="Submit" onclick="Printer.format.value='raw';"/>
+			<input type="submit" name="submit" value="Print RAW Text" onclick="Printer.format.value='raw';"/>
 		</p>
 	</div>
 </form>

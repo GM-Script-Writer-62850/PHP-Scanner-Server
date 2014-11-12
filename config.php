@@ -11,6 +11,7 @@ $DarkPicker=(bool)$cfg['DarkPicker'];
 $RulerIncrement=(double)$cfg['RulerIncrement'];
 $TimeZone=(string)$cfg['TimeZone'];
 $Printer=(integer)$cfg['Printer'];
+$HomePage=(string)$cfg['HomePage'];
 $NAME=(string)$cfg['NAME'];
 $VER=(string)$cfg['VER'];
 $SAE_VER=(string)$cfg['SAE_VER'];
