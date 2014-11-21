@@ -456,7 +456,7 @@ function buildPrinterOptions(json,p,P){
 			OPT=document.createElement('option');
 			OPT.value=json['printers'][printer][i]['value'][val];
 			OPT.textContent=json['printers'][printer][i]['value'][val];
-			if(json['printers'][printer][i]['default']==json[printer][i]['value'][val])
+			if(json['printers'][printer][i]['default']==json['printers'][printer][i]['value'][val])
 				OPT.setAttribute('selected','selected');
 			SEL.appendChild(OPT);
 		}
