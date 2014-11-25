@@ -1290,11 +1290,11 @@ else{
 			$strip=true;
 		else{
 			setcookie('lastScan',json_encode(Array(
-				"raw"=>$S_FILENAME,"preview"=>$P_FILENAME,"fields"=>Array(
-					"scanner"=>$SCANNER,"quality"=>$QUALITY,"duplex"=>$DUPLEX,
-					"size"=>$SIZE,"ornt"=>$ORNT,"mode"=>$MODE,"bright"=>$BRIGHT,
-					"contrast"=>$CONTRAST,/*"rotate"=>$ROTATE,*/"scale"=>$SCALE,//No need for rotate it will be 0 every time
-					"filetype"=>$FILETYPE,"lang"=>$LANG,"set_save"=>$SET_SAVE
+				"raw"=>$S_FILENAME,"preview"=>$P_FILENAME,"fields"=>Array("scanner"=>$SCANNER,
+					"source"=>$SOURCE,		"quality"=>$QUALITY,	"duplex"=>$DUPLEX,
+					"size"=>$SIZE,			"ornt"=>$ORNT,			"mode"=>$MODE,
+					"bright"=>$BRIGHT,		"contrast"=>$CONTRAST,	"scale"=>$SCALE,
+					"filetype"=>$FILETYPE,	"lang"=>$LANG,			"set_save"=>$SET_SAVE
 				)
 			)),time()+86400,substr($_SERVER['PHP_SELF'],0,strlen(end(explode('/',$_SERVER['PHP_SELF'])))*-1),$_SERVER['SERVER_NAME']);
 		}
