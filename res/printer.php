@@ -7,8 +7,8 @@
 $lpstat='lpstat -a | awk \'{print $1}\'';// command used to find printers
 if(function_exists('exe')){// internal call via inc/printer.php
 	if(isset($file)){
-		$_POST['quanity']=intval($_POST['quanity']);
-		$q=$_POST['quanity']>0?$_POST['quanity']:1;
+		$_POST['quantity']=intval($_POST['quantity']);
+		$q=$_POST['quantity']>0?$_POST['quantity']:1;
 		$o=escapeshellarg($_POST['options']);
 		Print_Message(
 			$_POST['printer'],
@@ -23,8 +23,8 @@ if(function_exists('exe')){// internal call via inc/printer.php
 }
 else if(isset($Printer)){ // internal call via include from ../download.php
 	header('Content-type: application/json; charset=UTF-8');
-	$_GET['quanity']=intval($_GET['quanity']);
-	$q=$_GET['quanity']>0?$_GET['quanity']:1;
+	$_GET['quantity']=intval($_GET['quantity']);
+	$q=$_GET['quantity']>0?$_GET['quantity']:1;
 	$o=escapeshellarg($_GET['options']);
 	echo json_encode((object)array(
 		'printer'=>$_GET['printer'],

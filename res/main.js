@@ -76,7 +76,7 @@ function changeColor(x,save){
 		str+=document.theme[fields[i]+'_COLOR'].value+'.';
 	var O=getID('style_old'),
 		N=getID('style_new'),T=TC;
-	if(TC=='innerText'){// Stoupid IE
+	if(TC=='innerText'){// Stupid IE
 		O=O.styleSheet;
 		N=N.styleSheet;
 		T='cssText';
@@ -220,7 +220,7 @@ function sendE(ele,e){
 		evt.initEvent(e, true, true);
 		ele.dispatchEvent(evt);
 	}
-	catch(err){//stoupid IE
+	catch(err){// Stupid IE
 		ele.fireEvent('on'+e);
 	}
 }
@@ -266,7 +266,7 @@ function storeRegion(img, sel){
 	document.scanning.loc_y2.value=sel.y2;
 }
 function setRegion(ias){
-	//Code to counter user stupidty and innocent mistakes
+	// Code to counter user stupidity and innocent mistakes, not that I have the right to call anyone stupid whit how bad my spelling is
 	if(ias.getOptions()["rotating"])
 		return false;
 	var ele=previewIMG;
@@ -301,7 +301,7 @@ function setRegion(ias){
 }
 function validateKey(ele,e,ias){
 	if(!e.which)
-		e.which=e.keyCode;// Stoupid IE needs to follow the standards
+		e.which=e.keyCode;// Stupid IE needs to follow the standards
 	if(e.which==13){// Enter
 		if(ias!=null)
 			setRegion(ias);
@@ -434,9 +434,9 @@ function buildPrinterOptions(json,p,P){
 
 	DIV=document.createElement('div');
 	DIV.style.display='inline-block';
-	DIV.innerHTML='<div class="label">Quanity:</div><div class="control"></div>';
+	DIV.innerHTML='<div class="label">Quantity:</div><div class="control"></div>';
 	SEL=document.createElement('select');
-	SEL.name='quanity';
+	SEL.name='quantity';
 	for(i=0;i<100;i++){
 		OPT=document.createElement('option');
 		OPT.value=i+1;
@@ -464,6 +464,15 @@ function buildPrinterOptions(json,p,P){
 		p.appendChild(DIV);
 	}
 }
+function genPrintOptions(p){
+	p=p.getElementsByTagName('select');
+	var i,opt=Array();
+	for(i=p.length-1;i>0;i--){
+		if(p[i].name!='quantity')
+			opt.push(p[i].name+'='+p[i].value);
+	}
+	return opt.join();
+}
 function submitPrint(o,limit,test){
 	if(o.format.value=='pdf'||test===true){
 		if(o.pdf.files[0].size>limit){
@@ -473,10 +482,7 @@ function submitPrint(o,limit,test){
 		if(test===false)
 			return;
 	}
-	var p=getID('p_config').getElementsByTagName('select'),i,opt=Array();
-	for(i=p.length-1;i>0;i--)
-		opt.push(p[i].name+'='+p[i].value);
-	o.options.value=opt.join();
+	o.options.value=genPrintOptions(p);
 	if(localStorage)
 		localStorage.setItem("lastPrinter", o.printer.value);
 }
@@ -491,7 +497,7 @@ function printMsg(t,m,a,r){// if r is -1 message goes at the top of the message 
 		ele.insertBefore(div,ele.childNodes[0]);
 	else
 		ele.appendChild(div);
-	div.style.height=(TC=='textContent'?(div.scrollHeight+'px'):'auto');// Stoupid IE7 does not apply styles set using setAttribute
+	div.style.height=(TC=='textContent'?(div.scrollHeight+'px'):'auto');// Stupid IE7 does not apply styles set using setAttribute
 	div.style.opacity=1;
 	setTimeout(function(){if(div)div.style.overflow='visible';},(TC=='textContent'?800:0));// 800ms is the animation duration in the css
 	return false;
@@ -727,6 +733,7 @@ function rotateChange(ele){
 }
 function changeBrightContrast(){// Webkit based only :(
 	// Does not work properly so lets disable it: brightness/contrast have a screwed up/illogical max %
+	// Seriously 0 to 100 sale like a percentage to darken, but brightening is 101 to infinity
 	//if(typeof(document.body.style.webkitFilter)!='string') 
 		return;
 	if(previewIMG.src.indexOf('res/images/blank.gif')>-1)
@@ -806,7 +813,7 @@ function disableIcons(){// Converts disabled icons to act like disabled icons
 		}
 	}
 	catch(e){
-		if(typeof(document.getElementsByClassName)=='function')//second most efficent
+		if(typeof(document.getElementsByClassName)=='function')//second most efficient
 			var icons=document.getElementsByClassName('tool icon');
 		else{// very inefficient 
 			var a=document.getElementsByTagName('a'),icons=Array();
@@ -849,16 +856,12 @@ function PDF_popup(files,print){
 	if(typeof(files)=='string')
 		files='{"'+files.replace(/"/g,'\"')+'":1}';
 	else if(files.tagName=='form'||files.tagName=='FORM'){
-		var p=getID('p_config'),url,i,opt;
+		var p=getID('p_config'),url;
 		if(p){
-			p=p.getElementsByTagName('select');
-			opt=Array();
-			for(i=p.length-1;i>0;i--)
-				opt.push(p[i].name+'='+p[i].value);
-			p=opt.join();
+			p=genPrintOptions(p);
 			localStorage.setItem('lastPrinter',files.printer.value);
 		}
-		url='download.php?type=pdf&json='+files.files.value+'&size='+files.size.value+'&'+files.format.value+
+		url='download.php?type=pdf&json='+files.files.value+'&quantity='+files.quantity.value+'&size='+files.size.value+'&'+files.format.value+
 				(p?'&printer='+encodeURIComponent(files.printer.value)+'&options='+p:'');
 		if(p){
 			var httpRequest = new XMLHttpRequest();
@@ -1724,7 +1727,7 @@ function setDefault(form){
 }
 document.onkeyup=function(event){
 	if(!event)
-		event=window.event;// Stoupid IE
+		event=window.event;// Stupid IE
 	if(event.ctrlKey&&(event.which==68||event.keyCode==68))// [Ctrl]+[Shift]+[D]
 		toggleDebug(true);
 }
