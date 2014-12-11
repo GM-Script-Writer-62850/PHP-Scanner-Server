@@ -93,7 +93,7 @@ if(typeof(localStorage)!='undefined'){
 			The scanner server can also allow you to print to the server's printer without any drivers via the web interface.
 			If the printer is configred and advailabe to all users it will be found.<br/>
 			<input type="submit" value="Search For Printers"/><br/>
-			<a href="index.php?page=Printer&action=List">Printer List</a>
+			<a href="index.php?page=Printer&amp;action=List">Printer List</a>
 		</p>
 	</form>
 </div>

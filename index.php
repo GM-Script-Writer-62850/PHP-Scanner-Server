@@ -390,10 +390,10 @@ else if($PAGE=="Printer"){
 		if(is_bool($json))
 			Print_Message("Error",'No printers have been <a href="index.php?page=Printer&action=List">searched for</a>.',"center");
 		else{
-			echo '<div class="box box-full"><h2>'."$PAGE $ACTION".'</h2><form action="index.php?page=Printer&action=List" method="POST">';
+			echo '<div class="box box-full"><h2>'."$PAGE $ACTION".'</h2><form action="index.php?page=Printer&amp;action=List" method="POST">';
 			$json=json_decode(file_get_contents('config/printers.json'));
 			$DELETE=Get_Values('delete');
-			if($DELETE){
+			if(isset($DELETE)){
 				unset($json->{'printers'}->{$DELETE});
 				if(isset($json->{'locations'}->{$DELETE}))
 					unset($json->{'locations'}->{$DELETE});
@@ -415,7 +415,7 @@ else if($PAGE=="Printer"){
 			}
 			echo "<ul>";
 			foreach($json->{"printers"} as $key => $val){
-				echo '<li>'.html($key).' <a href="index.php?page=Printer&action=List&delete='.html($key).'"><span class="del icon tool right"><span class="tip">Remove '.html($key).'</span></span></a><ul>';
+				echo '<li>'.html($key).' <a href="index.php?page=Printer&amp;action=List&amp;delete='.html($key).'" class="del icon tool right"><span class="tip">Remove '.html($key).'</span></a><ul>';
 					echo '<li>Location<ul><input name="'.html($key).'" value="'.(isset($json->{"locations"}->{$key})?$json->{"locations"}->{$key}:'').'"/><input type="submit" value="Set"/></ul></li>';
 					for($i=count($val)-1;$i>-1;$i=$i-1){
 						echo "<li>".$val[$i]->{"name"}.
@@ -631,7 +631,8 @@ else if($PAGE=="Config"){
 				if(!is_bool(strpos($help2,' failed: '))){
 					$err=substr($help2,strpos($help2,' failed: ')+9);
 					$err=substr($err,0,strpos($err,"\n"));
-					Print_Message('Failed: '.html($err),html($OP[$i]->{"NAME"})." is probably not configured properly.<br/>Check the Debug Console for details.",'center');
+					Print_Message('Failed: '.html($err),html($OP[$i]->{"NAME"})." is probably not configured properly.<br/>Check the Debug Console for details.<br/>".
+						"If you got a I/O error and this is a OLD scanner you may need to disable some USB3 XHCI stuff in your BIOS, even if the scanner is on a USB2 port.",'center');
 				}
 				// Get DPI
 				$res=substr($help2,strpos($help2,'--resolution ')+13);
@@ -838,32 +839,47 @@ else if($PAGE=="Device Notes"){
 		else{
 			Print_Message("New Default Scanner:",$CANNERS[$id]->{"DEVICE"},'center');
 		}
+		$DELETE=Get_Values('delete');
+		if(isset($DELETE)){
+			$new=Array();
+			$old=$CANNERS[$DELETE]->{"NAME"};
+			unset($CANNERS[$DELETE]);
+		}
 		echo "<div class=\"box box-full\"><h2>Installed Device List</h2>".'<a style="margin-left:5px;" href="index.php?page=Config&amp;action=Search-For-Scanners" onclick="printMsg(\'Searching For Scanners\',\'Please Wait...\',\'center\',0);">Scan for Devices</a>'."<ul>";
-		for($i=0,$max=count($CANNERS);$i<$max;$i++){
-			$name=html($CANNERS[$i]->{"NAME"});
-			$DEVICE=html($CANNERS[$i]->{"DEVICE"});
-			$device=url($CANNERS[$i]->{"DEVICE"});
+		foreach($CANNERS as $i=>$CANNER){
+			if(isset($DELETE))
+				array_push($new,$CANNER);
+			$name=html($CANNER->{"NAME"});
+			$DEVICE=html($CANNER->{"DEVICE"});
+			$device=url($CANNER->{"DEVICE"});
 			$res='';
-			$sources=explode('|',$CANNERS[$i]->{"SOURCE"});
-			echo "<li>$name ".(isset($CANNERS[$i]->{"SELECTED"})?'':"[<a href=\"index.php?page=Device%20Notes&amp;id=$i\">Set as default scanner</a>]").
+			$sources=explode('|',$CANNER->{"SOURCE"});
+			echo "<li>$name ".(isset($CANNER->{"SELECTED"})?'':"[<a href=\"index.php?page=Device%20Notes&amp;id=$i\">Set as default scanner</a>]").
+				"<a href=\"index.php?page=Device%20Notes&amp;delete=$i\" class=\"del icon tool right\"><span class=\"tip\">Remove $name</span></a>".
 				"<ul><li><a onclick=\"printMsg('Loading','Please Wait...','center',0);\" href=\"index.php?page=Device%20Notes&amp;action=$device\"><code>$DEVICE</code></a></li>";
 			for($x=0,$ct=count($sources);$x<$ct;$x++){
 				$val=html($sources[$x]);
-				$WIDTH=round($CANNERS[$i]->{"WIDTH-$val"}/25.4,2);
-				$HEIGHT=round($CANNERS[$i]->{"HEIGHT-$val"}/25.4,2);
-				$MODES=count(explode('|',$CANNERS[$i]->{"MODE-$val"}));
-				$DPI=explode('|',$CANNERS[$i]->{"DPI-$val"});
+				$WIDTH=round($CANNER->{"WIDTH-$val"}/25.4,2);
+				$HEIGHT=round($CANNER->{"HEIGHT-$val"}/25.4,2);
+				$MODES=count(explode('|',$CANNER->{"MODE-$val"}));
+				$DPI=explode('|',$CANNER->{"DPI-$val"});
 				echo ($val=='Inactive'?'<li>This scanner supports<ul>':"<li>The '<a onclick=\"printMsg('Loading','Please Wait...','center',0);\" href=\"index.php?page=Device%20Notes&amp;action=$device&amp;source=$val\">$val</a>' source supports<ul>").
-					"<li>A bay width of <span class=\"tool\">$WIDTH\"<span class=\"tip\">".$CANNERS[$i]->{"WIDTH-$val"}." mm</span></span></li>".
-					"<li>A bay height of <span class=\"tool\">$HEIGHT\"<span class=\"tip\">".$CANNERS[$i]->{"HEIGHT-$val"}." mm</span></span></li>".
+					"<li>A bay width of <span class=\"tool\">$WIDTH\"<span class=\"tip\">".$CANNER->{"WIDTH-$val"}." mm</span></span></li>".
+					"<li>A bay height of <span class=\"tool\">$HEIGHT\"<span class=\"tip\">".$CANNER->{"HEIGHT-$val"}." mm</span></span></li>".
 					'<li>A scanner resolution of '.$DPI[$DPI[0]=='auto'?1:0].' DPI to '.number_format($DPI[count($DPI)-1]).' DPI</li>'.
-					'<li>'.($CANNERS[$i]->{"DUPLEX-$val"}?'D':'No d').'uplex (double sided) scanning</li>'.
+					'<li>'.($CANNER->{"DUPLEX-$val"}?'D':'No d').'uplex (double sided) scanning</li>'.
 					"<li>$MODES color mode".($MODES==1?'':'s')."</li>".
 					'</ul></li>';
 			}
 			echo '</ul></li>';
 		}
 		echo '</ul></div>';
+		if(isset($DELETE)){
+			if(SaveFile('config/scanners.json',json_encode($new)))
+				Print_Message("Scanner has been remove",html($old).' has been removed, It can be reacquired by <a href="index.php?page=Config&action=Search-For-Scanners">searching for scanners</a>',"center");
+			else
+				Print_Message("Access Denied","Failed to save changes, ".html($old)." still exist, please contact your administrator. This can not happen unless they wanted it to. Well maybe if something has gone very very wrong.","center");
+		}
 	}
 	Footer('');
 }
