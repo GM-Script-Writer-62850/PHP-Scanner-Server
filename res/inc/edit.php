@@ -55,6 +55,7 @@
 <option value="color">Color</option>
 <option value="gray">Grayscale</option>
 <option value="lineart">Line Art</option>
+<option value="negate">Negative</option>
 </select>
 </div>
 

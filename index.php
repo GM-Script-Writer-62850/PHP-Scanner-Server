@@ -935,6 +935,8 @@ else if($PAGE=="Edit"){
 					if($MODE!='color'&&$MODE!=null){
 						if($MODE=='gray')
 							exe("convert $tmpFile -colorspace Gray $tmpFile",true);
+						else if($MODE=='negate')
+							exe("convert $tmpFile -negate $tmpFile",true);
 						else
 							exe("convert $tmpFile -monochrome $tmpFile",true);
 					}
