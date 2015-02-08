@@ -1225,7 +1225,7 @@ else{
 			$CANNERS[$SCANNER]->{"DEVICE"}=$DEVICE2;
 			$DEVICE=shell($DEVICE2);
 		}
-		$cmd="scanimage -d $DEVICE -l $X -t $Y -x $SIZE_X -y $SIZE_Y $DUPLEX--resolution $QUALITY $OURCE--mode ".shell($MODE)." $LAMP--format=pnm";
+		$cmd="scanimage -d $DEVICE $OURCE-l $X -t $Y -x $SIZE_X -y $SIZE_Y $DUPLEX--resolution $QUALITY --mode ".shell($MODE)." $LAMP--format=pnm";
 		if($SOURCE=='ADF'||$SOURCE=='Automatic Document Feeder') # Multi-page scan
 			exe("cd $CANDIR;$cmd --batch",true);// Be careful with this, doing this without a ADF feeder will result in scanning the flatbed over and over, include --batch-count=3 for testing
 		else # Single page scan
