@@ -861,8 +861,10 @@ function PDF_popup(files,print){
 			p=genPrintOptions(p);
 			localStorage.setItem('lastPrinter',files.printer.value);
 		}
-		url='download.php?type=pdf&json='+files.files.value+'&quantity='+files.quantity.value+'&size='+files.size.value+'&'+files.format.value+
-				(p?'&printer='+encodeURIComponent(files.printer.value)+'&options='+p:'');
+		url='download.php?type=pdf&json='+files.files.value+
+			(files.quantity?'&quantity='+files.quantity.value:'')+
+			'&size='+files.size.value+'&'+files.format.value+
+			(p?'&printer='+encodeURIComponent(files.printer.value)+'&options='+p:'');
 		if(p){
 			var httpRequest = new XMLHttpRequest();
 			httpRequest.onreadystatechange = function(){
