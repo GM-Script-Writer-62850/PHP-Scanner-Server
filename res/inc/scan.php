@@ -180,8 +180,9 @@ Scan Image
 		foreach($opt as $key => $val){
 			$str.="'$key':".(is_numeric($val)?$val:"'$val'").",";
 		}
-		echo "'set_save':'$id'".
-			'});">'.$id.'</a>';
+		echo $str.
+			"'set_save':'$id'});".
+			'">'.$id.'</a>';
 		$i++;
 		if($i<$max)
 			echo " | ";
