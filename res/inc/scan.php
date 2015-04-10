@@ -174,13 +174,14 @@ Scan Image
 		$max++;
 	}
 	foreach($set as $id => $opt){
+		$id=html($id);
 		echo '<a href="javascript:void(0);" onclick="config({';
 		$str='';
 		foreach($opt as $key => $val){
 			$str.="'$key':".(is_numeric($val)?$val:"'$val'").",";
 		}
-		echo substr($str,0,-1);
-		echo '});">'.$id.'</a>';
+		echo "'set_save':'$id'".
+			'});">'.$id.'</a>';
 		$i++;
 		if($i<$max)
 			echo " | ";
