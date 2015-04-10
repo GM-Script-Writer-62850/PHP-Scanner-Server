@@ -174,6 +174,7 @@ Scan Image
 		$max++;
 	}
 	foreach($set as $id => $opt){
+		$id=html($id);
 		echo '<a href="javascript:void(0);" onclick="config({';
 		$str='';
 		foreach($opt as $key => $val){
@@ -181,7 +182,7 @@ Scan Image
 		}
 		echo $str.
 			"'set_save':'".str_replace("'","\\'",$id)."'});".
-			'">'.html($id).'</a>';
+			'">'.$id.'</a>';
 		$i++;
 		if($i<$max)
 			echo " | ";
