@@ -101,17 +101,20 @@ function changeColor(x,save){
 	document.body.setAttribute('onbeforeunload',save?"if(!document.cookie)return confirm('The color theme was not saved because you have cookies disabled\\nPress OK to leave or Cancel to stay')":"if(!confirm('You did not save your color scheme\\nPress OK to leave or Cancel to stay'))return false");
 	return false;
 }
-function pre_scan(form,ias){
-	previewIMG.style.zIndex=-1;
-	previewIMG.nextSibling.removeAttribute('style');
-	previewIMG.parentNode.style.height=previewIMG.offsetHeight+3+'px';
-	form.loc_maxW.value=previewIMG.offsetWidth;
-	form.loc_maxH.value=previewIMG.offsetHeight;
-	var ele=getID('select');
-	if(ele)
-		ele.style.display='none';
-	if(!document.scanning.scanner)
-		return true;
+function pre_scan(form){
+	var ele=document.activeElement;
+	if(ele.value!="Save" && ele.type=="submit"){// If not saving settings
+		previewIMG.style.zIndex=-1;
+		previewIMG.nextSibling.removeAttribute('style');
+		previewIMG.parentNode.style.height=previewIMG.offsetHeight+3+'px';
+		form.loc_maxW.value=previewIMG.offsetWidth;
+		form.loc_maxH.value=previewIMG.offsetHeight;
+		ele=getID('select');
+		if(ele)
+			ele.style.display='none';
+		if(!document.scanning.scanner)
+			return true;
+	}
 	if(document.scanning.scanner.disabled){
 		document.scanning.scanner.removeAttribute('disabled');
 		setTimeout(function(){document.scanning.scanner.setAttribute('disabled','disabled');},250);

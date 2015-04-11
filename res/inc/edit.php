@@ -2,7 +2,7 @@
 <div id="select"></div>
 
 <div id="sidebar">
-<form name="scanning" action="index.php" onsubmit="return pre_scan(this,ias);" method="POST">
+<form name="scanning" action="index.php" onsubmit="return pre_scan(this);" method="POST">
 <input type="hidden" name="page" value="Edit">
 <input type="hidden" name="edit" value="1">
 <input type="hidden" name="file" value="<?php echo html($file); ?>">

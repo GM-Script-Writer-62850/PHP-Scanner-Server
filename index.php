@@ -1083,7 +1083,7 @@ else{
 		else if($WIDTH===0&&$HEIGHT===0&&$ROTATE===0)
 			addRuler();
 	}
-	else if(strlen($ACTION)==0)
+	else if(strlen($ACTION)==0||strlen($SAVEAS)>0)
 		echo '<script type="text/javascript">addRuler();scanReset();</script>';
 
 	if(strlen($ACTION)>0) # Only update values back to form if they aren't empty
