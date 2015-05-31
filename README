@@ -227,7 +227,7 @@ Frequently asked questions/issues:
 				/etc/php5/apache2/php.ini
 			You will need to change the post_max_size and upload_max_filesize
 			For me theres were on lines 673 and 805
-			If post_max_size is the lower value it will limit the upload size, this value should in practive be the larger value by just a little
+			If post_max_size is the lower value it will limit the upload size, this value should in practice be the larger value by just a little
 Internal Configuration Options:
 	Free Space Warning
 		This puts a warning on the page if you are low on disk space
@@ -265,17 +265,28 @@ Internal Configuration Options:
 		This may not be of use for PHP versions older than 5.1
 		This is set on line 11 of config.ini
 	Printer
-		This option enables the server side printering service, the printer must be configured in cups
-		This allows one to easily bybass all the crap involved with shaing printers and all the cross-platmorm nightmares involved!
+		This option enables the server side printing service, the printer must be configured in cups
+		This allows one to easily bypass all the crap involved with sharing printers and all the cross-platform nightmares involved!
 		Setting this option to 0 disables this feature
 		Setting this option to 1 enables it ONLY for printing documents made with the scanner software
 		Setting this option to 2 enables it ONLY for uploaded content via the Printer page
-		Setting this option to 3 enables it for both uploading documetns and printing scanned documents
+		Setting this option to 3 enables it for both uploading documents and printing scanned documents
 		This is set on line 12 of config.ini
 	HomePage
 		This option allows one to change the home page within the scanner server
-		While is supports a vast number of pages, the only options I consider usefull are Scan and Printer
+		While is supports a vast number of pages, the only options I consider useful are Scan and Printer
 		This is set on line 13 of config.ini
+	ShowRawFormat
+		This option allows one to show or hide the scanner option to change the raw scan format (pnm or tiff)
+		By default this option is hidden for the sake of simplicity
+		This is set on line 14 of config.ini
+	RawScanFormat
+		This option allows one to change the default raw format regardless of the ShowRawFormat setting
+		There is no real reason to pick one over the other, unless you one or the other does not work
+			See Issue #23: https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server/issues/23
+		Setting this option to 0 makes the default format pnm
+		Setting this option to 1 makes the default format tiff
+		This is set on line 15 of config.ini
 
 Credit where credit is due:
 	PHiLLIP KLiEWER

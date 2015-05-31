@@ -30,6 +30,9 @@ $Y_1=Get_Values('loc_y1');
 #$Y_2=Get_Values('loc_y2'); Un-used
 $SOURCE=Get_Values('source');
 $SOURCE=(strlen($SOURCE)==0?'Inactive':$SOURCE);
+$RAW=Get_Values('raw');
+$RAW=($RAW=='pnm'?'pnm':'tiff');// security check
+
 
 $notes='Please read the <a href="index.php?page=About">release notes</a> for more information.';
 $user=posix_getpwuid(posix_geteuid());
@@ -1225,20 +1228,20 @@ else{
 			$CANNERS[$SCANNER]->{"DEVICE"}=$DEVICE2;
 			$DEVICE=shell($DEVICE2);
 		}
-		$cmd="scanimage -d $DEVICE $OURCE-l $X -t $Y -x $SIZE_X -y $SIZE_Y $DUPLEX--resolution $QUALITY --mode ".shell($MODE)." $LAMP--format=pnm";
+		$cmd="scanimage -d $DEVICE $OURCE-l $X -t $Y -x $SIZE_X -y $SIZE_Y $DUPLEX--resolution $QUALITY --mode ".shell($MODE)." $LAMP--format=$RAW";
 		if($SOURCE=='ADF'||$SOURCE=='Automatic Document Feeder') # Multi-page scan
 			exe("cd $CANDIR;$cmd --batch",true);// Be careful with this, doing this without a ADF feeder will result in scanning the flatbed over and over, include --batch-count=3 for testing
 		else # Single page scan
-			exe("$cmd > ".shell("$CANDIR/scan_file$SCANNER.pnm"),false);
+			exe("$cmd > ".shell("$CANDIR/scan_file$SCANNER.$RAW"),false);
 
-		if(file_exists("$CANDIR/scan_file$SCANNER.pnm")){
-			if(Get_Values('size')=='full'&&filesize("$CANDIR/scan_file$SCANNER.pnm")==0){
+		if(file_exists("$CANDIR/scan_file$SCANNER.$RAW")){
+			if(Get_Values('size')=='full'&&filesize("$CANDIR/scan_file$SCANNER.$RAW")==0){
 				exe("echo 'Scan Failed...'",true);
 				exe("echo 'Maybe this scanner does not report it size correctly, maybe the default scan size will work it may or may not be a full scan.'",true);
 				exe("echo 'If it is not a full scan you are welcome to manually edit your $here/config/scanners.json file with the correct size.'",true);
-				@unlink("$CANDIR/scan_file$SCANNER.pnm");
+				@unlink("$CANDIR/scan_file$SCANNER.$RAW");
 				exe("echo 'Attempting to scan without forcing full scan'");
-				exe("scanimage -d $DEVICE --resolution $QUALITY --mode ".shell($MODE)." $LAMP--format=ppm > ".shell("$CANDIR/scan_file$SCANNER.pnm"),false);
+				exe("scanimage -d $DEVICE --resolution $QUALITY --mode ".shell($MODE)." $LAMP--format=$RAW > ".shell("$CANDIR/scan_file$SCANNER.$RAW"),false);
 			}
 		}
 
@@ -1325,7 +1328,7 @@ else{
 			Print_Message("Could not scan",'<p style="text-align:left;margin:0;">This is can be cauesed by one or more of the following:</p>'.
 				'<ul><li>The scanner is not on.</li><li>The scanner is not connected to the computer.</li>'.
 				'<li>You need to run the <a href="index.php?page=Access%20Enabler">Access Enabler</a>.</li>'.
-				(file_exists("/tmp/scan_file$SCANNER.pnm")?"<li>Removing <code>/tmp/scan_file$SCANNER.pnm</code> may help.</li>":'').
+				(file_exists("/tmp/scan_file$SCANNER.$RAW")?"<li>Removing <code>/tmp/scan_file$SCANNER.$RAW</code> may help.</li>":'').
 				'<li><code>'.$user.'</code> does not have permission to write files to the <code>'.getcwd().'/scans</code> folder.</li>'.
 				'<li>You may have to <a href="index.php?page=Config">re-configure</a> the scanner.</li></ul>'.$notes,'left');
 		}

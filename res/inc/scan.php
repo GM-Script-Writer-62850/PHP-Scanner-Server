@@ -67,6 +67,18 @@ echo file_exists("config/paper.json")?file_get_contents("config/paper.json"):'{"
 <div class="ie_276228"><select name="mode" class="title"></select></div>
 </div>
 
+<div<?php echo $ShowRawFormat?'':' style="display:none;"';?>>
+<div class="label">
+<span class="tool">RAW Format<span class="tip">The format the scanner's scan is saved (pre-processing)</span></span>:
+</div>
+<div class="control">
+<select name="raw">
+<option value="pnm">pnm - Portable Any Map</option>
+<option value="tiff"<?php echo $RawScanFormat==1?' selected="selected"':'';?>>tiff - Tagged Image File Format</option>
+</select>
+</div>
+</div>
+
 <div id="duplex">
 <div class="label tool">
 <span>Duplex<span class="tip">Double Sided Scan</span></span>:
