@@ -924,7 +924,7 @@ code {
 #popUpDiv #email form .label {
 	width: 95px;
 }
-#popUpDiv #email .control input:not([type="checkbox"]), #popUpDiv #email .control select {
+#popUpDiv #email .control input:not([type="checkbox"]), #popUpDiv #email .control select, #popUpDiv #email .control textarea {
 	width: 150px;
 }
 #popUpDiv #email .help {

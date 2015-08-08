@@ -53,9 +53,15 @@ if(isset($_POST['file'])||isset($_POST['json'])){
 	$mail->Subject = $_POST['title']; // set title
 	$mail->IsHTML(true);
 
-	$message='<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>'.htmlspecialchars($_POST['title']).'</title></head><body style="text-align:center;">'.
-		'<h1>Scanned with <a href="https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server">PHP Scanner Server</a></h1>';
-	$altMsg="Scanned with PHP Scanner Server";
+	$message='<!DOCTYPE html><html><head><meta charset="UTF-8"/><title>'.htmlspecialchars($_POST['title']).'</title></head><body style="text-align:center;">';
+	if(strlen($_POST["body"])>0){
+			$message.='<p style="text-align:left;">'.str_replace("\n","<br/>",htmlspecialchars($_POST['body'])).'</p>';
+			$altMsg=$_POST['body']."\n";
+	}
+	else
+		$altMsg="";
+	$altMsg.="Scanned with PHP Scanner Server";
+	$message.='<h1>Scanned with <a href="https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server">PHP Scanner Server</a></h1>';
 	$image=false;
 	foreach($scans as $scan => $val){
 		$message.='<h3>'.htmlspecialchars($scan).'</h3><p>';

@@ -33,7 +33,6 @@ $SOURCE=(strlen($SOURCE)==0?'Inactive':$SOURCE);
 $RAW=Get_Values('raw');
 $RAW=($RAW=='pnm'?'pnm':'tiff');// security check
 
-
 $notes='Please read the <a href="index.php?page=About">release notes</a> for more information.';
 $user=posix_getpwuid(posix_geteuid());
 $user=$user['name'];
@@ -865,6 +864,8 @@ else if($PAGE=="Device Notes"){
 				$WIDTH=round($CANNER->{"WIDTH-$val"}/25.4,2);
 				$HEIGHT=round($CANNER->{"HEIGHT-$val"}/25.4,2);
 				$MODES=count(explode('|',$CANNER->{"MODE-$val"}));
+				if($CANNER->{"DPI-$val"}==="")
+					$CANNER->{"DPI-$val"}="0|0";
 				$DPI=explode('|',$CANNER->{"DPI-$val"});
 				echo ($val=='Inactive'?'<li>This scanner supports<ul>':"<li>The '<a onclick=\"printMsg('Loading','Please Wait...','center',0);\" href=\"index.php?page=Device%20Notes&amp;action=$device&amp;source=$val\">$val</a>' source supports<ul>").
 					"<li>A bay width of <span class=\"tool\">$WIDTH\"<span class=\"tip\">".$CANNER->{"WIDTH-$val"}." mm</span></span></li>".

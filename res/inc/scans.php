@@ -91,9 +91,9 @@ else{
 			'<a class="tool" target="_blank" href="scans/Scan_'.url($FILE).'" style="width:100%;"><img src="scans/'.url($IMAGE).'" alt="'.html($FILE).'" style="width:100%"/><span class="tip">View raw file</span></a>'.
 			'</p></div>';
 	}
-	echo '</div><script type="text/javascript">'.
+	echo '</div><script type="text/javascript">'. // Also see paper.php line 78
 		'if(typeof document.body.style.MozColumnGap=="string")'.
-			'getID("scans").className="columns";'.// At least someone knows how to do something right
+			'getID("scans").className="columns";'.// At least someone knows how to do something right (Firefox > Edge/IE > Chrome)
 		'else '.
 			'enableColumns("scans",null,'.(isset($_COOKIE["columns"])?'true':'false').');</script>';
 }

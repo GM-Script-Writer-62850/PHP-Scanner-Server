@@ -74,9 +74,9 @@ if($add!=null&&$N_width!=null&&$N_height!=null){
 	}
 }
 ?></div>
-<script type="text/javascript">
+<script type="text/javascript"> // Also see scans.php line 95
 if(typeof document.body.style.MozColumnGap=="string")
-	getID("paper-list").className+=" columns";// At least someone knows how to do something right
+	getID("paper-list").className+=" columns";// At least someone knows how to do something right (Firefox > Edge/IE > Chrome)
 else
 	enableColumns("paper-list",null,<?php echo isset($_COOKIE["columns"])?'true':'false'; ?>);
 </script>

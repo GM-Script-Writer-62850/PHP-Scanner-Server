@@ -1403,8 +1403,9 @@ function emailManager(file){
 	'<form name="email" target="_blank" action="email.php" onsubmit="return validateEmail(this);">'+
 	'<input type="hidden" name="'+(file=='Scan_Compilation'?'json':'file')+'" value="'+(file=='Scan_Compilation'?encodeHTML(JSON.stringify(filesLst)):file)+'"/>'+
 	'<div class="label">'+(file?'From':'Email')+':</div><div class="control"><input type="text" onchange="configEmail(this.value)" name="from" value="johndoe@gmail.com"/></div>'+
-	(file?'<div class="label">Subject:</div><div class="control"><input type="text" name="title" value="[Scanned '+(file=='Scan_Compilation'?'Compilation':(file.substr(-3)!='txt'?'Image':'Text'))+'] '+(file=='Scan_Compilation'?files_ct+' Scans':file.substr(5))+'"/></div>':'')+
-	(file?'<div class="label">To:</div><div class="control"><input type="text" name="to" value=""/></div>':'')+
+	(file?'<div class="label">Subject:</div><div class="control"><input type="text" name="title" value="[Scanned '+(file=='Scan_Compilation'?'Compilation':(file.substr(-3)!='txt'?'Image':'Text'))+'] '+(file=='Scan_Compilation'?files_ct+' Scans':file.substr(5))+'"/></div>'+
+		'<div class="label">To:</div><div class="control"><input type="text" name="to" value=""/></div>'+
+		'<div class="label">Message:</div><div class="control"><textarea name="body"></textarea></div>':'')+
 	'<div class="label">Password:</div><div class="control"><input type="password" name="pass" ondblclick="this.type=(this.type==\'text\'?\'password\':\'text\')" autocomplete="off"/></div>'+
 	'<div class="label">Host:</div><div class="control"><input type="text" name="host" value="smtp.gmail.com"/></div>'+
 	'<div class="label">Prefix:</div><div class="control tool"><select name="prefix"><option value="ssl">SSL</option><option value="tls">TLS</option><option value="plain">None</option></select><span class="tip" style="display:none"></span></div>'+
@@ -1416,7 +1417,7 @@ function emailManager(file){
 	html+='<input type="submit" value="'+(file?'Send':'Save')+'"/><input style="float:right;" type="button" value="Cancel" onclick="toggle(\'blanket\')"/>'+
 	'</form>'+
 	'<div class="help"><h2>Help Links</h2><p><a target="_blank" href="http://www.google.com">Google</a><br/>eg: What are Yahoo\'s smtp settings</p></div>'+
-	'<div class="help"><h2>Tips</h2><p>'+(file?'Send to multiple people by separating addresses with a comma.<br/>':'')+'Host, prefix, and port are auto detected when you change the email address.</p></div>'+
+	'<div class="help"><h2>Tips</h2><p>'+(file?'Send to multiple people by separating addresses with a comma.<br/>':'')+'Host, prefix, and port are auto detected when you change the '+(file?'From field':'Email Address')+'.</p></div>'+
 	'</div>';
 	getID("blanket").childNodes[0].innerHTML=html
 	if(data){
@@ -1529,6 +1530,7 @@ function sendEmail(ele){
 		"&from="+encodeURIComponent(ele.from.value)+
 		"&to="+encodeURIComponent(ele.to.value)+
 		"&title="+encodeURIComponent(ele.title.value)+
+		"&body="+encodeURIComponent(ele.body.value)+
 		"&pass="+encodeURIComponent(ele.pass.value)+
 		"&host="+encodeURIComponent(ele.host.value)+
 		"&prefix="+encodeURIComponent(ele.prefix.value)+
