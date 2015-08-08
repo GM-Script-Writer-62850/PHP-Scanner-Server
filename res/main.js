@@ -1405,6 +1405,7 @@ function emailManager(file){
 	'<div class="label">'+(file?'From':'Email')+':</div><div class="control"><input type="text" onchange="configEmail(this.value)" name="from" value="johndoe@gmail.com"/></div>'+
 	(file?'<div class="label">Subject:</div><div class="control"><input type="text" name="title" value="[Scanned '+(file=='Scan_Compilation'?'Compilation':(file.substr(-3)!='txt'?'Image':'Text'))+'] '+(file=='Scan_Compilation'?files_ct+' Scans':file.substr(5))+'"/></div>':'')+
 	(file?'<div class="label">To:</div><div class="control"><input type="text" name="to" value=""/></div>':'')+
+        '<div class="label">Body:</div><div class="control"><input type="textarea" name="body" value=""/></div>'+
 	'<div class="label">Password:</div><div class="control"><input type="password" name="pass" ondblclick="this.type=(this.type==\'text\'?\'password\':\'text\')" autocomplete="off"/></div>'+
 	'<div class="label">Host:</div><div class="control"><input type="text" name="host" value="smtp.gmail.com"/></div>'+
 	'<div class="label">Prefix:</div><div class="control tool"><select name="prefix"><option value="ssl">SSL</option><option value="tls">TLS</option><option value="plain">None</option></select><span class="tip" style="display:none"></span></div>'+
@@ -1529,6 +1530,7 @@ function sendEmail(ele){
 		"&from="+encodeURIComponent(ele.from.value)+
 		"&to="+encodeURIComponent(ele.to.value)+
 		"&title="+encodeURIComponent(ele.title.value)+
+                "&body="+encodeURIComponent(ele.body.value)+
 		"&pass="+encodeURIComponent(ele.pass.value)+
 		"&host="+encodeURIComponent(ele.host.value)+
 		"&prefix="+encodeURIComponent(ele.prefix.value)+
