@@ -330,7 +330,7 @@ function validateKey(ele,e,ias){
 function lastScan(data,ele,html){
 	var generic=data.raw.slice(5),
 		scan=data.scan;
-	previewIMG.src='scans/'+data.preview;
+	previewIMG.src='scans/thumb/'+data.preview;
 	if(!ruler){
 		ias.setOptions({'enable': true });
 		ias.update();

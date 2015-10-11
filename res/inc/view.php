@@ -8,11 +8,11 @@ $icons='<a class="tool icon download" href="download.php?file='.url($file).'"><s
 	'<span class="tool icon view-off"><span class="tip">View (Disabled)</span></span> '.
 	'<a class="tool icon upload" href="#" onclick="return upload(\''.html(js($file,5)).'\')"><span class="tip">Upload to Imgur</span></a> '.
 	'<a href="#" onclick="return emailManager(\''.html(js($file)).'\');" class="tool icon email"><span class="tip">Email</span></a>';
-if(file_exists("scans/$file")){
+if(file_exists("scans/file/$file")){
 	if(substr($file,-3)=='txt'){
 		echo "<div class=\"box box-full\"><h2>".html($file)."</h2>".
 			"<p>$icons</p>".
-			"<pre class=\"border\" id=\"text-file-".html($file)."\">".html(file_get_contents("scans/$file"))."</pre></div>".
+			"<pre class=\"border\" id=\"text-file-".html($file)."\">".html(file_get_contents("scans/file/$file"))."</pre></div>".
 			'<script type="text/javascript" src="data:text/javascript;charset=utf-8,'.
 			url('(function(e){if(e.offsetHeight==2)e[TC]="Tesseract was unable to find any text in the scan.";})(getID("text-file-'.js($file).'"));').
 			'"></script>';// Using Data URI as a dirty trick for security (don't want a separate file for this)
@@ -20,7 +20,7 @@ if(file_exists("scans/$file")){
 	else{
 		echo '<div class="box box-full"><h2>'.html($file).'</h2>'.
 			"<p>$icons<br/>".
-			'<a class="tool" href="scans/'.url($file).'" target="_blank"><img src="scans/'.url($file).'"/><span class="tip">View raw image</span></a></p></div>';
+			'<a class="tool" href="scans/file/'.url($file).'" target="_blank"><img src="scans/file/'.url($file).'"/><span class="tip">View raw image</span></a></p></div>';
 	}
 }
 else{

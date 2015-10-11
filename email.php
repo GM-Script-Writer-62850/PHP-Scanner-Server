@@ -17,7 +17,7 @@ if(isset($_POST['file'])||isset($_POST['json'])){
 	foreach($scans as $scan => $val){
 		if(strrpos($scan, "/")>-1)
 			$scan=substr($scan,strrpos($scan,"/")+1);
-		if(!file_exists("scans/$prefix$scan"))
+		if(!file_exists("scans/file/$prefix$scan"))
 			die(json_encode(array("title"=>"404 Not Found","message"=>"That scan <code>".htmlspecialchars($scan)."</code> no longer exists")));
 	}
 
@@ -66,12 +66,12 @@ if(isset($_POST['file'])||isset($_POST['json'])){
 	foreach($scans as $scan => $val){
 		$message.='<h3>'.htmlspecialchars($scan).'</h3><p>';
 		if(substr($scan,-3)!='txt'){
-			$mail->AddEmbeddedImage("scans/$prefix$scan", $scan);
+			$mail->AddEmbeddedImage("scans/file/$prefix$scan", $scan);
 			$message.='<img alt="'.$scan.'" src="cid:'.htmlspecialchars($scan).'"/>';
 			$image=true;
 		}
 		else{
-			$filedata=file_get_contents("scans/$prefix$scan");
+			$filedata=file_get_contents("scans/file/$prefix$scan");
 			$message.=htmlspecialchars($filedata);
 			if(!$image)
 				$altMsg.="$filedata\n----------------------\n";

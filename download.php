@@ -82,7 +82,7 @@ else if((isset($_GET['type'])?$_GET['type']:'')=='pdf'&&!isset($_GET['raw'])){
 		if(is_numeric(strpos($file, "/")))
 			$file=substr($file,strrpos($file,"/")+1);
 		$file="Scan_$file";
-		if(!is_file("scans/$file"))
+		if(!is_file("scans/file/$file"))
 			continue;
 		$ext=substr($file,strrpos($file,'.')+1);
 		$width=$Pwidth;
@@ -92,15 +92,15 @@ else if((isset($_GET['type'])?$_GET['type']:'')=='pdf'&&!isset($_GET['raw'])){
 		if($full){
 			if($ext=='txt'){
 				$pdf->SetFont('Arial','',$fontSize*0.75*($width/215.9));
-				$pdf->MultiCell(0,5,file_get_contents("scans/$file"),0,"L",false);
+				$pdf->MultiCell(0,5,file_get_contents("scans/file/$file"),0,"L",false);
 			}
 			else{
-				$image=explode("x",shell_exec("identify -format '%wx%h' ".escapeshellarg("scans/$file")));
+				$image=explode("x",shell_exec("identify -format '%wx%h' ".escapeshellarg("scans/file/$file")));
 				if($height/$width<=$image[1]/$image[0])
 					$width=0;
 				else
 					$height=0;
-				$pdf->Image("scans/$file",$marginLeft,$marginTop,$width,$height);
+				$pdf->Image("scans/file/$file",$marginLeft,$marginTop,$width,$height);
 			}
 		}
 		else{
@@ -108,17 +108,17 @@ else if((isset($_GET['type'])?$_GET['type']:'')=='pdf'&&!isset($_GET['raw'])){
 			$pdf->MultiCell(0,$fontSize*($width/215.9),$file,0,"C",false);
 			if($ext=='txt'){
 				$pdf->SetFont('Arial','',$fontSize*0.75*($width/215.9));
-				$pdf->MultiCell(0,5*($width/215.9),file_get_contents("scans/$file"),0,"L",false);
+				$pdf->MultiCell(0,5*($width/215.9),file_get_contents("scans/file/$file"),0,"L",false);
 			}
 			else{
-				$image=explode("x",shell_exec("identify -format '%wx%h' ".escapeshellarg("scans/$file")));
+				$image=explode("x",shell_exec("identify -format '%wx%h' ".escapeshellarg("scans/file/$file")));
 				$width=$width-($marginLeft*2);
 				$height=$height-$marginTop*2-$fontSize*0.75*($Pwidth/215.9)/2;
 				if($height/$width<=$image[1]/$image[0])
 					$width=0;
 				else
 					$height=0;
-				$pdf->Image('scans/'.$file,$marginLeft,$marginTop/2+$fontSize*($Pwidth/215.9),$width,$height);
+				$pdf->Image('scans/file/'.$file,$marginLeft,$marginTop/2+$fontSize*($Pwidth/215.9),$width,$height);
 			}
 		}
 	}
@@ -153,8 +153,8 @@ else if(isset($_GET['json'])){
 		if(is_numeric(strpos($file, "/")))
 			$file=substr($file,strrpos($file,"/")+1);
 		$file="Scan_$file";
-		if(is_file("scans/$file")){
-			$FILES.=escapeshellarg("scans/$file").' ';
+		if(is_file("scans/file/$file")){
+			$FILES.=escapeshellarg("scans/file/$file").' ';
 			$ct+=1;
 		}
 	}
@@ -203,10 +203,10 @@ else if(isset($_GET['json'])){
 		returnFile("No legit file names provided",'404_Error.txt','txt');
 }
 else if(isset($_GET['file'])){
-	if(file_exists("scans/".$_GET['file'])){
+	if(file_exists("scans/file/".$_GET['file'])){
 		if(isset($_GET['compress'])){
 			$file='/tmp/download-'.md5(time().rand()).'.zip';
-			$cmd="cd 'scans' && zip '$file' ".escapeshellarg($_GET['file']);
+			$cmd="cd 'scans/file' && zip '$file' ".escapeshellarg($_GET['file']);
 			$output=shell_exec("$cmd 2>&1");
 			if(is_file($file)){
 				returnFile($file,substr($_GET['file'],0,strrpos($_GET['file'],'.')).'.zip','zip');
@@ -217,7 +217,7 @@ else if(isset($_GET['file'])){
 		}
 		else{
 			$ext=substr($_GET['file'],strrpos($_GET['file'],".")+1);
-			returnFile("scans/".$_GET['file'],$_GET['file'],$ext);
+			returnFile("scans/file/".$_GET['file'],$_GET['file'],$ext);
 		}
 	}
 	else

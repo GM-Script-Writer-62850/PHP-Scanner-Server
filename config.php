@@ -27,6 +27,11 @@ if($RequireLogin){
 		$Auth=false;
 }
 
+else{
+	$ScanPreview="";
+	$ScanFile="";
+}
+
 // A few functions I need even on error pages
 function html($X){
 	return htmlspecialchars($X);

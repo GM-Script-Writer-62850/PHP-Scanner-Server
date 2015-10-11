@@ -29,7 +29,7 @@ foreach($files as $file => $trash){
 		$file=substr($file,strrpos($file,'/')+1);
 	if(substr($file,0,5)!="Scan_")
 		$file="Scan_$file";
-	if(file_exists("scans/$file"))
+	if(file_exists("scans/file/$file"))
 		array_push($Files,$file);
 }
 if(isset($_GET['album'])&&count($Files)>1){
@@ -50,12 +50,12 @@ foreach($Files as $file){
 		'description' => 'Uploaded from PHP Scanner Server');// image: https://api.imgur.com/endpoints/image#image-upload
 	if(substr($file,-4)=='.txt'){
 		$file2='/tmp/'.md5(time().rand()).'.png';
-		shell_exec("convert ".escapeshellarg("scans/$file")." '$file2'");
+		shell_exec("convert ".escapeshellarg("scans/file/$file")." '$file2'");
 		$image=array_merge($image,array('image' => base64_encode(file_get_contents($file2))));
 		@unlink($file2);
 	}
 	else
-		$image=array_merge($image,array('image' => base64_encode(file_get_contents("scans/$file"))));
+		$image=array_merge($image,array('image' => base64_encode(file_get_contents("scans/file/$file"))));
 	if(isset($destination))
 		$image=array_merge($image,array('album' => $destination));
 	$json=json_curl($image,'image',true);

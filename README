@@ -5,8 +5,8 @@ Based on Linux Scanner Server 1.2 Beta
 
 Released under the GPL 2.0
 
-Last Update: 4/11/2015 (Month/Day/Year)
-For Version: 1.4-15
+Last Update: 10/11/2015 (Month/Day/Year)
+For Version: 1.5-16
 
 Change Log:
 	https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server/wiki/Change-Log
@@ -27,8 +27,9 @@ The following packages need to be installed:
 + zip                    - For downloading a compressed scan
 + php-fpdf               - For downloading a pdf file
 + libpaper-utils         - For detecting paper sizes
-+ sed                    - Used in the fallback method of detecting tesseract languages
-+ grep                   - Used in the fallback method of detecting tesseract languages
++ sed                    - Used in the fall-back method of detecting tesseract languages
++ grep                   - Used in the fall-back method of detecting tesseract languages
+_ hplip                  - Required for HP scanner support
 _ cups                   - Required if you want to use the printer service
 _ php5-cli               - For running php from command line
 _ curl                   - For making url request via command line through the network (alternative to php5-cli)
@@ -103,7 +104,7 @@ _ fortune                - For displaying fortunes in the debug console
 _ cowsay                 - For wrapping fortunes in ASCII art
 	* Mandatory
 	+ Recommended for full functionality
-	_ Optional
+	_ Optional or required for full functionality
 
 	Some of these will likely already be installed, some newer distros (ubuntu 13.10) will require php5-json
 
@@ -143,7 +144,7 @@ Enabling Auto-Deletion of old scans:
 		crontab -e
 	then add this line (if you need root here use `sudo crontab -e`)
 		*/5 * * * * php -f /path/to/cleaner.php
-	or this line (Will not require root unless yuo want it to work when you are not loged in)
+	or this line (Will not require root unless you want it to work when you are not loged in)
 		*/5 * * * * curl http://localhost/path/to/cleaner.php
 
 	It will Check every 5 minutes for scans older than 1 day (86400 seconds value
@@ -151,7 +152,7 @@ Enabling Auto-Deletion of old scans:
 
 Frequently asked questions/issues:
 	Why is there a 404 error while trying to display a 404 error
-		Apparently you are running the server in a subfolder on the domain, you will need to edit .htaccess with the full path relative to the root document
+		Apparently you are running the server in a sub-folder on the domain, you will need to edit .htaccess with the full path relative to the root document
 		Basically if you put the server in /var/www/scanner/ you need to put /scanner before /inc in the .htaccess file
 	Sometimes when I download a large file I get nothing (a 0 byte file)
 		You will need to increase the max memory PHP can use, 
@@ -226,8 +227,15 @@ Frequently asked questions/issues:
 			for me it was located in 
 				/etc/php5/apache2/php.ini
 			You will need to change the post_max_size and upload_max_filesize
-			For me theres were on lines 673 and 805
+			For me they were on lines 673 and 805
 			If post_max_size is the lower value it will limit the upload size, this value should in practice be the larger value by just a little
+	How can I make a network share for scans
+		All raw scans are saved to scans/file/
+		You can create a READ ONLY share
+		It can be relocated using /etc/fstab and the bind option like so:
+			/path/to/share     /path/to/scans/file           bind    defaults,bind   0       0
+	Can I archive old scans
+		There is a line commented out in cleaner.php that will give you this feature.
 Internal Configuration Options:
 	Free Space Warning
 		This puts a warning on the page if you are low on disk space
@@ -245,7 +253,7 @@ Internal Configuration Options:
 		It only checks the Internet if the last check was over 24 hours ago
 		This is set on line 5 of config.ini
 	Enable Login
-		There are 2 ways, one is pretty and one is not, but the not so pretty one is more secure
+		There are 2 ways, one is pretty and one is not, but the not so pretty one is by far more secure
 		Look under apache tricks for the secure one
 		The pretty one is enabled on line 6 of config.ini
 	Session Duration
@@ -308,9 +316,9 @@ Credit where credit is due:
 	Stefan Petre
 		ColorPicker (www.eyecon.ro/colorpicker/)
 			Does not get full credit, it had lots of issues
-	There are a few others, there are comments in the source code for them
 	jamesfu
 		Proof reading (see issue #18)
+	There are a few others, there are comments in the source code for them
 
 Installation Notes:
 	Extract files to /var/www (or wherever your web pages are visible from)
@@ -339,6 +347,14 @@ Installation Notes:
 		sudo ln -s ../mods-available/headers.load /etc/apache2/mods-enabled/ && sudo service apache2 restart
 
 Apache Tricks:
+	Note
+		This part was written for a older version of apache2
+		These 2 lines:
+			Order allow,deny
+			allow from all
+		Have been replaced with this line:
+			Require all granted
+		In the current version
 	Enabling .htaccess
 		open /etc/apache2/sites-available/default
 		locate this:
@@ -362,7 +378,7 @@ Apache Tricks:
 				AuthType Basic 
 				AuthUserFile /var/www/.htpasswd 
 				AuthGroupFile /dev/null
-				require valid-user
+				Require valid-user
 			now me need to make a login (Bob is the user name)
 				sudo htpasswd -c /var/www/.htpasswd Bob
 			now you will have to login to access /var/www
@@ -408,7 +424,7 @@ Apache Tricks:
 		notice theses 2 lines
 			NameVirtualHost *:80
 			Listen 80
-		thoes tell it to use port 80
+		those tell it to use port 80
 		you can add more or change them
 		for the sake of example we will use port 81 you may use any port number that is not in use (run a port scan to see what is in use)
 		so we will add these to lines

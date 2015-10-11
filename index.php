@@ -174,7 +174,7 @@ function genIconLinks($config,$file,$isBulk){
 		$click=false;
 		if(isset($_COOKIE['lastScan'])&&!isset($config->{'recent'})){
 			$cookie=json_decode($_COOKIE['lastScan']);
-			if(file_exists("scans/".$cookie->{"raw"})&&file_exists("scans/".$cookie->{"preview"}))
+			if(file_exists("scans/file/".$cookie->{"raw"})&&file_exists("scans/thumb/".$cookie->{"preview"}))
 				$click="return lastScan(".html(json_encode($cookie)).",this,'".html(js(genIconLinks((object)array('recent'=>0),$cookie->{'raw'},false)))."')";
 			else
 				setcookie('lastScan','',0);
@@ -224,9 +224,11 @@ function SaveFile($file,$content){// @ Suppresses any warnings
 }
 
 function checkFreeSpace($X){
-	$pace=disk_free_space('scans')/1024/1024;
-	if($pace<$X){// There is less than X MB of free space
-		Print_Message("Warning: Low Disk Space","There is only ".number_format($pace)." MB of free space, please delete some scan(s) if any.<br/>Low disk space can cause really bad problems.",'center');
+	$dirs=Array('file','thumb');
+	foreach($dirs as $key => $val){
+		$pace=disk_free_space("scans/$val")/1024/1024;
+		if($pace<$X)// There is less than X MB of free space
+			Print_Message("Warning: Low Disk Space","There is only ".number_format($pace)." MB of free space in <code>".getcwd()."/scans/$val</code>, please delete some scan(s) if any.<br/>Low disk space can cause really bad problems.",'center');
 	}
 	return $pace;
 }
@@ -311,6 +313,47 @@ function quit(){
 }
 
 # ****************
+# Verify Install (For anyone who installs from git and does not read the notes written in several places)
+# ****************
+
+if(!function_exists("json_decode")){
+	$PAGE="Incomplete Installation";
+	InsertHeader($PAGE);
+	Print_Message("Missing Dependancy","<i>php5-json</i> does not appear to be installed, or you forgot to restart <i>apache2</i> after installing it.<br/>Unless it is disabled in <code>php.ini</code>","center");
+	Footer('');
+	quit();
+}
+
+$dirs=Array('config','config/parallel','scans','scans/thumb','scans/file');
+foreach($dirs as $dir){
+	if(!is_dir($dir)){
+		@mkdir($dir);
+		if(is_dir($dir))
+			continue;
+		$here=getcwd();
+		$PAGE="Incomplete Installation";
+		InsertHeader($PAGE);
+		Print_Message("Missing Directory","<i>$here/$dir</i> does not exist!<br/><code>$user</code> also needs to have write access to it<br>To fix run this in a terminal as root<br><code>mkdir $here/$dir && chown $user $here/$dir</code>","center");
+		Footer('');
+		quit();
+	}
+}
+
+if(!function_exists('shell_exec')){
+	$PAGE="Incomplete Installation";
+	InsertHeader($PAGE);
+	Print_Message("PHP Configuration Error","<code>shell_exec</code> is disabled in <code>php.ini</code><br/>It needs to be removed from the <code>disable_functions</code> list.","center");
+	Footer('');
+	quit();
+}
+
+$files=scandir('scans');// Migrate files to new storage layout
+if(count($files)>5){
+	exe('mv scans/Scan_* scans/file/',true);
+	exe('mv scans/Preview_* scans/thumb/',true);
+}
+
+# ****************
 # Generate that Fortune
 # ****************
 
@@ -344,34 +387,6 @@ $ACTION=Get_Values('action');
 
 if($PAGE==NULL)
 	$PAGE=$HomePage;
-
-# ****************
-# Verify Install (For anyone who installs from git and does not read the notes written in several places)
-# ****************
-
-if(!function_exists("json_decode")){
-	$here=getcwd();
-	$PAGE="Incomplete Installation";
-	InsertHeader($PAGE);
-	Print_Message("Missing Dependancy","<i>php5-json</i> does not appear to be installed, or you forgot to restart <i>apache2</i> after installing it.","center");
-	Footer('');
-	quit();
-}
-
-$dirs=Array('scans','config','config/parallel');
-foreach($dirs as $dir){
-	if(!is_dir($dir)){
-		@mkdir($dir);
-		if(is_dir($dir))
-			continue;
-		$here=getcwd();
-		$PAGE="Incomplete Installation";
-		InsertHeader($PAGE);
-		Print_Message("Missing Directory","<i>$here/$dir</i> does not exist!<br/><code>$user</code> also needs to have write access to it<br>To fix run this in a terminal as root<br><code>mkdir $here/$dir && chown $user $here/$dir</code>","center");
-		Footer('');
-		quit();
-	}
-}
 
 # ****************
 # Login Page
@@ -446,18 +461,25 @@ else if($PAGE=="Scans"){
 
 	if($DELETE=="Remove"){
 		$FILE=fileSafe(Get_Values('file'));
-		if($FILE==null){
+		if($FILE==null){// rm -r scans/*/*
 			$files=scandir('scans');
 			foreach($files as $file){
 				if($file=='.'||$file=='..')
 					continue;
-				unlink("scans/$file");
+				if(is_dir($file)){
+					$sub=scandir("scans/$file");
+					foreach($sub as $f){
+						if($f=='.'||$f=='..')
+							continue;
+						unlink("scans/$file/$f");
+					}
+				}
 			}
 		}
 		else{
 			$FILE2=substr($FILE,0,strrpos($FILE,".")+1);
-			@unlink("scans/Preview_".$FILE2."jpg");
-			@unlink("scans/Scan_$FILE");
+			@unlink("scans/thumb/Preview_".$FILE2."jpg");
+			@unlink("scans/file/Scan_$FILE");
 			Print_Message("File Deleted","The file <code>".html($FILE)."</code> has been removed.",'center');
 		}
 	}
@@ -919,7 +941,7 @@ else if($PAGE=="Edit"){
 			include "res/inc/edit-text.php";
 		else{
 			if(Get_Values('edit')!=null){
-				if(file_exists("scans/Scan_$file")){
+				if(file_exists("scans/file/Scan_$file")){
 					$langs=findLangs();
 					if(!validNum(Array($WIDTH,$HEIGHT,$X_1,$Y_1,$BRIGHT,$CONTRAST,$SCALE,$ROTATE))||
 					  ($FILETYPE!=="txt"&&$FILETYPE!=="png"&&$FILETYPE!=="tiff"&&$FILETYPE!=="jpg")||
@@ -929,7 +951,7 @@ else if($PAGE=="Edit"){
 						quit();
 					}
 					$tmpFileRaw="/tmp/Scan_$file";
-					$fileRaw="scans/Scan_$file";
+					$fileRaw="scans/file/Scan_$file";
 					if(!@copy($fileRaw,$tmpFileRaw)){
 						Print_Message("Permission Error","Unable to create <code>$tmpFileRaw</code>",'center');
 						quit();
@@ -965,16 +987,16 @@ else if($PAGE=="Edit"){
 						exe("convert $tmpFile -rotate $ROTATE $tmpFile",true);
 					}
 					exe("convert $tmpFile -alpha off $tmpFile",true);
-					$file=substr($fileRaw,11);
+					$file=substr($fileRaw,16);
 					$edit=strpos($file,'-edit-');
 					$name=(is_bool($edit)?substr($file,0,-4):substr($file,0,$edit));
 					$ext=substr($file,strrpos($file,'.')+1);
 					$int=1;
-					while(file_exists("scans/Preview_$name-edit-$int.jpg")){
+					while(file_exists("scans/thumb/Preview_$name-edit-$int.jpg")){
 						$int++;
 					}
-					$file="scans/Scan_$name-edit-$int.$ext";//scan
-					$name=str_replace("scans/Scan_","scans/Preview_",$file);//preview
+					$file="scans/file/Scan_$name-edit-$int.$ext";//scan
+					$name=str_replace("file/Scan_","thumb/Preview_",$file);//preview
 					if($FILETYPE==substr($file,strrpos($file,'.')+1)){
 						@rename($tmpFileRaw,$file);// Incorrect access denied message is generated
 						if(file_exists($tmpFileRaw)&&!file_exists($file)){// Just in-case it becomes accurate
@@ -998,16 +1020,16 @@ else if($PAGE=="Edit"){
 					$FILE=substr($name,0,strrpos($name,'.')+1).'jpg';//Preview
 					if($FILETYPE!='txt'){
 						exe("convert ".shell($file)." -scale '450x471' ".shell($FILE),true);
-						$file=substr($file,11);
+						$file=substr($file,16);
 					}
 					else{
 						exe("convert $tmpFile -scale '450x471' ".shell($FILE),true);
 						unlink($tmpFileRaw);
-						$file=substr($file,11,strrpos($file,'.')-10).'txt';
+						$file=substr($file,16,strrpos($file,'.')-10).'txt';
 					}
 				}
 			}
-			if(file_exists("scans/Scan_$file")){
+			if(file_exists("scans/file/Scan_$file")){
 				if(substr($file,-3)=="txt")
 					include "res/inc/edit-text.php";
 				else
@@ -1019,15 +1041,17 @@ else if($PAGE=="Edit"){
 		}
 	}
 	else{
-		if(count(scandir("scans"))==2){
+		if(count(scandir("scans/file"))==2){
 			Print_Message("No Images","All files have been removed. There are no scanned images to display.",'center');
 		}
 		else{
 			Print_Message("No File Specified","Please select a file to edit",'center');
-			$FILES=explode("\n",substr(exe("cd 'scans'; ls 'Preview'*",true),0,-1));
+			$FILES=sacndir('scans/thumb');
 			for($i=0,$max=count($FILES);$i<$max;$i++){
+				if($FILES[$i]=='.'||$FILES[$i]=='..')
+					continue;
 				$FILE=substr($FILES[$i],7,-3);
-				$FILE=substr(exe("cd 'scans'; ls ".shell("Scan$FILE").'*',true),5);//Should only have one file listed
+				$FILE=substr(exe("cd 'scans/file/'; ls ".shell("Scan$FILE").'*',true),5);//Should only have one file listed
 				$IMAGE=$FILES[$i];
 				include "res/inc/editscans.php";
 			}
@@ -1288,19 +1312,19 @@ else{
 			}
 
 			# Generate Preview Image
-			exe("convert $SCAN -scale '450x471' ".shell("scans/$P_FILENAME"),true);
+			exe("convert $SCAN -scale '450x471' ".shell("scans/thumb/$P_FILENAME"),true);
 
 			# Convert scan to file type
 			if($FILETYPE=="txt"){
 				$S_FILENAMET=substr($S_FILENAME,0,strrpos($S_FILENAME,'.'));
 				exe("convert $SCAN -fx '(r+g+b)/3' ".shell("/tmp/_scan_file$SCANNER.tif"),true);
-				exe("tesseract ".shell("/tmp/_scan_file$SCANNER.tif").' '.shell("scans/$S_FILENAMET")." -l ".shell($LANG),true);
+				exe("tesseract ".shell("/tmp/_scan_file$SCANNER.tif").' '.shell("scans/file/$S_FILENAMET")." -l ".shell($LANG),true);
 				unlink("/tmp/_scan_file$SCANNER.tif");
-				if(!file_exists("scans/$S_FILENAMET.txt"))//in case tesseract fails
-					SaveFile("scans/$S_FILENAMET.txt","");
+				if(!file_exists("scans/file/$S_FILENAMET.txt"))//in case tesseract fails
+					SaveFile("scans/file/$S_FILENAMET.txt","");
 			}
 			else{
-				exe("convert $SCAN -alpha off ".shell("scans/$S_FILENAME"),true);
+				exe("convert $SCAN -alpha off ".shell("scans/file/$S_FILENAME"),true);
 			}
 			@unlink("$CANDIR/".$files[$i]);
 		}
@@ -1325,7 +1349,7 @@ else{
 			($ROTATE!="0"?"var p=document.createElement('p');p.innerHTML='<small>Changing orientation will void select region.</small>';getID('opt').appendChild(p);":'').
 			"$(document).ready(function(){document.scanning.scanner.disabled=true;".(isset($strip)?"stripSelect();":'')."});</script>";
 		# Check if image is empty and post error, otherwise post image to page
-		if(!file_exists("scans/$P_FILENAME")){
+		if(!file_exists("scans/thumb/$P_FILENAME")){
 			Print_Message("Could not scan",'<p style="text-align:left;margin:0;">This is can be cauesed by one or more of the following:</p>'.
 				'<ul><li>The scanner is not on.</li><li>The scanner is not connected to the computer.</li>'.
 				'<li>You need to run the <a href="index.php?page=Access%20Enabler">Access Enabler</a>.</li>'.
@@ -1335,7 +1359,7 @@ else{
 		}
 		else{
 			Update_Links($S_FILENAME,$PAGE);
-			Update_Preview("scans/$P_FILENAME");
+			Update_Preview("scans/thumb/$P_FILENAME");
 		}
 		echo '<script type="text/javascript">if(document.scanning.scanner.childNodes.length>1)document.scanning.reset.disabled=true;</script>';
 		if($ct>3)

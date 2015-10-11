@@ -22,18 +22,18 @@ foreach($files as $file => $val){
 	$ct++;
 	echo '<div>';
 	$file=$prefix.$file;
-	if(file_exists("scans/$file")){
+	if(file_exists("scans/file/$file")){
 		$ext=substr($file,strrpos($file,".")+1);
 		if($ext=="txt"){
-			echo "<pre>".htmlspecialchars(file_get_contents("scans/$file"))."</pre>";
+			echo "<pre>".htmlspecialchars(file_get_contents("scans/file/$file"))."</pre>";
 		}
 		else{
 			$file=htmlspecialchars($file);
-			echo "<img alt=\"$file\" src=\"scans/$file\">";
+			echo "<img alt=\"$file\" src=\"scans/file/$file\">";
 		}
 	}
 	else
-		echo '<hr><h2>404 Not Found</h1>The requested file <code>scans/'.htmlspecialchars($file).'</code> does not exist.<hr>';
+		echo '<hr><h2>404 Not Found</h1>The requested file <code>scans/file/'.htmlspecialchars($file).'</code> does not exist.<hr>';
 	echo '</div>';
 }
 echo '<script type="text/javascript">var total='.$ct.';</script>';
