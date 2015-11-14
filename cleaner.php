@@ -1,5 +1,5 @@
 <?php
-$maxAge=-1;// Max age in seconds, scans older that this will be deleted; use a negative value to disable
+$maxAge=-1;// max age in seconds, scans older that this will be deleted; negative values disable cleaning
 if(isset($_GET['file'])){
 	if(is_numeric(strrpos($_GET['file'], "/")))
 		$_GET['file']=substr($_GET['file'],strrpos($_GET['file'],"/")+1);

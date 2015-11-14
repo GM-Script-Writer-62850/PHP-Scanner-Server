@@ -849,6 +849,23 @@ code {
 	width: 350px;
 }
 
+#rulegen > div, #rulegen input{
+	margin:5px;
+}
+
+#rulegen ul{
+	-moz-column-count: 2;
+	-moz-column-gap: 0;
+	-webkit-column-count: 2;
+	-webkit-column-gap: 0;
+	column-count: 2;
+	column-gap: 0;
+}
+
+#rulegen li{
+	list-style:none;
+}
+
 #footer {
 	clear: both;
 	text-align: center;
