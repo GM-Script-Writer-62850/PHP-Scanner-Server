@@ -58,7 +58,7 @@ To install these rules save the generated rules to <i>/etc/udev/rules.d/40-scann
 		}
 		echo "</pre>To apply these permissions without rebooting run these commands as root:<pre>";
 		foreach($paths as $val){
-			echo 'chmod '.($type=="GROUP"?"root:$group":$group)." /dev/bus/usb/$val\n";
+			echo 'ch'.($type=="GROUP"?"own root:$group":"mod $group")." /dev/bus/usb/$val\n";
 		}
 		echo "</pre></div>";
 	}
