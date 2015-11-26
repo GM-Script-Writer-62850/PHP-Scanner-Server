@@ -592,13 +592,18 @@ else if($PAGE=="Config"){
 			Print_Message('Error','No printers found!!!<br/>Please go to your <a href="http://'.$_SERVER['HTTP_HOST'].':631">CUPS</a> configuration to setup printers.','center');
 	}
 	else if($ACTION=="Search-For-Scanners"){ # Find avalible scanners on the system
-		$OP=json_decode(
+		/*$OP=json_decode( // Double quotes in varables break this
 			"[".substr(
 				exe('scanimage -f "{\\"ID\\":%i,\\"INUSE\\":0,\\"DEVICE\\":\\"%d\\",\\"NAME\\":\\"%v %m %t\\"},"',true),
 				0,
 				-1
 			)."]"
 		);
+		debugMsg(count($OP));*/
+		$OP=array();
+		$arr=explode('[=(^^)=]',exe('scanimage -f "%i[=(^^)=]%d[=(^^)=]%v %m %t[=(^^)=]"',true));// If a scanner breaks this it is trying to; Cat in a box: [=(^^)=] 
+		for($i=0,$max=count($arr);$i<$max-1;$i=$i+3)
+			array_push($OP,(object)array("ID"=>intval($arr[$i]),"INUSE"=>0,"DEVICE"=>$arr[$i+1],"NAME"=>$arr[$i+2]));
 		$ct=count($OP);
 		$scan=scandir('config/parallel');
 		for($i=0,$max=count($scan);$i<$max;$i++){
