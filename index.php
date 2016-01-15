@@ -1270,7 +1270,7 @@ else{
 				exe("echo 'Maybe this scanner does not report it size correctly, maybe the default scan size will work it may or may not be a full scan.'",true);
 				exe("echo 'If it is not a full scan you are welcome to manually edit your $here/config/scanners.json file with the correct size.'",true);
 				@unlink("$CANDIR/scan_file$SCANNER.$RAW");
-				exe("echo 'Attempting to scan without forcing full scan'");
+				exe("echo 'Attempting to scan without forcing full scan'",true);
 				exe("scanimage -d $DEVICE --resolution $QUALITY --mode ".shell($MODE)." $LAMP--format=$RAW > ".shell("$CANDIR/scan_file$SCANNER.$RAW"),false);
 			}
 		}
