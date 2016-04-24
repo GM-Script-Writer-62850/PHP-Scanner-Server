@@ -5,7 +5,7 @@ Based on Linux Scanner Server 1.2 Beta
 
 Released under the GPL 2.0
 
-Last Update: 10/11/2015 (Month/Day/Year)
+Last Update: 5/24/2016 (Month/Day/Year)
 For Version: 1.5-16
 
 Change Log:
@@ -14,94 +14,139 @@ Change Log:
 PHP Linux Scanner Server is a PHP web application that allows you to share multiple scanners (supported by SANE) over a network.
 
 The following packages need to be installed:
-* imagemagick (6.5.9+)   - For image conversion
-* sane-utils             - For accessing scanners
-* usbutils               - For updating the device path of scanners using libusb
-* tesseract-ocr          - For image to text conversion
-* apache2                - A web server
-* php5                   - For running php
-* coreutils              - For various purposes, not having this would probably result in an unusable system
-* php5-json              - For storing/transferring/parsing data (If this package is not available, it may already be part of php5)
-+ php5-curl              - For uploading scans to imgur.com
-+ tar                    - For downloading a copy of PHP Linux Scanner Server in .tar.bz2 format (link in footer)
-+ zip                    - For downloading a compressed scan
-+ php-fpdf               - For downloading a pdf file
-+ libpaper-utils         - For detecting paper sizes
-+ sed                    - Used in the fall-back method of detecting tesseract languages
-+ grep                   - Used in the fall-back method of detecting tesseract languages
-_ hplip                  - Required for HP scanner support
-_ cups                   - Required if you want to use the printer service
-_ php5-cli               - For running php from command line
-_ curl                   - For making url request via command line through the network (alternative to php5-cli)
-_ tesseract-ocr-eng      - English language file for tesseract
-_ tesseract-ocr-equ      - Equations file for tesseract
-_ tesseract-ocr-osd      - Script and Orientation file for tesseract
-_ tesseract-ocr-afr      - Afrikaans language file for tesseract
-_ tesseract-ocr-ara      - Arabic language file for tesseract
-_ tesseract-ocr-aze      - Azerbaijani language file for tesseract
-_ tesseract-ocr-bel      - Belarusian language file for tesseract
-_ tesseract-ocr-ben      - Bengali language file for tesseract
-_ tesseract-ocr-bul      - Bulgarian language file for tesseract
-_ tesseract-ocr-cat      - Catalan language file for tesseract
-_ tesseract-ocr-ces      - Czech language file for tesseract
-_ tesseract-ocr-chi-sim  - Simplified Chinese language file for tesseract
-_ tesseract-ocr-chi-tra  - Traditional Chinese language file for tesseract
-_ tesseract-ocr-chr      - Cherokee language file for tesseract
-_ tesseract-ocr-dan      - Danish language file for tesseract
-_ tesseract-ocr-deu      - German language file for tesseract
-_ tesseract-ocr-deu-frak - German Fraktur language file for tesseract
-_ tesseract-ocr-ell      - Greek language file for tesseract
-_ tesseract-ocr-enm      - Middle English language file for tesseract
-_ tesseract-ocr-epo      - Esperanto language file for tesseract
-_ tesseract-ocr-est      - Estonian language file for tesseract
-_ tesseract-ocr-eus      - Basque language file for tesseract
-_ tesseract-ocr-fin      - Finnish language file for tesseract
-_ tesseract-ocr-fra      - French language file for tesseract
-_ tesseract-ocr-frk      - Frankish language file for tesseract
-_ tesseract-ocr-frm      - Middle French language file for tesseract
-_ tesseract-ocr-glg      - Galician language file for tesseract
-_ tesseract-ocr-grc      - Ancient Greek file for tesseract
-_ tesseract-ocr-heb      - Hebrew language file for tesseract
-_ tesseract-ocr-hin      - Hindi language file for tesseract
-_ tesseract-ocr-hrv      - Croatian language file for tesseract
-_ tesseract-ocr-hun      - Hungarian language file for tesseract
-_ tesseract-ocr-ind      - Indonesian language file for tesseract
-_ tesseract-ocr-isl      - Icelandic language file for tesseract
-_ tesseract-ocr-ita      - Italian language file for tesseract
-_ tesseract-ocr-ita-old  - Old Italian language file for tesseract
-_ tesseract-ocr-jpn      - Japanese language file for tesseract
-_ tesseract-ocr-kan      - Kannada language file for tesseract
-_ tesseract-ocr-kor      - Korean language file for tesseract
-_ tesseract-ocr-lav      - Latvian language file for tesseract
-_ tesseract-ocr-lit      - Lithuanian language file for tesseract
-_ tesseract-ocr-mal      - Malayalam language file for tesseract
-_ tesseract-ocr-mkd      - Macedonian language file for tesseract
-_ tesseract-ocr-mlt      - Maltese language file for tesseract
-_ tesseract-ocr-msa      - Malay language file for tesseract
-_ tesseract-ocr-nld      - Dutch language file for tesseract
-_ tesseract-ocr-nor      - Norwegian language file for tesseract
-_ tesseract-ocr-pol      - Polish language file for tesseract
-_ tesseract-ocr-por      - Portuguese language file for tesseract
-_ tesseract-ocr-ron      - Romanain language file for tesseract
-_ tesseract-ocr-rus      - Russian language file for tesseract
-_ tesseract-ocr-slk      - Slovak language file for tesseract
-_ tesseract-ocr-slk-frak - Slovak Fractur language file for tesseract
-_ tesseract-ocr-slv      - Slovenian language file for tesseract
-_ tesseract-ocr-spa      - Spanish language file for tesseract
-_ tesseract-ocr-spa-old   - Old Spanish language file for tesseract
-_ tesseract-ocr-sqi      - Albanian language file for tesseract
-_ tesseract-ocr-srp      - Serbian language file for tesseract
-_ tesseract-ocr-swa      - Swahili language file for tesseract
-_ tesseract-ocr-swe      - Swedish language file for tesseract
-_ tesseract-ocr-tam      - Tamil language file for tesseract
-_ tesseract-ocr-tel      - Telugu language file for tesseract
-_ tesseract-ocr-tgl      - Tagalog language file for tesseract
-_ tesseract-ocr-tha      - Thai language file for tesseract
-_ tesseract-ocr-tur      - Turkish language file for tesseract
-_ tesseract-ocr-ukr      - Ukranian language file for tesseract
-_ tesseract-ocr-vie      - Vietnamese language file for tesseract
-_ fortune                - For displaying fortunes in the debug console
-_ cowsay                 - For wrapping fortunes in ASCII art
+* imagemagick (6.5.9+)     - For image conversion
+* sane-utils               - For accessing scanners
+* usbutils                 - For updating the device path of scanners using libusb
+* tesseract-ocr            - For image to text conversion
+* apache2                  - A web server
+* coreutils                - For various purposes, not having this would probably result in an unusable system
+* php5                     - For running php
+* php                      - Ubuntu 16.04 + | For running php
+* php5-json                - For storing/transferring/parsing data (If this package is not available, it may already be part of php5)
+* php-json                 - Ubuntu 16.04 + | For storing/transferring/parsing data (If this package is not available, it may already be part of php5)
++ php5-curl                - For uploading scans to imgur.com
++ php-curl                 - Ubuntu 16.04 + | For uploading scans to imgur.com
++ tar                      - For downloading a copy of PHP Linux Scanner Server in .tar.bz2 format (link in footer)
++ zip                      - For downloading a compressed scan
++ php-fpdf                 - For downloading a pdf file
++ libpaper-utils           - For detecting paper sizes
++ sed                      - Used in the fall-back method of detecting tesseract languages
++ grep                     - Used in the fall-back method of detecting tesseract languages
+_ hplip                    - Required for HP scanner support
+_ cups                     - Required if you want to use the printer service
+_ php5-cli                 - For running php from command line
+_ php-cli                  - Ubuntu 16.04 + | For running php from command line
+_ curl                     - For making url request via command line through the network (alternative to php5-cli)
+_ tesseract-ocr-afr        - Afrikaans language file for tesseract
+_ tesseract-ocr-amh        - Amharic language file for tesseract
+_ tesseract-ocr-ara        - Arabic language file for tesseract
+_ tesseract-ocr-asm        - Assamese language file for tesseract
+_ tesseract-ocr-aze        - Azerbaijani language file for tesseract
+_ tesseract-ocr-aze-cyrl   - Azerbaijani (Cyrillic) language file for tesseract
+_ tesseract-ocr-bel        - Belarusian language file for tesseract
+_ tesseract-ocr-ben        - Bengali language file for tesseract
+_ tesseract-ocr-bod        - Tibetan Standard language file for tesseract
+_ tesseract-ocr-bos        - Bosnian language file for tesseract
+_ tesseract-ocr-bul        - Bulgarian language file for tesseract
+_ tesseract-ocr-cat        - Catalan language file for tesseract
+_ tesseract-ocr-ceb        - Cebuano language file for tesseract
+_ tesseract-ocr-ces        - Czech language file for tesseract
+_ tesseract-ocr-chi-sim    - Simplified Chinese language file for tesseract
+_ tesseract-ocr-chi-tra    - Traditional Chinese language file for tesseract
+_ tesseract-ocr-chr        - Cherokee language file for tesseract
+_ tesseract-ocr-cym        - Welsh language file for tesseract
+_ tesseract-ocr-dan        - Danish language file for tesseract
+_ tesseract-ocr-dan-frak   - Danish (Fraktur) language file for tesseract
+_ tesseract-ocr-deu        - German language file for tesseract
+_ tesseract-ocr-deu-frak   - German Fraktur language file for tesseract
+_ tesseract-ocr-dzo        - Dzongkha language file for tesseract
+_ tesseract-ocr-ell        - Greek language file for tesseract
+_ tesseract-ocr-eng        - English language file for tesseract
+_ tesseract-ocr-enm        - Middle English language file for tesseract
+_ tesseract-ocr-epo        - Esperanto language file for tesseract
+_ tesseract-ocr-equ        - equations language file for tesseract
+_ tesseract-ocr-est        - Estonian language file for tesseract
+_ tesseract-ocr-eus        - Basque language file for tesseract
+_ tesseract-ocr-fas        - Persian language file for tesseract
+_ tesseract-ocr-fin        - Finnish language file for tesseract
+_ tesseract-ocr-fra        - French language file for tesseract
+_ tesseract-ocr-frk        - Frankish language file for tesseract
+_ tesseract-ocr-frm        - Middle French language file for tesseract
+_ tesseract-ocr-gle        - Irish language file for tesseract
+_ tesseract-ocr-gle-uncial - Irish (Uncial) language file for tesseract
+_ tesseract-ocr-glg        - Galician language file for tesseract
+_ tesseract-ocr-grc        - Ancient Greek language file for tesseract
+_ tesseract-ocr-guj        - Gujarati language file for tesseract
+_ tesseract-ocr-hat        - Hatian language file for tesseract
+_ tesseract-ocr-heb        - Hebrew language file for tesseract
+_ tesseract-ocr-hin        - Hindi language file for tesseract
+_ tesseract-ocr-hrv        - Croatian language file for tesseract
+_ tesseract-ocr-hun        - Hungarian language file for tesseract
+_ tesseract-ocr-iku        - Inuktitut language file for tesseract
+_ tesseract-ocr-ind        - Indonesian language file for tesseract
+_ tesseract-ocr-isl        - Icelandic language file for tesseract
+_ tesseract-ocr-ita        - Italian language file for tesseract
+_ tesseract-ocr-ita-old    - Old Italian language file for tesseract
+_ tesseract-ocr-jav        - Javanese language file for tesseract
+_ tesseract-ocr-jpn        - Japanese language file for tesseract
+_ tesseract-ocr-kan        - Kannada language file for tesseract
+_ tesseract-ocr-kat        - Georgian language file for tesseract
+_ tesseract-ocr-kat-old    - Old Georgian language file for tesseract
+_ tesseract-ocr-kaz        - Kazakh language file for tesseract
+_ tesseract-ocr-khm        - Khmer language file for tesseract
+_ tesseract-ocr-kir        - Kyrgyz language file for tesseract
+_ tesseract-ocr-kor        - Korean language file for tesseract
+_ tesseract-ocr-kur        - Kurdish language file for tesseract
+_ tesseract-ocr-lao        - Lao language file for tesseract
+_ tesseract-ocr-lat        - Latin language file for tesseract
+_ tesseract-ocr-lav        - Latvian language file for tesseract
+_ tesseract-ocr-lit        - Lithuanian language file for tesseract
+_ tesseract-ocr-mal        - Malayalam language file for tesseract
+_ tesseract-ocr-mar        - Marathi language file for tesseract
+_ tesseract-ocr-mkd        - Macedonian language file for tesseract
+_ tesseract-ocr-mlt        - Maltese language file for tesseract
+_ tesseract-ocr-msa        - Malay language file for tesseract
+_ tesseract-ocr-mya        - Burmese language file for tesseract
+_ tesseract-ocr-nep        - Nepali language file for tesseract
+_ tesseract-ocr-nld        - Dutch language file for tesseract
+_ tesseract-ocr-nor        - Norwegian language file for tesseract
+_ tesseract-ocr-ori        - Oriya language file for tesseract
+_ tesseract-ocr-osd        - script and orientation language file for tesseract
+_ tesseract-ocr-pan        - Punjabi language file for tesseract
+_ tesseract-ocr-pol        - Polish language file for tesseract
+_ tesseract-ocr-por        - Portuguese language file for tesseract
+_ tesseract-ocr-pus        - Pashto language file for tesseract
+_ tesseract-ocr-ron        - Romanian language file for tesseract
+_ tesseract-ocr-rus        - Russian language file for tesseract
+_ tesseract-ocr-san        - Sanskrit language file for tesseract
+_ tesseract-ocr-sin        - Sinhala language file for tesseract
+_ tesseract-ocr-slk        - Slovak language file for tesseract
+_ tesseract-ocr-slk-frak   - Slovak Fractur language file for tesseract
+_ tesseract-ocr-slv        - Slovenian language file for tesseract
+_ tesseract-ocr-spa        - Spanish language file for tesseract
+_ tesseract-ocr-spa-old    - Old Spanish language file for tesseract
+_ tesseract-ocr-sqi        - Albanian language file for tesseract
+_ tesseract-ocr-srp        - Serbian language file for tesseract
+_ tesseract-ocr-srp-latn   - Serbian (Latin) language file for tesseract
+_ tesseract-ocr-swa        - Swahili language file for tesseract
+_ tesseract-ocr-swe        - Swedish language file for tesseract
+_ tesseract-ocr-syr        - Syriac language file for tesseract
+_ tesseract-ocr-tam        - Tamil language file for tesseract
+_ tesseract-ocr-tel        - Telugu language file for tesseract
+_ tesseract-ocr-tgk        - Tajik language file for tesseract
+_ tesseract-ocr-tgl        - Tagalog language file for tesseract
+_ tesseract-ocr-tha        - Thai language file for tesseract
+_ tesseract-ocr-tir        - Tigrinya language file for tesseract
+_ tesseract-ocr-tur        - Turkish language file for tesseract
+_ tesseract-ocr-uig        - Uyghur language file for tesseract
+_ tesseract-ocr-ukr        - Ukranian language file for tesseract
+_ tesseract-ocr-urd        - Urdu language file for tesseract
+_ tesseract-ocr-uzb        - Uzbek language file for tesseract
+_ tesseract-ocr-uzb-cyrl   - Uzbek (Cyrillic) language file for tesseract
+_ tesseract-ocr-vie        - Vietnamese language file for tesseract
+_ tesseract-ocr-yid        - Yiddish language file for tesseract
+_ fortune                  - For displaying fortunes in the debug console
+_ cowsay                   - For wrapping fortunes in ASCII art
 	* Mandatory
 	+ Recommended for full functionality
 	_ Optional or required for full functionality

@@ -6,7 +6,7 @@
 		try{
 			ct=getID('container');
 			content.body.style.backgroundColor=getComputedStyle(ct,null).getPropertyValue('background-color');
-			content.body.style.color=getComputedStyle(ct,null).getPropertyValue('color');
+			//content.body.style.color=getComputedStyle(ct,null).getPropertyValue('color'); // What was this even for?
 			s=content.evaluate("//tr[not(@class)]/td[not(@class)]/../../tr[not(@class)]",content,null,6,null);
 			for(var i=s.snapshotLength-1;i>-1;i--){
 				s.snapshotItem(i).className='v';

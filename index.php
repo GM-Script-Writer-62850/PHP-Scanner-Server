@@ -598,8 +598,7 @@ else if($PAGE=="Config"){
 				0,
 				-1
 			)."]"
-		);
-		debugMsg(count($OP));*/
+		);*/
 		$OP=array();
 		$arr=explode('[=(^^)=]',exe('scanimage -f "%i[=(^^)=]%d[=(^^)=]%v %m %t[=(^^)=]"',true));// If a scanner breaks this it is trying to; Cat in a box: [=(^^)=] 
 		for($i=0,$max=count($arr);$i<$max-1;$i=$i+3)
