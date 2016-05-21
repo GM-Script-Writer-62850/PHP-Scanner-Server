@@ -627,8 +627,11 @@ else if($PAGE=="Config"){
 			}
 		}
 		for($i=0;$i<$ct;$i++){// Get scanner specific data
-			if($i<$ct-$FakeCt)
+			if($i<$ct-$FakeCt){
+				if(substr($OP[$i]->{"DEVICE"},0,4)=='net:') // Seems a delay is needed to prevent I/O error (maybe cause the remote server is a raspberry pi; very slow system)
+					sleep(1);
 				$help=exe("scanimage -A -d ".shell($OP[$i]->{"DEVICE"}),true);
+			}
 			else
 				$help=file_get_contents('res/scanhelp/'.$OP[$i]->{"NAME"});
 			// Get Source
