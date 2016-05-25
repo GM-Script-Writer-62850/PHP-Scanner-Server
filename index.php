@@ -1244,7 +1244,7 @@ else{
 		}*/
 
 		if(!is_bool($CANNERS[$SCANNER]->{"DUPLEX-$SOURCE"})){
-			$DUPLEX="--adf-mode $DUPLEX";
+			$DUPLEX="--adf-mode $DUPLEX ";
 		}
 		else if($CANNERS[$SCANNER]->{"DUPLEX-$SOURCE"}===true){
 			if($DUPLEX==true)
