@@ -83,7 +83,7 @@ $upLimit=getMaximumFileUploadSize();
 	<div class="box box-wide">
 		<h2>PDF Printing</h2>
 		<p class="center">
-			<input type="file" name="pdf" onchange="submitPrint(Printer,<?php echo $upLimit; ?>,true)"/> (<?php echo $upLimit/1024/1024; ?> Megabyte limit)<br/>
+			<input type="file" name="pdf" onchange="submitPrint(Printer,<?php echo $upLimit; ?>,true)" accept="application/pdf"/> (<?php echo $upLimit/1024/1024; ?> Megabyte limit)<br/>
 			<input type="submit" name="submit" value="Print PDF" onclick="Printer.format.value='pdf';this.value='Uploading';"/>
 		</p>
 	</div>

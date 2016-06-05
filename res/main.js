@@ -459,6 +459,14 @@ function buildPrinterOptions(json,p,P){
 			OPT=document.createElement('option');
 			OPT.value=json['printers'][printer][i]['value'][val];
 			OPT.textContent=json['printers'][printer][i]['value'][val];
+			if(json['printers'][printer][i]['name']=="Output Mode"){// Human friendly names for Color option (at-least for HP Printers)
+				if(OPT.textContent=="RGB")
+					OPT.textContent="Color";
+				else if(OPT.textContent=="CMYGray")
+					OPT.textContent="High Quality Grayscale";
+				else if(OPT.textContent=="KGray")
+					OPT.textContent="Black Only Grayscale";
+			}
 			if(json['printers'][printer][i]['default']==json['printers'][printer][i]['value'][val])
 				OPT.setAttribute('selected','selected');
 			SEL.appendChild(OPT);
@@ -522,7 +530,7 @@ function parseJSON(jsonTXT){
 }
 function inArray(arr,val){
 	for(var i=0;i<arr.length;i++){
-		if(arr[i]==val){
+		if(arr[i]===val){
 			return true;
 		}
 	}
@@ -583,6 +591,7 @@ function sourceChange(ele){
 	var i,max,text,html1,html2,html3,html4,dpi,modes,valA,valB,valC,valD,duplex,papers,size,width,height,
 		info=document.scanning.scanner,settings,def=false;
 	info=scanners[info.selectedIndex];
+	localStorage.clear();// DELETE ME LATER
 	if(typeof(localStorage)!='undefined'){
 		settings=localStorage.getItem('default');
 		def=settings!=null;
@@ -622,11 +631,11 @@ function sourceChange(ele){
 	for(i=0,max=dpi.length;i<max;i++)
 		html3+='<option value="'+dpi[i]+'"'+(def?(settings.quality==dpi[i]?' selected="selected"':''):'')+'>'+dpi[i]+' '+(isNaN(dpi[i])?'':'DPI')+'</option>';
 	// Change Duplex
-	duplex=typeof(info['DUPLEX-'+ele.value])=='boolean'?'false|true':info['DUPLEX-'+ele.value];
-	duplex=duplex.split('|');
+	duplex=typeof(info['DUPLEX-'+ele.value])=='boolean'?Array(false,true):info['DUPLEX-'+ele.value].split('|');
 	html4='';
 	for(i in duplex)
-		html4+='<option value="'+duplex[i]+'"'+(def?(settings.duplex==duplex[i]?' selected="selected"':''):'')+'>'+(typeof(duplex[i])=='boolean'?(duplex[i]?'Yes':'No'):duplex[i])+'</option>';
+		html4+='<option value="'+duplex[i]+'"'+(def?(settings.duplex==duplex[i]?' selected="selected"':''):'')+'>'+
+			(typeof(duplex[i])=='boolean'?(duplex[i]?'Yes':'No'):duplex[i])+'</option>';
 	// Apply Changes
 	valA=document.scanning.mode.value;
 	valB=document.scanning.size.value;
@@ -789,8 +798,8 @@ function scanReset(){
 	sendE(document.scanning.filetype,'change');
 }
 /*function lastCordsChange(json,state){
-	// This is related to lines 52, 69-78,219,221, 223, and 225 of scan.php it is a attept to add a option is use the last scan's coordinates (incomplete and I changed my mind on making it)
-	// It will still need to disabled when/if the scanner is changed and including the coords at page load is buged and attempting to scan results in a invalid input security error
+	// This is related to lines 52, 69-78,219,221, 223, and 225 of scan.php it is a attempt to add a option is use the last scan's coordinates (incomplete and I changed my mind on making it)
+	// It will still need to disabled when/if the scanner is changed and including the coords at page load is bugged and attempting to scan results in a invalid input security error
 	if(state){
 		json=parseJSON(json);
 		json["x2"]=0;//these 2 are only used in the UI and have no direct impact in the backend
@@ -1707,7 +1716,7 @@ function scanFilter(f2,f1){
 	}
 	if(f1Total>f2Total)
 		return alert("That combination can't have any results");
-	document.location.href="index.php?page=Scans&filter=3&t1="+f1Total+"&t2="+f2Total;
+	document.location.href="index.php?page=Scans&filter=3&origin="+f1['origin'].value+"&t1="+f1Total+"&t2="+f2Total;
 }
 function setDefault(form){
 	if(typeof(localStorage)=='undefined'||typeof(JSON)!='object')

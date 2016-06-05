@@ -19,6 +19,7 @@ The following packages need to be installed:
 * usbutils                 - For updating the device path of scanners using libusb
 * tesseract-ocr            - For image to text conversion
 * apache2                  - A web server
+* libapache2-mod-php       - Ubuntu 16.04 + | Enables PHP to run under apache2
 * coreutils                - For various purposes, not having this would probably result in an unusable system
 * php5                     - For running php
 * php                      - Ubuntu 16.04 + | For running php
@@ -152,8 +153,9 @@ _ cowsay                   - For wrapping fortunes in ASCII art
 	_ Optional or required for full functionality
 
 	Some of these will likely already be installed, some newer distros (ubuntu 13.10) will require php5-json
+	Starting with Ubuntu 16.04 libapache2-mod-php is not pulled by php, php5 has been changed to php7.0, there is a php meta package
 
-	sudo apt-get install imagemagick sane-utils usbutils apache2 php5 php5-curl tesseract-ocr tar zip php-fpdf libpaper-utils grep sed coreutils
+	sudo apt-get install imagemagick sane-utils usbutils apache2 php libapache2-mod-php php-json php-curl php-fpdf tesseract-ocr tar zip libpaper-utils grep sed coreutils
 
 Permissions:
 	The user www-data needs write permissions to the following folders

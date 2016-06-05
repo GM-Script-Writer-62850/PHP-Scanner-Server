@@ -600,7 +600,7 @@ else if($PAGE=="Config"){
 			)."]"
 		);*/
 		$OP=array();
-		$arr=explode('[=(^^)=]',exe('scanimage -f "%i[=(^^)=]%d[=(^^)=]%v %m %t[=(^^)=]"',true));// If a scanner breaks this it is trying to; Cat in a box: [=(^^)=] 
+		$arr=explode('[=(^^)=]',exe('scanimage -f "%i[=(^^)=]%d[=(^^)=]%v %m %t[=(^^)=]"',true));// If a scanner breaks this it is trying to; Cat in a box: [=(^^)=]
 		for($i=0,$max=count($arr);$i<$max-1;$i=$i+3)
 			array_push($OP,(object)array("ID"=>intval($arr[$i]),"INUSE"=>0,"DEVICE"=>$arr[$i+1],"NAME"=>$arr[$i+2]));
 		$ct=count($OP);
@@ -1370,7 +1370,7 @@ else{
 		}
 		echo '<script type="text/javascript">if(document.scanning.scanner.childNodes.length>1)document.scanning.reset.disabled=true;</script>';
 		if($ct>3)
-			Print_Message("Info",'Multiple scans made, only displaying last one, go to <a href="index.php?page=Scans&amp;filter=3&amp;T2='.($startTime-1).'&T1='.($endTime+1).'">Scanned Files</a> for the rest','center');
+			Print_Message("Info",'Multiple scans made, only displaying last one, go to <a href="index.php?page=Scans&amp;filter=3&amp;origin='.$SCANNER.'&amp;T2='.($startTime-1).'&T1='.($endTime+1).'">Scanned Files</a> for the rest','center');
 	}
 	checkFreeSpace($FreeSpaceWarn);
 }
