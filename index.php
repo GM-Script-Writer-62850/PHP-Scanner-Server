@@ -1305,7 +1305,13 @@ else{
 
 			# Adjust Brightness
 			if($BRIGHT!="0"||$CONTRAST!="0"){
-				exe("convert $SCAN -brightness-contrast '$BRIGHT".'x'."$CONTRAST' $SCAN",true);
+				if($MODE=='Lineart'){
+					exe("convert $SCAN -brightness-contrast '$BRIGHT".'x'."$CONTRAST' -depth 16 $SCAN",true);
+					exe("convert $SCAN -monochrome -depth 1 $SCAN",true);
+				}
+				else{
+					exe("convert $SCAN -brightness-contrast '$BRIGHT".'x'."$CONTRAST' $SCAN",true);
+				}
 			}
 
 			# Rotate Image
