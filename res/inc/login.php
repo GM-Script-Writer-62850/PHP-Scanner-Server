@@ -21,7 +21,7 @@ if(isset($_POST['json'])&&!isset($PAGE)){
 		die('{"message":"You must have a name","error":true}');
 	if($mode=="login"){
 		if(isset($json->{$user})){
-			if($json->{$user}->{"md5"}==md5($pass)){
+			if($json->{$user}->{"md5"}===md5($pass)){
 				$msg="You are now logged in";
 				Allow();
 			}
@@ -42,7 +42,7 @@ if(isset($_POST['json'])&&!isset($PAGE)){
 			$msg="The user '$user' has been created. DON'T FORGET YOUR PASSWORD, YOU SHOULD KNOW BETTER";
 		}
 		else if(isset($json->{'root'})){
-			if(md5($_POST["auth"])==$json->{"root"}->{"md5"}){
+			if(md5($_POST["auth"])===$json->{"root"}->{"md5"}){
 				$json->{$user}=array("md5" => md5($pass) );
 				$msg="The user <code>".htmlspecialchars($user)."</code> has been created";
 			}
@@ -56,7 +56,7 @@ if(isset($_POST['json'])&&!isset($PAGE)){
 			die('{"message":"Invalid User Name","error":true}');
 		if(!isset($json->{'root'}))
 			$json->{"root"}=array( "md5" => null );
-		if($json->{"root"}->{"md5"}!=md5($_POST["auth"]))
+		if($json->{"root"}->{"md5"}!==md5($_POST["auth"]))
 			die('{"message":"Authorization was unsuccessful","error":true}');
 		$json->{$user}->{"md5"}=md5($pass);
 		if(strlen($_POST["newp"])==0){
@@ -70,7 +70,7 @@ if(isset($_POST['json'])&&!isset($PAGE)){
 	else if($mode=="change"){
 		if(!isset($json->{$user}))
 			die('{"message":"Invalid User Name","error":true}');
-		if($json->{$user}->{"md5"}==md5($pass))
+		if($json->{$user}->{"md5"}===md5($pass))
 			$json->{$user}->{"md5"}=md5($_POST["newp"]);
 		else
 			die('{"message":"Invalid password","error":true}');
