@@ -135,7 +135,7 @@ function genIconLinks($config,$file,$isBulk){
 			'target'=>'_blank',
 			'disable'=>isset($config->{'print'}),
 			'tip'=>'Print',
-			'bulk'=>"bulkPrint(this)"
+			'bulk'=>$GLOBALS['Printer'] % 2 == 0?"bulkPrint(this)":"PDF_popup(filesLst,true)"
 		),
 		'del'=>(object)array(
 			'href'=>"index.php?page=Scans&amp;delete=Remove&amp;file=$sURL",
