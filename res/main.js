@@ -847,7 +847,7 @@ function disableIcons(){// Converts disabled icons to act like disabled icons
 	}
 }
 function PDF_popup(files,print){
-	if(print===true){
+	if(print===true&&files.length>0){
 		if(confirm("Press OK to use your system's printer.\nPress Cancel to open the Server Print Dialog."))
 			return true;
 	}
