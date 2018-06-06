@@ -590,7 +590,6 @@ function sourceChange(ele){
 	var i,max,text,html1,html2,html3,html4,dpi,modes,valA,valB,valC,valD,duplex,papers,size,width,height,
 		info=document.scanning.scanner,settings,def=false;
 	info=scanners[info.selectedIndex];
-	localStorage.clear();// DELETE ME LATER
 	if(typeof(localStorage)!='undefined'){
 		settings=localStorage.getItem('default');
 		def=settings!=null;
