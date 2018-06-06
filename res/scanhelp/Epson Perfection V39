@@ -1,0 +1,65 @@
+Options specific to device `imagescan:esci:gt-s650:usb:/sys/devices/pci0000:00/0000:00:1d.7/usb1/1-6/1-6:1.0':
+  General:
+    --source Document Table [Document Table] [read-only]
+        Document Source
+    --enable-resampling[=(yes|no)] [inactive]
+        This option provides the user with a wider range of supported
+        resolutions.  Resolutions not supported by the hardware will be
+        achieved through image processing methods.
+    --resolution 50..4800dpi [300]
+        Resolution
+    --scan-area Executive/Portrait|ISO/A4/Portrait|ISO/A5/Portrait|ISO/A5/Landscape|ISO/A6/Portrait|ISO/A6/Landscape|JIS/B5/Portrait|JIS/B6/Portrait|JIS/B6/Landscape|Letter/Portrait|Manual|Maximum [Manual]
+        Scan Area
+    --mode Monochrome|Grayscale|Color [Color]
+        Image Type
+  Geometry:
+    -x 2.53999..218.44mm [215.9]
+        Width of scan-area.
+    -y 2.53999..299.72mm [297.18]
+        Height of scan-area.
+    -l 0..215.9mm [0]
+        Top Left X
+    -t 0..297.18mm [0]
+        Top Left Y
+  Enhancement:
+    --rotate 0 degrees|90 degrees|180 degrees|270 degrees|Auto [0 degrees]
+        Rotate
+    --blank-threshold 0..100 [0]
+        Skip Blank Pages Settings
+    --brightness -100..100 [0]
+        Change brightness of the acquired image.
+    --contrast -100..100 [0]
+        Change contrast of the acquired image.
+    --threshold 0..255 [128]
+        Threshold
+  Other:
+    --cct-1  [1.0824]
+        
+    --cct-2  [0.00849915]
+        
+    --cct-3  [-0.0908966]
+        
+    --cct-4  [0.0338898]
+        
+    --cct-5  [1.10429]
+        
+    --cct-6  [-0.138199]
+        
+    --cct-7  [0.00869751]
+        
+    --cct-8  [-0.155685]
+        
+    --cct-9  [1.14699]
+        
+    --gamma 1.0|1.8 [1.8]
+        Gamma
+    --line-count 0..255 [0]
+        Specify how many scan lines to move from the device to the software in
+        one transfer.  Note that 0 will use the maximum usable value.  Values
+        larger than the maximum usable value are clamped to the maximum.
+    --speed[=(yes|no)] [no]
+        Speed
+    --sw-color-correction[=(yes|no)] [yes]
+        
+    --transfer-format RAW [RAW] [read-only]
+        Transfer Format

@@ -44,15 +44,7 @@ function getShadow($b,$t){
 	return 'rgb('.implode(',',$c).')';
 }
 ?>
-@-webkit-keyframes fadein { /* Chrome, Safari, and Opera */
-	from {
-		opacity: 0;
-	}
-	to {
-		opacity: 1;
-	}
-}
-@keyframes fadein { /* Standard: Firefox and IE10 */
+@keyframes fadein {
 	from {
 		opacity: 0;
 	}
@@ -121,7 +113,6 @@ img{
 	text-decoration: none !important;
 	font-variant: normal;
 	font-weight: normal;
-	-webkit-animation-name: fadein;
 	animation-name: fadein;
 }
 

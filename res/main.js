@@ -561,7 +561,6 @@ function scannerChange(ele){
 				'scale':settings.scale,
 				'filetype':settings.filetype,
 				'lang':settings.lang
-				
 			});
 		}
 	}
@@ -575,7 +574,7 @@ function scannerChange(ele){
 		}
 		html+='<option value="'+sources[i]+'"'+(def?(settings.source==sources[i]?' selected="selected"':''):'')+'>'+text+'</option>';
 	}
-	if(document.all)// http://support.microsoft.com/kb/276228	
+	if(document.all)// http://support.microsoft.com/kb/276228
 		form.source.parentNode.innerHTML='<select name="source" class="title" onchange="sourceChange(this)">'+html+'</select>';
 	else
 		form.source.innerHTML=html;
@@ -591,6 +590,7 @@ function sourceChange(ele){
 	var i,max,text,html1,html2,html3,html4,dpi,modes,valA,valB,valC,valD,duplex,papers,size,width,height,
 		info=document.scanning.scanner,settings,def=false;
 	info=scanners[info.selectedIndex];
+	localStorage.clear();// DELETE ME LATER
 	if(typeof(localStorage)!='undefined'){
 		settings=localStorage.getItem('default');
 		def=settings!=null;
@@ -744,7 +744,7 @@ function rotateChange(ele){
 }
 function changeBrightContrast(){// Webkit based only :(
 	// Does not work properly so lets disable it: brightness/contrast have a screwed up/illogical max %
-	// Seriously 0 to 100 sale like a percentage to darken, but brightening is 101 to infinity
+	// Seriously 0 to 100 scales like a percentage to darken, but brightening is 101 to infinity
 	//if(typeof(document.body.style.webkitFilter)!='string') 
 		return;
 	if(previewIMG.src.indexOf('res/images/blank.gif')>-1)
@@ -1518,9 +1518,10 @@ function configEmail(addr){
 function sendEmail(ele){
 	if(typeof(XMLHttpRequest)=='undefined')
 		return printMsg('Error',supportErrorA+'<a href="http://www.w3schools.com/xml/xml_http.asp" target="_blank">XMLHttpRequest</a>, so you can not send emails with that button'+supportErrorB,'center',0);
-	var now=new Date().getTime();
+	var httpRequest,params
+		now=new Date().getTime();
 	printMsg('Sending Email<span id="email-'+now+'"></span>','Please Wait...<br/>This could take a while depending on the file size of the scan and the upload speed at '+document.domain,'center',0);
-	var httpRequest = new XMLHttpRequest();
+	httpRequest = new XMLHttpRequest();
 	httpRequest.onreadystatechange = function(){
 		if(httpRequest.readyState==4){
 			if(httpRequest.status==200){
@@ -1534,7 +1535,7 @@ function sendEmail(ele){
 		}
 	};
 	httpRequest.open('POST', 'email.php');
-	var params = (ele.file?"file="+encodeURIComponent(ele.file.value):"json="+encodeURIComponent(ele.json.value))+
+	params = (ele.file?"file="+encodeURIComponent(ele.file.value):"json="+encodeURIComponent(ele.json.value))+
 		"&from="+encodeURIComponent(ele.from.value)+
 		"&to="+encodeURIComponent(ele.to.value)+
 		"&title="+encodeURIComponent(ele.title.value)+

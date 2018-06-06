@@ -641,7 +641,12 @@ else if($PAGE=="Config"){
 			else{
 				$sources=substr($help,$sources+9);
 				$defSource=substr($sources,strpos($sources,' [')+2);
+				$ro=$defSource;
 				$defSource=substr($defSource,0,strpos($defSource,']'));
+				$ro=substr($ro,strlen($defSource)+2,11);
+				if($ro=='[read-only]'){
+					$defSource='Inactive';
+				}
 			}
 			$OP[$i]->{"SOURCE"}=strtolower($defSource)=='inactive'?'Inactive':substr($sources,0,strpos($sources,' ['));
 			$sources=explode('|',$OP[$i]->{"SOURCE"});
