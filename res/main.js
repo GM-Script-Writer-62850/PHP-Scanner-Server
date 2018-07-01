@@ -1407,7 +1407,7 @@ function emailManager(file){
 	}
 	html+='<li>You can double click the password blank to see the password.</li>'+
 	(document.location.protocol=='http:'?'<li>This does not use a secure connection to get your login from your browser to the server.</li>':'')+'</ul></div>'+
-	'<form name="email" target="_blank" action="email.php" onsubmit="return validateEmail(this);">'+
+	'<form name="email" target="_blank" action="email.php" onsubmit="return validateEmail(this);" method="POST">'+
 	'<input type="hidden" name="'+(file=='Scan_Compilation'?'json':'file')+'" value="'+(file=='Scan_Compilation'?encodeHTML(JSON.stringify(filesLst)):file)+'"/>'+
 	'<div class="label">'+(file?'From':'Email')+':</div><div class="control"><input type="text" onchange="configEmail(this.value)" name="from" value="johndoe@gmail.com"/></div>'+
 	(file?'<div class="label">Subject:</div><div class="control"><input type="text" name="title" value="[Scanned '+(file=='Scan_Compilation'?'Compilation':(file.substr(-3)!='txt'?'Image':'Text'))+'] '+(file=='Scan_Compilation'?files_ct+' Scans':file.substr(5))+'"/></div>'+
