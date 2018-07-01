@@ -1517,7 +1517,7 @@ function configEmail(addr){
 function sendEmail(ele){
 	if(typeof(XMLHttpRequest)=='undefined')
 		return printMsg('Error',supportErrorA+'<a href="http://www.w3schools.com/xml/xml_http.asp" target="_blank">XMLHttpRequest</a>, so you can not send emails with that button'+supportErrorB,'center',0);
-	var httpRequest,params
+	var httpRequest,params,
 		now=new Date().getTime();
 	printMsg('Sending Email<span id="email-'+now+'"></span>','Please Wait...<br/>This could take a while depending on the file size of the scan and the upload speed at '+document.domain,'center',0);
 	httpRequest = new XMLHttpRequest();
