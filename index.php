@@ -274,10 +274,11 @@ function findLangs(){
 		}
 	}
 	else if(is_dir($langs)){
-		$langs=explode("\n",substr(exe("ls ".shell($langs)." | grep 'tesseract-ocr-' | sed 's/tesseract-ocr-//'",true),0,-1));
+		$langs=substr(exe("ls ".shell($langs)." | grep 'tesseract-ocr-' | sed 's/tesseract-ocr-//'",true),0,-1);
+		$langs=strlen($langs)>0?explode("\n",$langs):array();
 	}
 	else{
-		Print_Message("Tesseract Error:","Unable to find any installed language files or documentation.<br/>You can edit lines 145 and or 146 of <code>".getcwd()."/index.php</code> with the correct location for your system.","center");
+		Print_Message("Tesseract Error:","Unable to find any installed language files or documentation.<br/>You can edit lines 261 and or 262 of <code>".getcwd()."/index.php</code> with the correct location for your system.","center");
 		$langs=array();
 	}
 	return $langs;
