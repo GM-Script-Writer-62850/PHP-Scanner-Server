@@ -752,8 +752,15 @@ function changeBrightContrast(){// Webkit based only :(
 	previewIMG.style.webkitFilter='brightness('+(Number(document.scanning.bright.value)+100)+'%) contrast('+(Number(document.scanning.contrast.value)+100)+'%)';
 }
 function fileChange(type){
-	if(type=='txt')
-		getID('lang').removeAttribute('style');
+	if(type=='txt'){
+		if(document.scanning.lang.value==''){
+			document.scanning.filetype.children[3].disabled=true;
+			printMsg('Tesseract Error','Saving to Text File format requires tesseract, it may not be installed!','center',-1);
+			document.scanning.filetype.selectedIndex=0;
+		}
+		else
+			getID('lang').removeAttribute('style');
+	}
 	else
 		getID('lang').style.display='none';
 }
