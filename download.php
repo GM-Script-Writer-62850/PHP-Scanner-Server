@@ -126,7 +126,7 @@ else if((isset($_GET['type'])?$_GET['type']:'')=='pdf'&&!isset($_GET['raw'])){
 				$pdf->Image($file,$marginLeft,$marginTop/2+$fontSize*($Pwidth/215.9),$width,$height);
 			}
 		}
-		if(substr($name,-4)=='tiff');
+		if(substr($name,-4)=='tiff')
 			@unlink($file);
 	}
 	if($pages>0){
