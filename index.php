@@ -257,14 +257,23 @@ function debugMsg($msg){// Good for printing a quick message during testing
 	Print_Message("Debug Message",$msg,'center');
 }
 
-function findLangs(){
-	$tess="/usr/share/tesseract-ocr/tessdata";// This is where tesseract stores it language files
-	$langs="/usr/share/doc";// This is where documentation is stored
-	if(is_dir($tess)){
+function findLangs(){// This tries 3 methods
+	$tess="/usr/share/tesseract-ocr";// This is where tesseract stores it language files
+	$doc="/usr/share/doc";// This is where documentation is stored
+
+	$langs=substr(exe("tesseract --list-langs",true),0,-1);// Asking the software what it has to work with seems like a good idea
+	if(substr($langs,0,27)=='List of available languages'){
+		$langs=explode("\n",$langs);
+		$langs=array_slice($langs,1);
+	}
+	else
 		$langs=array();
+	// Just in case this there is a old version in use that can't provide that info
+	if(is_dir($tess)&&count($langs)==0){// Find installed language packs by checked for the files
+		$tess="$tess/".(is_dir("$tess/tessdata")?'':substr(exe("ls ".shell($tess)." | tail -1",true),0,-1)).'/tessdata';// Find tessdata folder
 		$tess=scandir($tess);
 		for($i=2,$max=count($tess);$i<$max;$i++){
-			$pos=strpos($tess[$i],'.');
+			$pos=strpos($tess[$i],'.traineddata');
 			if($pos){
 				$tess[$i]=substr($tess[$i],0,strpos($tess[$i],'.',$pos));
 				if(!in_array($tess[$i],$langs)){
@@ -273,12 +282,9 @@ function findLangs(){
 			}
 		}
 	}
-	else if(is_dir($langs)){
-		$langs=substr(exe("ls ".shell($langs)." | grep 'tesseract-ocr-' | sed 's/tesseract-ocr-//'",true),0,-1);
+	if(is_dir($doc)&&count($langs)==0){// Find installed language packs by checking installed documentations files
+		$langs=substr(exe("ls ".shell($doc)." | grep 'tesseract-ocr-' | sed 's/tesseract-ocr-//'",true),0,-1);
 		$langs=strlen($langs)>0?explode("\n",$langs):array();
-	}
-	else{	
-		$langs=array();
 	}
 	if(count($langs)==0)
 		Print_Message("Tesseract Error:","Unable to find any installed language files or documentation.<br/>You can edit lines 261 and or 262 of <code>".getcwd()."/index.php</code> with the correct location for your system.","center");
@@ -958,8 +964,8 @@ else if($PAGE=="Edit"){
 				if(file_exists("scans/file/Scan_$file")){
 					$langs=findLangs();
 					if(!validNum(Array($WIDTH,$HEIGHT,$X_1,$Y_1,$BRIGHT,$CONTRAST,$SCALE,$ROTATE))||
-					  ($FILETYPE!=="txt"&&$FILETYPE!=="png"&&$FILETYPE!=="tiff"&&$FILETYPE!=="jpg")||
-					  !in_array($LANG,$langs)){
+					  (!in_array($FILETYPE,array("txt","png","tiff","jpg")))||
+					  (!in_array($LANG,$langs))&&$LANG!=''){
 						Print_Message("No, you can not do that","Input data is invalid and most likely an attempt to run malicious code on the server <i>denied</i>",'center');
 						Footer('');
 						quit();
@@ -1026,7 +1032,7 @@ else if($PAGE=="Edit"){
 						$t=time();
 						$S_FILENAMET=substr($file,0,strrpos($file,'.'));
 						exe("convert $tmpFile -fx '(r+g+b)/3' ".shell("/tmp/edit_scan_file$t.tif"),true);
-						exe("tesseract ".shell("/tmp/edit_scan_file$t.tif").' '.shell($S_FILENAMET)." -l ".shell($LANG),true);
+						exe("tesseract ".shell("/tmp/edit_scan_file$t.tif").' '.shell($S_FILENAMET).($LANG==''?'':" -l ".shell($LANG)),true);
 						unlink("/tmp/edit_scan_file$t.tif");
 						if(!file_exists("$S_FILENAMET.txt"))// In case tesseract fails
 							SaveFile("$S_FILENAMET.txt","");
@@ -1085,7 +1091,7 @@ else{
 	$CANNERS=json_decode(file_exists("config/scanners.json")?file_get_contents("config/scanners.json"):'[]');
 	if(strlen($SAVEAS)>0||$ACTION=="Scan Image"){
 		$langs=findLangs();
-		if(!validNum(Array($SCANNER,$BRIGHT,$CONTRAST,$SCALE,$ROTATE))||!in_array($LANG,$langs)||!in_array($QUALITY,explode("|",$CANNERS[$SCANNER]->{"DPI-$SOURCE"}))){// Security check
+		if(!validNum(Array($SCANNER,$BRIGHT,$CONTRAST,$SCALE,$ROTATE))||(!in_array($LANG,$langs)&&$LANG!='')||!in_array($QUALITY,explode("|",$CANNERS[$SCANNER]->{"DPI-$SOURCE"}))){// Security check
 			Print_Message("No, you can not do that","Input data is invalid and most likely an attempt to run malicious code on the server <i>denied</i>",'center');
 			Footer('');
 			quit();
@@ -1167,7 +1173,7 @@ else{
 		   (!in_array($MODE,explode('|',$CANNERS[$SCANNER]->{"MODE-$SOURCE"})))||
 		   (!in_array($SOURCE,explode('|',$CANNERS[$SCANNER]->{"SOURCE"})))||
 		   (!in_array($DUPLEX,is_bool($CANNERS[$SCANNER]->{"DUPLEX-$SOURCE"})?array(true,false):explode('|',$CANNERS[$SCANNER]->{"DUPLEX-$SOURCE"})))||
-		   ($FILETYPE!=="txt"&&$FILETYPE!=="png"&&$FILETYPE!=="tiff"&&$FILETYPE!=="jpg")){
+		   !in_array($FILETYPE,array("txt","png","tiff","jpg"))){
 			Print_Message("No, you can not do that","Input data is invalid and most likely an attempt to run malicious code on the server. <i>Denied</i>",'center');
 			quit();
 		}
@@ -1341,7 +1347,7 @@ else{
 			if($FILETYPE=="txt"){
 				$S_FILENAMET=substr($S_FILENAME,0,strrpos($S_FILENAME,'.'));
 				exe("convert $SCAN -fx '(r+g+b)/3' ".shell("/tmp/_scan_file$SCANNER.tif"),true);
-				exe("tesseract ".shell("/tmp/_scan_file$SCANNER.tif").' '.shell("scans/file/$S_FILENAMET")." -l ".shell($LANG),true);
+				exe("tesseract ".shell("/tmp/_scan_file$SCANNER.tif").' '.shell("scans/file/$S_FILENAMET").($LANG==''?'':" -l ".shell($LANG)),true);
 				unlink("/tmp/_scan_file$SCANNER.tif");
 				if(!file_exists("scans/file/$S_FILENAMET.txt"))//in case tesseract fails
 					SaveFile("scans/file/$S_FILENAMET.txt","");
