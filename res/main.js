@@ -590,6 +590,7 @@ function sourceChange(ele){
 	var i,max,text,html1,html2,html3,html4,dpi,modes,valA,valB,valC,valD,duplex,papers,size,width,height,
 		info=document.scanning.scanner,settings,def=false;
 	info=scanners[info.selectedIndex];
+	localStorage.clear();// DELETE ME LATER
 	if(typeof(localStorage)!='undefined'){
 		settings=localStorage.getItem('default');
 		def=settings!=null;
@@ -846,9 +847,35 @@ function disableIcons(){// Converts disabled icons to act like disabled icons
 	}
 }
 function PDF_popup(files,print){
-	if(print===true&&files.length>0){
-		if(confirm("Press OK to use your system's printer.\nPress Cancel to open the Server Print Dialog."))
+	if(print===true&&!ReplacePrinter){
+		var note='',ct=0;
+		print=false;
+		if(typeof(files)=='string'){
+			ct=1;
+			if(files.indexOf('.tiff')==-1)
+				print=true;// not a problem to ask
+		}
+		else{
+			var tiff=Array();
+			for(var i in files){
+				ct++;
+				if(i.substr(-4)=='tiff')
+					tiff.push(i);
+			}
+			if(ct!=tiff.length&&tiff.length>0){
+				print=true;
+				note='\nThese are TIFF files:\n'+tiff.toString('\n')+'\n\nThey will ONLY print using the Server Printer\n';
+			}
+			else if(tiff==0)
+				print=true;// integrated only
+		}
+		if(print&&ct>0&&confirm("Press OK to use your system's printer.\nPress Cancel to open the Server Print Dialog."+note)){
+			if(typeof(files)!='string'){
+				window.open("print.php?json="+JSON.stringify(files));
+			}
 			return true;
+		}
+		print=true;
 	}
 	function populateSelect(ele){
 		var opt,ele=getID('PDF_PAPER');
@@ -879,7 +906,7 @@ function PDF_popup(files,print){
 				if(httpRequest.readyState==4){
 					if(httpRequest.status==200){
 						var json=parseJSON(httpRequest.responseText);
-						printMsg(encodeHTML(json['printer']),'Your document is being processed:<br/><pre>'+encodeHTML(json['message'])+'</pre>','center',0);
+						printMsg(encodeHTML(json['printer']),'Your document is being processed:<br/><pre title="'+encodeHTML(json['command'])+'">'+encodeHTML(json['message'])+'</pre>','center',0);
 					}
 					else
 						printMsg('Error','A '+httpRequest.status+' error was encountered.','center',0);
@@ -942,7 +969,7 @@ function PDF_popup(files,print){
 		httpRequest2.open('GET', 'config/printers.json?nocache='+new Date().getTime());
 		httpRequest2.send(null);
 	}
-	popup('blanket',print?540:290);
+	popup('blanket',print?550:310);
 	return false;
 }
 function toggleFile(file){
@@ -975,8 +1002,13 @@ function bulkPrint(link){
 		return printMsg('Sorry',supportErrorA+"JSON object so you can not print scans with that button."+supportErrorB,'center',0);
 	var ct=0;
 	for(var i in filesLst){
-		ct++;
-		break;
+		if(i.substr(-4)=='tiff'){
+			if(!confirm('Warning TIFF files are not supported!\nThe file: '+i+'\nWill NOT be printed.\nPress OK to skip this file.\n\n'+
+				'If you want to print this file I suggest downloading a PDF file to print or using the Edit page to save it as anything else.'))
+				return;
+		}
+		else
+			ct++;
 	}
 	if(ct>0){
 		window.open("print.php?json="+encodeURIComponent(JSON.stringify(filesLst)));

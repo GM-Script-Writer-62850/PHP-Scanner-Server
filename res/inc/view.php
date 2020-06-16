@@ -1,13 +1,5 @@
 <?php
-$icons='<a class="tool icon download" href="download.php?file='.url($file).'"><span class="tip">Download</span></a> '.
-	'<a class="tool icon zip" href="download.php?file='.url($file).'&amp;compress"><span class="tip">Download Zip</span></a> '.
-	'<a class="tool icon pdf" href="#" onclick="PDF_popup(\''.html(js(substr($file,5))).'\');"><span class="tip">Download PDF</span></a> '.
-	'<a class="tool icon print" href="print.php?file='.url($file).'" target="_blank"><span class="tip">Print</span></a> '.
-	'<a class="tool icon del" href="index.php?page=Scans&amp;delete=Remove&amp;file='.url(substr($file,5)).'" onclick="return confirm(\'Delete this scan\')"><span class="tip">Delete</span></a> '.
-	'<a class="tool icon edit" href="index.php?page=Edit&amp;file='.url(substr($file,5)).'"><span class="tip">Edit</span></a> '.
-	'<span class="tool icon view-off"><span class="tip">View (Disabled)</span></span> '.
-	'<a class="tool icon upload" href="#" onclick="return upload(\''.html(js($file,5)).'\')"><span class="tip">Upload to Imgur</span></a> '.
-	'<a href="#" onclick="return emailManager(\''.html(js($file)).'\');" class="tool icon email"><span class="tip">Email</span></a>';
+$icons=genIconLinks((object)array('view'=>0),"$file",false);
 if(file_exists("scans/file/$file")){
 	if(substr($file,-3)=='txt'){
 		echo "<div class=\"box box-full\"><h2>".html($file)."</h2>".
@@ -20,13 +12,15 @@ if(file_exists("scans/file/$file")){
 	else{
 		echo '<div class="box box-full"><h2>'.html($file).'</h2>'.
 			"<p>$icons<br/>".
-			'<a class="tool" href="scans/file/'.url($file).'" target="_blank"><img src="scans/file/'.url($file).'"/><span class="tip">View raw image</span></a></p></div>';
+			'<a class="tool" href="scans/file/'.url($file).'" target="_blank">'.
+			(substr($file,-4)=='tiff'?'<h3>Sorry TIFF format can NOT be displayed, please download to view.</h3>':'<img src="scans/file/'.url($file).'"/>').
+			'<span class="tip">View raw image</span></a></p></div>';
 	}
 }
 else{
 	echo '<br/>'.
 		'<div class="box box-full"><h2>404 Scan Not Found</h2>'.
 		'<p>'.str_replace('" href', '-off" href', $icons).'</p>'.
-		'<pre class="border">'.html($file).' was not found, it was probally deleted</pre></div>';
+		'<pre class="border">'.html($file).' was not found, it was probably deleted</pre></div>';
 }
 ?>

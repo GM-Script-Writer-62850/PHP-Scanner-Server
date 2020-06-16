@@ -81,46 +81,53 @@ else if((isset($_GET['type'])?$_GET['type']:'')=='pdf'&&!isset($_GET['raw'])){
 		$file=$key;
 		if(is_numeric(strpos($file, "/")))
 			$file=substr($file,strrpos($file,"/")+1);
-		$file="Scan_$file";
-		if(!is_file("scans/file/$file"))
+		$name=$file;
+		$file="scans/file/Scan_$name";
+		if(!is_file($file))
 			continue;
 		$ext=substr($file,strrpos($file,'.')+1);
 		$width=$Pwidth;
 		$height=$Pheight;
 		$pdf->AddPage();
 		$pages+=1;
+		if(substr($name,-4)=='tiff'){// fpdf does not support tiff
+			shell_exec("convert '".escapeshellarg($file)."' '/tmp/$name.png'");
+			$file="/tmp/$name.png";
+		}
 		if($full){
 			if($ext=='txt'){
 				$pdf->SetFont('Arial','',$fontSize*0.75*($width/215.9));
-				$pdf->MultiCell(0,5,file_get_contents("scans/file/$file"),0,"L",false);
+				$pdf->MultiCell(0,5,file_get_contents($file),0,"L",false);
 			}
 			else{
-				$image=explode("x",shell_exec("identify -format '%wx%h' ".escapeshellarg("scans/file/$file")));
+				$image=explode("x",shell_exec("identify -format '%wx%h' ".escapeshellarg($file)));
 				if($height/$width<=$image[1]/$image[0])
 					$width=0;
 				else
 					$height=0;
-				$pdf->Image("scans/file/$file",$marginLeft,$marginTop,$width,$height);
+				$pdf->Image($file,$marginLeft,$marginTop,$width,$height);
 			}
 		}
 		else{
 			$pdf->SetFont('Arial','B',$fontSize*($width/215.9));
-			$pdf->MultiCell(0,$fontSize*($width/215.9),$file,0,"C",false);
+			$pdf->MultiCell(0,$fontSize*($width/215.9),$name,0,"C",false);
 			if($ext=='txt'){
 				$pdf->SetFont('Arial','',$fontSize*0.75*($width/215.9));
-				$pdf->MultiCell(0,5*($width/215.9),file_get_contents("scans/file/$file"),0,"L",false);
+				$pdf->MultiCell(0,5*($width/215.9),file_get_contents($file),0,"L",false);
 			}
 			else{
-				$image=explode("x",shell_exec("identify -format '%wx%h' ".escapeshellarg("scans/file/$file")));
+				$image=explode("x",shell_exec("identify -format '%wx%h' ".escapeshellarg($file)));
 				$width=$width-($marginLeft*2);
 				$height=$height-$marginTop*2-$fontSize*0.75*($Pwidth/215.9)/2;
 				if($height/$width<=$image[1]/$image[0])
 					$width=0;
 				else
 					$height=0;
-				$pdf->Image('scans/file/'.$file,$marginLeft,$marginTop/2+$fontSize*($Pwidth/215.9),$width,$height);
+				$pdf->Image($file,$marginLeft,$marginTop/2+$fontSize*($Pwidth/215.9),$width,$height);
 			}
 		}
+		if(substr($name,-4)=='tiff');
+			@unlink($file);
 	}
 	if($pages>0){
 		if(isset($_GET['printer'])&&($Printer % 2 != 0)){
@@ -190,8 +197,11 @@ else if(isset($_GET['json'])){
 		if(is_file($file)){
 			if(filesize($file)>0)
 				returnFile($file,$name,$type);
-			else
+			else{
+				if($type=='pdf'&&strpos($output,'not allowed by the security policy')>0)
+					$output=$output."\n\n*** https://stackoverflow.com/questions/52998331/imagemagick-security-policy-pdf-blocking-conversion";
 				returnFile(debug($cmd,$output),'Error.txt','txt');
+			}
 			@unlink($file);
 		}
 		else if(isset($output))

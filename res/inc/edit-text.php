@@ -7,7 +7,7 @@ if(isset($_POST['file-text'])){ // 1_Mar_8_2012~11-22-41.txt  1_Mar_8_2012~11-22
 	while(file_exists("scans/thumb/Preview_$name-edit-$int.jpg")){
 		$int++;
 	}
-	copy("scans/thumb/$preview","scans/Preview_$name-edit-$int.jpg");
+	copy("scans/thumb/$preview","scans/thumb/Preview_$name-edit-$int.jpg");
 	if(SaveFile("scans/file/Scan_$name-edit-$int.txt",$_POST['file-text'])){
 		Print_Message("Saved","You have successfully edited $file",'center');
 		$file="$name-edit-$int.txt";

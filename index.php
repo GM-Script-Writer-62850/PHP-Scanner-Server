@@ -133,7 +133,7 @@ function genIconLinks($config,$file,$isBulk){
 			'href'=>"print.php?file=$URL",
 			'onclick'=>$GLOBALS['Printer'] % 2 == 0?'return true':"return PDF_popup('$sJS',true)",
 			'target'=>'_blank',
-			'disable'=>isset($config->{'print'}),
+			'disable'=>isset($config->{'print'})||($GLOBALS['Printer'] % 2 == 0&&substr($URL,-4)=='tiff'),
 			'tip'=>'Print',
 			'bulk'=>$GLOBALS['Printer'] % 2 == 0?"bulkPrint(this)":"PDF_popup(filesLst,true)"
 		),
@@ -151,7 +151,7 @@ function genIconLinks($config,$file,$isBulk){
 		),
 		'view'=>(object)array(
 			'href'=>"index.php?page=View&amp;file=$URL",
-			'disable'=>isset($config->{'view'}),
+			'disable'=>isset($config->{'view'})||substr($URL,-4)=='tiff',
 			'tip'=>'View',
 			'bulk'=>"bulkView(this)"
 		),
@@ -550,7 +550,7 @@ else if($PAGE=="Config"){
 
 	Footer('');
 
-	if($ACTION=="Search-For-Printers"&&$Printer>0){ # Find avalible printers on the system
+	if($ACTION=="Search-For-Printers"&&$Printer>0){ # Find available printers on the system
 		unset($file);
 		include('res/printer.php');
 		$json=(object)array();
@@ -586,13 +586,13 @@ else if($PAGE=="Config"){
 			if(SaveFile("config/printers.json",json_encode($json)))
 				Print_Message('Success',count($list).' Printer(s) have been found and configured.<br/><ul style="text-align:left"><li>'.implode("</li><li>",$list).'</li></ul>','center');
 			else
-				Print_Message('Failure','Bad news: <code>'.$user.'</code> does not have permission to write files to the <code>'.html(getcwd()).'/config</code> folder.','cetner');
+				Print_Message('Failure','Bad news: <code>'.$user.'</code> does not have permission to write files to the <code>'.html(getcwd()).'/config</code> folder.','center');
 		}
 		else
 			Print_Message('Error','No printers found!!!<br/>Please go to your <a href="http://'.$_SERVER['HTTP_HOST'].':631">CUPS</a> configuration to setup printers.','center');
 	}
-	else if($ACTION=="Search-For-Scanners"){ # Find avalible scanners on the system
-		/*$OP=json_decode( // Double quotes in varables break this
+	else if($ACTION=="Search-For-Scanners"){ // Find available scanners on the system
+		/*$OP=json_decode( // Double quotes in variables break this
 			"[".substr(
 				exe('scanimage -f "{\\"ID\\":%i,\\"INUSE\\":0,\\"DEVICE\\":\\"%d\\",\\"NAME\\":\\"%v %m %t\\"},"',true),
 				0,
@@ -1007,8 +1007,8 @@ else if($PAGE=="Edit"){
 					while(file_exists("scans/thumb/Preview_$name-edit-$int.jpg")){
 						$int++;
 					}
-					$file="scans/file/Scan_$name-edit-$int.$ext";//scan
-					$name=str_replace("file/Scan_","thumb/Preview_",$file);//preview
+					$file="scans/file/Scan_$name-edit-$int.$ext";// Scan
+					$name=str_replace("file/Scan_","thumb/Preview_",$file);// Preview
 					if($FILETYPE==substr($file,strrpos($file,'.')+1)){
 						@rename($tmpFileRaw,$file);// Incorrect access denied message is generated
 						if(file_exists($tmpFileRaw)&&!file_exists($file)){// Just in-case it becomes accurate
@@ -1026,10 +1026,10 @@ else if($PAGE=="Edit"){
 						exe("convert $tmpFile -fx '(r+g+b)/3' ".shell("/tmp/edit_scan_file$t.tif"),true);
 						exe("tesseract ".shell("/tmp/edit_scan_file$t.tif").' '.shell($S_FILENAMET)." -l ".shell($LANG),true);
 						unlink("/tmp/edit_scan_file$t.tif");
-						if(!file_exists("$S_FILENAMET.txt"))//In case tesseract fails
+						if(!file_exists("$S_FILENAMET.txt"))// In case tesseract fails
 							SaveFile("$S_FILENAMET.txt","");
 					}
-					$FILE=substr($name,0,strrpos($name,'.')+1).'jpg';//Preview
+					$FILE=substr($name,0,strrpos($name,'.')+1).'jpg';// Preview
 					if($FILETYPE!='txt'){
 						exe("convert ".shell($file)." -scale '450x471' ".shell($FILE),true);
 						$file=substr($file,16);
@@ -1037,7 +1037,10 @@ else if($PAGE=="Edit"){
 					else{
 						exe("convert $tmpFile -scale '450x471' ".shell($FILE),true);
 						unlink($tmpFileRaw);
-						$file=substr($file,16,strrpos($file,'.')-10).'txt';
+						$file=substr($file,16,strrpos($file,'.')-15).'txt';
+					}
+					if(file_exists($tmpFileRaw)){
+						unlink($tmpFileRaw);
 					}
 				}
 			}
@@ -1063,7 +1066,7 @@ else if($PAGE=="Edit"){
 				if($FILES[$i]=='.'||$FILES[$i]=='..')
 					continue;
 				$FILE=substr($FILES[$i],7,-3);
-				$FILE=substr(exe("cd 'scans/file/'; ls ".shell("Scan$FILE").'*',true),5);//Should only have one file listed
+				$FILE=substr(exe("cd 'scans/file/'; ls ".shell("Scan$FILE").'*',true),5);// Should only have one file listed
 				$IMAGE=$FILES[$i];
 				include "res/inc/editscans.php";
 			}
@@ -1080,7 +1083,7 @@ else{
 	$CANNERS=json_decode(file_exists("config/scanners.json")?file_get_contents("config/scanners.json"):'[]');
 	if(strlen($SAVEAS)>0||$ACTION=="Scan Image"){
 		$langs=findLangs();
-		if(!validNum(Array($SCANNER,$BRIGHT,$CONTRAST,$SCALE,$ROTATE))||!in_array($LANG,$langs)||!in_array($QUALITY,explode("|",$CANNERS[$SCANNER]->{"DPI-$SOURCE"}))){//security check
+		if(!validNum(Array($SCANNER,$BRIGHT,$CONTRAST,$SCALE,$ROTATE))||!in_array($LANG,$langs)||!in_array($QUALITY,explode("|",$CANNERS[$SCANNER]->{"DPI-$SOURCE"}))){// Security check
 			Print_Message("No, you can not do that","Input data is invalid and most likely an attempt to run malicious code on the server <i>denied</i>",'center');
 			Footer('');
 			quit();
@@ -1217,7 +1220,7 @@ else{
 			$SIZE_X=$scanner_w;
 			$SIZE_Y=$scanner_h;
 		}
-		else if($sizes[0]<=$scanner_w&&$sizes[1]<=$scanner_h&&$sizes[1]<=$scanner_w&&$sizes[0]<=$scanner_h){// fits both ways
+		else if($sizes[0]<=$scanner_w&&$sizes[1]<=$scanner_h&&$sizes[1]<=$scanner_w&&$sizes[0]<=$scanner_h){// Fits both ways
 			if($ORNT!="vert"){
 				$SIZE_X=$sizes[1];
 				$SIZE_Y=$sizes[0];
@@ -1227,11 +1230,11 @@ else{
 				$SIZE_Y=$sizes[1];
 			}
 		}
-		else if($sizes[0]<=$scanner_w&&$sizes[1]<=$scanner_h){//fits tall way
+		else if($sizes[0]<=$scanner_w&&$sizes[1]<=$scanner_h){// Fits tall way
 			$SIZE_X=$sizes[0];
 			$SIZE_Y=$sizes[1];
 		}
-		else if($sizes[1]<=$scanner_w&&$sizes[0]<=$scanner_h){//fits wide way
+		else if($sizes[1]<=$scanner_w&&$sizes[0]<=$scanner_h){// Fits wide way
 			$SIZE_X=$sizes[1];
 			$SIZE_Y=$sizes[0];
 		}

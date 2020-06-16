@@ -113,6 +113,6 @@ Save Image
 <h2><?php echo html($file); ?></h2>
 <p>
 <?php echo genIconLinks((object)array('edit'=>0),"Scan_$file",false); ?>
-</p></div><!-- There are no line breaks on the next line to make the javascript ever so slightly faster -->
+</p></div><!-- There are no line breaks on the next line to make the JavaScript ever so slightly faster -->
 <div id="preview_img"><p><img alt="Preview" src="scans/thumb/Preview_<?php echo url(substr($file,0,strrpos($file,'.'))); ?>.jpg" title="Preview"/><img style="z-index:-1;" src="res/images/blank.gif" title="Processing" alt=""/></p></div>
 </div>

@@ -468,6 +468,11 @@ div.ie_276228 {/* http://support.microsoft.com/kb/276228 */
 	font-size: 12px;
 	width: 157px;
 }
+#popUpDiv button, #popUpDiv input{
+	padding:0;
+	margin-top:3px;
+}
+
 
 .side_box select[name="scanner"] option[disabled] {
 	background-color: yellow;

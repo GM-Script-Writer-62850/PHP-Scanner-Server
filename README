@@ -327,21 +327,31 @@ Internal Configuration Options:
 		Setting this option to 2 enables it ONLY for uploaded content via the Printer page
 		Setting this option to 3 enables it for both uploading documents and printing scanned documents
 		This is set on line 12 of config.ini
+	ReplacePrinter
+		This allows you to disable the client side printing button in favor of the intigrrated one
+		This option is ignored if the integrated printer is disabled
+		This is set on line 13 of config.ini
+	BusterPrintBug
+		Debian Buster has a issue with printing PDF files under some conditions
+		Setting this option to 0 leaves mitigations disabled
+		Setting this option to 1 converts the PDF to a ps file before printing using the pdf2ps command, this may reduce quality, but is faster than 2
+		Setting this option to 2 reformats the PDF using the convert command (pdf -> pdf)
+		This is set on line 14 of config.ini
 	HomePage
 		This option allows one to change the home page within the scanner server
 		While is supports a vast number of pages, the only options I consider useful are Scan and Printer
-		This is set on line 13 of config.ini
+		This is set on line 15 of config.ini
 	ShowRawFormat
 		This option allows one to show or hide the scanner option to change the raw scan format (pnm or tiff)
 		By default this option is hidden for the sake of simplicity
-		This is set on line 14 of config.ini
+		This is set on line 16 of config.ini
 	RawScanFormat
 		This option allows one to change the default raw format regardless of the ShowRawFormat setting
 		There is no real reason to pick one over the other, unless you one or the other does not work
 			See Issue #23: https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server/issues/23
 		Setting this option to 0 makes the default format pnm
 		Setting this option to 1 makes the default format tiff
-		This is set on line 15 of config.ini
+		This is set on line 17 of config.ini
 
 Credit where credit is due:
 	PHiLLIP KLiEWER
