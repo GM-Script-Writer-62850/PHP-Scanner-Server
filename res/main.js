@@ -1292,7 +1292,7 @@ function imgurPopup(file,links){
 			'<li>HTML Link (websites & blogs)<ul><li><input '+attrs+' value="&lt;a href=&quot;'+links+'&quot;&gt;'+file+'&lt;/a&gt;"/></li></ul></li>'+
 			'<li>BBCode Link (message boards & forums)<ul><li><input '+attrs+' value="[URL='+links+']'+file+'[/URL]"/></li></ul></li>'+
 			'<li>Markdown Link (reddit comment)<ul><li><input '+attrs+' value="['+file+']('+links+')"/></li></ul></li>'+
-			'</ul></div><iframe style="float:right;border-radius:5px;" width="400" height="400" frameborder="0" src="'+links+'/embed"></iframe>'+
+			'</ul></div><iframe style="float:right;border-radius:5px;" width="400" height="400" frameborder="0" src="'+links+'/embed?pub=true&w=400"></iframe>'+
 			'<input type="button" value="Close" style="width:100%;" onclick="toggle(\'blanket\')"/>';
 		popup('blanket',675);
 		return false;
