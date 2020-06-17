@@ -7,19 +7,23 @@
 $lpstat='lpstat -a | awk \'{print $1}\'';// Command used to find printers
 if(!function_exists('busterWorkaround')){
 	function busterWorkaround($file,$cfg){
-		if($cfg==1)// ~4x faster
+		if($cfg==1)// Faster
 			$cmd="pdf2ps '$file' '$file.ps'";
-		else// Better quality maybe?
-			$cmd="convert '$file' '$file'";
+		else{
+			$cfg=$cfg*4;
+			if($cfg<288)
+				$cfg=288;
+			$cmd="convert -verbose -density $cfg '$file' '$file'";// DPI = density/4
+		}
 		if(function_exists('exe'))
 			exe($cmd,true);
 		else
-			shell_exec($cmd);
+			$debug="$cmd\n".shell_exec("$cmd 2>&1");
 		if($cfg==1){
 			unlink($file);
 			$file="$file.ps";
 		}
-		return $file;
+		return function_exists('exe')?$file:array($file,$debug);
 	}
 }
 if(function_exists('exe')){// Internal call via inc/printer.php
@@ -48,14 +52,18 @@ else if(isset($Printer)){ // Internal call via include from ../download.php
 	$o=escapeshellarg($_GET['options']);
 	$BusterPrintBug=parse_ini_file('config.ini');
 	$BusterPrintBug=(int)$BusterPrintBug['BusterPrintBug'];
+	$debug=false;
 	if($BusterPrintBug > 0){
 		$file=busterWorkaround($file,$BusterPrintBug);
+		$debug=$file[1];
+		$file=$file[0];
 	}
 	$cmd='lp -d '.escapeshellarg($_GET['printer'])." -n $q -o $o $file";
 	echo json_encode((object)array(
 		'printer'=>$_GET['printer'],
 		'command'=>$cmd,
-		'message'=>shell_exec($cmd) // This line makes it print using the integrated printer
+		'message'=>shell_exec($cmd), // This line makes it print using the integrated printer
+		'debug'=>$debug
 	));
 }
 else{

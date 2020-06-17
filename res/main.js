@@ -912,8 +912,15 @@ function PDF_popup(files,print){
 			httpRequest.onreadystatechange = function(){
 				if(httpRequest.readyState==4){
 					if(httpRequest.status==200){
-						var json=parseJSON(httpRequest.responseText);
+						var json=parseJSON(httpRequest.responseText),
+							debug=getID('debug').childNodes[1],
+							text=debug.textContent;
+						text=text.substr(0,text.indexOf('$')+2);
+						debug.textContent+=json['command']+'\n'+json['message']+text;
 						printMsg(encodeHTML(json['printer']),'Your document is being processed:<br/><pre title="'+encodeHTML(json['command'])+'">'+encodeHTML(json['message'])+'</pre>','center',0);
+						if(json['debug']){
+							debug.textContent+=json['debug']+text;
+						}
 					}
 					else
 						printMsg('Error','A '+httpRequest.status+' error was encountered.','center',0);

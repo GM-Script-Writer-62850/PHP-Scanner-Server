@@ -980,14 +980,14 @@ else if($PAGE=="Edit"){
 					$file=shell($fileRaw);
 					if($MODE!='color'&&$MODE!=null){
 						if($MODE=='gray')
-							exe("convert $tmpFile -colorspace Gray $tmpFile",true);
+							exe("convert -verbose $tmpFile -colorspace Gray $tmpFile",true);
 						else if($MODE=='negate')
-							exe("convert $tmpFile -negate $tmpFile",true);
+							exe("convert -verbose $tmpFile -negate $tmpFile",true);
 						else
-							exe("convert $tmpFile -monochrome $tmpFile",true);
+							exe("convert -verbose $tmpFile -monochrome $tmpFile",true);
 					}
 					if($BRIGHT!="0"||$CONTRAST!="0"){
-						exe("convert $tmpFile -brightness-contrast $BRIGHT".'x'."$CONTRAST $tmpFile",true);
+						exe("convert -verbose $tmpFile -brightness-contrast $BRIGHT".'x'."$CONTRAST $tmpFile",true);
 					}
 					if($WIDTH!="0"&&$HEIGHT!="0"&&$WIDTH!=null&&$HEIGHT!=null){
 						$TRUE=explode("x",exe("identify -format '%wx%h' $file",true));
@@ -997,16 +997,16 @@ else if($PAGE=="Edit"){
 						$HEIGHT=round($HEIGHT/$M_HEIGHT*$TRUE_H);
 						$X_1=round($X_1/$M_WIDTH*$TRUE_W);
 						$Y_1=round($Y_1/$M_HEIGHT*$TRUE_H);
-						exe("convert $tmpFile +repage -crop '$WIDTH x $HEIGHT + $X_1 + $Y_1' $tmpFile",true);
+						exe("convert -verbose $tmpFile +repage -crop '$WIDTH x $HEIGHT + $X_1 + $Y_1' $tmpFile",true);
 					}
 
 					if($SCALE!="100"){
-						exe("convert $tmpFile -scale '$SCALE%' $tmpFile",true);
+						exe("convert -verbose $tmpFile -scale '$SCALE%' $tmpFile",true);
 					}
 					if($ROTATE!="0"){
-						exe("convert $tmpFile -rotate $ROTATE $tmpFile",true);
+						exe("convert -verbose $tmpFile -rotate $ROTATE $tmpFile",true);
 					}
-					exe("convert $tmpFile -alpha off $tmpFile",true);
+					exe("convert -verbose $tmpFile -alpha off $tmpFile",true);
 					$file=substr($fileRaw,16);
 					$edit=strpos($file,'-edit-');
 					$name=(is_bool($edit)?substr($file,0,-4):substr($file,0,$edit));
@@ -1026,12 +1026,12 @@ else if($PAGE=="Edit"){
 					}
 					else if($FILETYPE!='txt'){
 						$file=substr($file,0,strrpos($file,'.')+1).$FILETYPE;
-						exe("convert $tmpFile ".shell($file),true);
+						exe("convert -verbose $tmpFile ".shell($file),true);
 					}
 					else{
 						$t=time();
 						$S_FILENAMET=substr($file,0,strrpos($file,'.'));
-						exe("convert $tmpFile -fx '(r+g+b)/3' ".shell("/tmp/edit_scan_file$t.tif"),true);
+						exe("convert -verbose $tmpFile -fx '(r+g+b)/3' ".shell("/tmp/edit_scan_file$t.tif"),true);
 						exe("tesseract ".shell("/tmp/edit_scan_file$t.tif").' '.shell($S_FILENAMET).($LANG==''?'':" -l ".shell($LANG)),true);
 						unlink("/tmp/edit_scan_file$t.tif");
 						if(!file_exists("$S_FILENAMET.txt"))// In case tesseract fails
@@ -1039,11 +1039,11 @@ else if($PAGE=="Edit"){
 					}
 					$FILE=substr($name,0,strrpos($name,'.')+1).'jpg';// Preview
 					if($FILETYPE!='txt'){
-						exe("convert ".shell($file)." -scale '450x471' ".shell($FILE),true);
+						exe("convert -verbose ".shell($file)." -scale '450x471' ".shell($FILE),true);
 						$file=substr($file,16);
 					}
 					else{
-						exe("convert $tmpFile -scale '450x471' ".shell($FILE),true);
+						exe("convert -verbose $tmpFile -scale '450x471' ".shell($FILE),true);
 						unlink($tmpFileRaw);
 						$file=substr($file,16,strrpos($file,'.')-15).'txt';
 					}
@@ -1322,38 +1322,38 @@ else{
 			# Adjust Brightness
 			if($BRIGHT!="0"||$CONTRAST!="0"){
 				if($MODE=='Lineart'){
-					exe("convert $SCAN -brightness-contrast '$BRIGHT".'x'."$CONTRAST' -depth 16 $SCAN",true);
-					exe("convert $SCAN -monochrome -depth 1 $SCAN",true);
+					exe("convert -verbose $SCAN -brightness-contrast '$BRIGHT".'x'."$CONTRAST' -depth 16 $SCAN",true);
+					exe("convert -verbose $SCAN -monochrome -depth 1 $SCAN",true);
 				}
 				else{
-					exe("convert $SCAN -brightness-contrast '$BRIGHT".'x'."$CONTRAST' $SCAN",true);
+					exe("convert -verbose $SCAN -brightness-contrast '$BRIGHT".'x'."$CONTRAST' $SCAN",true);
 				}
 			}
 
 			# Rotate Image
 			if($ROTATE!="0"){
-				exe("convert $SCAN -rotate '$ROTATE' $SCAN",true);
+				exe("convert -verbose $SCAN -rotate '$ROTATE' $SCAN",true);
 			}
 
 			# Scale Image
 			if($SCALE!="100"){
-				exe("convert $SCAN -scale '$SCALE%' $SCAN",true);
+				exe("convert -verbose $SCAN -scale '$SCALE%' $SCAN",true);
 			}
 
 			# Generate Preview Image
-			exe("convert $SCAN -scale '450x471' ".shell("scans/thumb/$P_FILENAME"),true);
+			exe("convert -verbose $SCAN -scale '450x471' ".shell("scans/thumb/$P_FILENAME"),true);
 
 			# Convert scan to file type
 			if($FILETYPE=="txt"){
 				$S_FILENAMET=substr($S_FILENAME,0,strrpos($S_FILENAME,'.'));
-				exe("convert $SCAN -fx '(r+g+b)/3' ".shell("/tmp/_scan_file$SCANNER.tif"),true);
+				exe("convert -verbose $SCAN -fx '(r+g+b)/3' ".shell("/tmp/_scan_file$SCANNER.tif"),true);
 				exe("tesseract ".shell("/tmp/_scan_file$SCANNER.tif").' '.shell("scans/file/$S_FILENAMET").($LANG==''?'':" -l ".shell($LANG)),true);
 				unlink("/tmp/_scan_file$SCANNER.tif");
 				if(!file_exists("scans/file/$S_FILENAMET.txt"))//in case tesseract fails
 					SaveFile("scans/file/$S_FILENAMET.txt","");
 			}
 			else{
-				exe("convert $SCAN -alpha off ".shell("scans/file/$S_FILENAME"),true);
+				exe("convert -verbose $SCAN -alpha off ".shell("scans/file/$S_FILENAME"),true);
 			}
 			@unlink("$CANDIR/".$files[$i]);
 		}
