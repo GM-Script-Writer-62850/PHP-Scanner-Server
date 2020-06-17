@@ -1644,7 +1644,7 @@ function updateCheck(vs,e){
 	if(e===true)
 		return printMsg('Update Available',
 			'Version '+vs+' is available for <a target="_blank" href="https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server/wiki/Change-Log">download</a>'+
-				(data["version"].indexOf('_dev')>-1?'<br/>This is a developmental version, it may have some bugs, wanna try it?':''),
+				(vs.indexOf('_dev')>-1?'<br/>This is a developmental version, it may have some bugs, wanna try it?':''),
 			'center',
 			-1
 		);
