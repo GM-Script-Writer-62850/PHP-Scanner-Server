@@ -137,7 +137,7 @@ else if((isset($_GET['type'])?$_GET['type']:'')=='pdf'&&!isset($_GET['raw'])){
 			unlink($file);
 		}
 		else{
-			$file=$pages>1?"Compilation.pdf":substr($file,0,strlen($ext)*-1)."pdf";
+			$file=$pages>1?"Compilation.pdf":substr("Scan_$name",0,strlen($ext)*-1)."pdf";
 			$pdf->Output($file,'I');
 		}
 	}
