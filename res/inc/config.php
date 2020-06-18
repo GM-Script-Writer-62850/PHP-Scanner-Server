@@ -76,11 +76,9 @@ else
 ?></ul><p>
 If you want to save a setting for your own use, right-click it and save it to your web browser's bookmarks.
 </p><script type="text/javascript">
-if(typeof(localStorage)!='undefined'){
-	if(localStorage.getItem('default')!=null)
-		document.write('<div class="footer"><p><input type="button" value="Clear Default Settings" onclick="if(!confirm(\'Clear Default Settings\'))return;'+
-		'(function(e){localStorage.removeItem(\'default\');printMsg(\'Cleared\',\'Default settings have been deleted\',\'center\',-1);e.parentNode.removeChild(e);})(this.parentNode.parentNode);"/></p></div>');
-}
+if(localStorage.getItem('default')!=null)
+	document.write('<div class="footer"><p><input type="button" value="Clear Default Settings" onclick="if(!confirm(\'Clear Default Settings\'))return;'+
+	'(function(e){localStorage.removeItem(\'default\');printMsg(\'Cleared\',\'Default settings have been deleted\',\'center\',-1);e.parentNode.removeChild(e);})(this.parentNode.parentNode);"/></p></div>');
 </script>
 </div>
 

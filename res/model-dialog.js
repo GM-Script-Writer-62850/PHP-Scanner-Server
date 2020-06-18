@@ -2,7 +2,7 @@
 "use strict";
 function toggle(div_id){
 	var el = getID(div_id);
-	if( el.style.display == 'none' ){
+	if(el.style.display == 'none'){
 		el.style.display = 'block';
 		setTimeout(function(){
 			el.style.backgroundColor="";
@@ -38,11 +38,11 @@ function blanket_size(popUpDivVar){
 	blanket.style.height = blanket_height + 'px';
 	popUpDiv = blanket.childNodes[0];
 	popUpDiv_height=viewportheight/2-popUpDiv.offsetHeight/2;
-	popUpDiv.style.top = popUpDiv_height + 'px';
+	popUpDiv.style.top = (popUpDiv_height<0?0:popUpDiv_height) + 'px';
 }
 function window_pos(popUpDivVar,width){
 	var viewportwidth,window_width,popUpDiv;
-	if (typeof window.innerWidth != 'undefined'){
+	if(typeof window.innerWidth != 'undefined'){
 		viewportwidth = window.innerHeight;
 	}
 	else{
@@ -52,7 +52,7 @@ function window_pos(popUpDivVar,width){
 		window_width = viewportwidth;
 	}
 	else{
-		if (document.body.parentNode.clientWidth > document.body.parentNode.scrollWidth){
+		if(document.body.parentNode.clientWidth > document.body.parentNode.scrollWidth){
 			window_width = document.body.parentNode.clientWidth;
 		}
 		else{

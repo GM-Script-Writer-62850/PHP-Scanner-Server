@@ -19,7 +19,7 @@
 <span class="tool">Source<span class="tip">Scan source (such as a document-feeder)</span></span>:
 </div>
 <div class="control">
-<div class="ie_276228"><select name="source" class="title" onchange="sourceChange(this)"></select></div>
+<select name="source" class="title" onchange="sourceChange(this)"></select>
 </div>
 </div>
 
@@ -27,14 +27,14 @@
 <span class="tool">Quality<span class="tip">Resolution</span></span>:
 </div>
 <div class="control tool">
-<div class="ie_276228"><select name="quality" class="upper"></select></div><span class="tip">Dots Per Inch</span>
+<select name="quality" class="upper"></select><span class="tip">Dots Per Inch</span>
 </div>
 
 <div class="label">
 <span class="tool">Size<span class="tip">How big the paper is</span></span>:
 </div>
 <div class="control tool">
-<div class="ie_276228"><select name="size" onchange="paperChange(this);"></select></div><span class="tip"></span>
+<select name="size" onchange="paperChange(this);"></select><span class="tip"></span>
 <script type="text/javascript">paper=<?php
 echo file_exists("config/paper.json")?file_get_contents("config/paper.json"):'{"Paper":{"height":279.4,"width":215.9},"Picture":{"height":152.4,"width":101.6}}'; ?></script>
 </div>
@@ -64,7 +64,7 @@ echo file_exists("config/paper.json")?file_get_contents("config/paper.json"):'{"
 <span class="tool">Mode<span class="tip">Color Type</span></span>:
 </div>
 <div class="control">
-<div class="ie_276228"><select name="mode" class="title"></select></div>
+<select name="mode" class="title"></select>
 </div>
 
 <div<?php echo $ShowRawFormat?'':' style="display:none;"';?>>
@@ -84,7 +84,7 @@ echo file_exists("config/paper.json")?file_get_contents("config/paper.json"):'{"
 <span>Duplex<span class="tip">Double Sided Scan</span></span>:
 </div>
 <div class="control">
-<div class="ie_276228"><select name="duplex" class="title"></select></div>
+<select name="duplex" class="title"></select>
 </div>
 </div>
 

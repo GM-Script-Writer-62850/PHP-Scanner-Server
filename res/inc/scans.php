@@ -56,7 +56,7 @@ else{
 	}
 	arsort($i);
 	$FILES=array_keys($i);
-	echo '<div id="scans">';
+	echo '<div id="scans" class="columns">';
 	$filter=Get_Values('filter');
 	if(!is_null($filter)){
 		$origin=Get_Values('origin');
@@ -122,10 +122,5 @@ else{
 			'<a class="tool" target="_blank" href="scans/file/Scan_'.url($FILE).'" style="width:100%;"><img src="scans/thumb/'.url($IMAGE).'" alt="'.html($FILE).'" style="width:100%"/><span class="tip">View raw file</span></a>'.
 			'</p></div>';
 	}
-	echo '</div><script type="text/javascript">'. // Also see paper.php line 78
-		'if(typeof document.body.style.MozColumnGap=="string")'.
-			'getID("scans").className="columns";'.// At least someone knows how to do something right (Firefox > Edge/IE > Chrome)
-		'else '.
-			'enableColumns("scans",null,'.(isset($_COOKIE["columns"])?'true':'false').');</script>';
 }
-?>
+?></div>

@@ -1,6 +1,5 @@
 "use strict";
-var supportErrorA="Your browser does not support the ", supportErrorB="<br/>You have 3 choices: Ignore This, update your browser, and switch browsers.",
-	ias, previewIMG, scanners, checkTimeout, rotateTimer, paper, ruler=false, ctxA, ctxB, filesLst={}, TC='textContent';// TC can be changed to 'innerText' see header.php
+var ias, previewIMG, scanners, checkTimeout, rotateTimer, paper, ruler=false, ctxA, ctxB, filesLst={};
 $(document).ready(function (){
 	var e=$('img[title="Preview"]');
 	previewIMG=e[0];
@@ -59,8 +58,6 @@ function encodeHTML(string){// http://stackoverflow.com/questions/24816/escaping
 	return String(string).replace(/[&<>"'\/]/g,function(s){return entityMap[s];});
 }
 function changeColor(x,save){
-	if(typeof(XMLHttpRequest)=='undefined')
-		return printMsg('Sorry',supportErrorA+"XMLHttpRequest "+(TC=='textContent'?'function':'object')+" so can't change themes."+supportErrorB,'center',0);
 	var fields=Array('BG','LK','LC','PB','HB','HT','PT','BB','BT','AH','AT'),str='';
 	if(typeof(x)=='string'){
 		x=x.split('.');
@@ -75,19 +72,14 @@ function changeColor(x,save){
 	for(var i in fields)
 		str+=document.theme[fields[i]+'_COLOR'].value+'.';
 	var O=getID('style_old'),
-		N=getID('style_new'),T=TC;
-	if(TC=='innerText'){// Stupid IE
-		O=O.styleSheet;
-		N=N.styleSheet;
-		T='cssText';
-	}
-	if(N[T].length>0)
-		O[T]=N[T];
+		N=getID('style_new');
+	if(N.textContent.length>0)
+		O.textContent=N.textContent;
 	var httpRequest = new XMLHttpRequest();
 	httpRequest.onreadystatechange = function(){
 		if(httpRequest.readyState==4){
 			if(httpRequest.status==200){
-				N[T]=httpRequest.responseText.replace(/url\("images/g,'url("res/images');
+				N.textContent=httpRequest.responseText.replace(/url\("images/g,'url("res/images');
 				if(save&&x==null)
 					printMsg('Saved: Your color scheme has been saved',"This is your theme's data you can put in the configuration file:<br/>"+str.slice(0,-1).toUpperCase()+
 						'<br/>Themes will last 10 years or untill you delete the cookie.','center',-1);
@@ -134,7 +126,7 @@ function addRuler(){
 	span=document.createElement('span');
 	span.className="tip center";
 	if(I==10||I==25.4)
-		span[TC]=(I==10?'Centimeters':'Inches');
+		span.textContent=(I==10?'Centimeters':'Inches');
 	else
 		span.innerHTML="Millimeters<hr/>"+I;
 	container.appendChild(span);
@@ -218,14 +210,10 @@ function updateRulers(XY){
 	drawRuler(ctxB,XY[1]/I);
 }
 function sendE(ele,e){
-	try{
-		var evt = document.createEvent("HTMLEvents");
-		evt.initEvent(e, true, true);
-		ele.dispatchEvent(evt);
-	}
-	catch(err){// Stupid IE
-		ele.fireEvent('on'+e);
-	}
+	var evt = document.createEvent("HTMLEvents");
+	evt.initEvent(e, true, true);
+	ele.dispatchEvent(evt);
+
 }
 function config(json){
 	if(document.scanning.scanner.value!=json['scanner']&&document.scanning.scanner.disabled){
@@ -303,8 +291,6 @@ function setRegion(ias){
 	storeRegion(null, ias.getSelection());
 }
 function validateKey(ele,e,ias){
-	if(!e.which)
-		e.which=e.keyCode;// Stupid IE needs to follow the standards
 	if(e.which==13){// Enter
 		if(ias!=null)
 			setRegion(ias);
@@ -350,15 +336,10 @@ function buildScannerOptions(json){
 			sel=i;
 		str+='<option'+(json[i]["INUSE"]==1?' disabled="disabled"':'')+(json[i]["SELECTED"]?' selected="selected"':'')+' value="'+json[i]["ID"]+'">'+json[i]["NAME"]+' on '+loc+'</option>';
 	}
-	if(document.all)// http://support.microsoft.com/kb/276228
-		document.scanning.scanner.parentNode.innerHTML='<select onchange="scannerChange(this)" style="width:238px;" name="scanner">'+str+'</select>';
-	else
-		document.scanning.scanner.innerHTML=str;
+	document.scanning.scanner.innerHTML=str;
 	return sel;
 }
 function checkScanners(){
-	if(typeof(XMLHttpRequest)=='undefined'||typeof(JSON)!='object')
-		return printMsg('Sorry',supportErrorA+"XMLHttpRequest and/or the JSON object so this page can not check if the scanner is in-use or not in real time."+supportErrorB,'center',0);
 	var httpRequest = new XMLHttpRequest();
 	httpRequest.onreadystatechange = function(){
 		if(httpRequest.readyState==4){
@@ -501,16 +482,16 @@ function printMsg(t,m,a,r){// if r is -1 message goes at the top of the message 
 	var div=document.createElement('div');
 	var ele=getID('new_mes');
 	div.className="message";
-	div.innerHTML="<h2>"+t+'<a class="icon tool del" onclick="(function(e){e.setAttribute(\'style\',\'height:0;opacity:0;margin-bottom:0;\');setTimeout(function(){e.parentNode.removeChild(e);},'+
-		(TC=='textContent'?800:0)+');})(this.parentNode.parentNode);this.setAttribute(\'onclick\',\'return false;\');this.removeChild(this.childNodes[0]);return false;" href="#">'+
+	div.innerHTML="<h2>"+t+'<a class="icon tool del" onclick="(function(e){e.setAttribute(\'style\',\'height:0;opacity:0;margin-bottom:0;\');setTimeout(function(){e.parentNode.removeChild(e);},800);});'+
+		'(this.parentNode.parentNode);this.setAttribute(\'onclick\',\'return false;\');this.removeChild(this.childNodes[0]);return false;" href="#">'+
 		'<span class="tip">Close</span></a></h2><div'+(a!='center'?' style="text-align:'+a+';"':'')+">"+m+"</div>";
-	if(r!=-1&& typeof(ele.insertBefore)=='function')
+	if(r!=-1)
 		ele.insertBefore(div,ele.childNodes[0]);
 	else
 		ele.appendChild(div);
-	div.style.height=(TC=='textContent'?(div.scrollHeight+'px'):'auto');// Stupid IE7 does not apply styles set using setAttribute
+	div.style.height=div.scrollHeight+'px';
 	div.style.opacity=1;
-	setTimeout(function(){if(div)div.style.overflow='visible';},(TC=='textContent'?800:0));// 800ms is the animation duration in the css
+	setTimeout(function(){if(div)div.style.overflow='visible';},800);// 800ms is the animation duration in the css
 	return false;
 }
 function roundNumber(num,dec){// http://forums.devarticles.com/javascript-development-22/javascript-to-round-to-2-decimal-places-36190.html#post71368
@@ -519,10 +500,7 @@ function roundNumber(num,dec){// http://forums.devarticles.com/javascript-develo
 }
 function parseJSON(jsonTXT){
 	try{
-		if(typeof(JSON)==='object')
-			return JSON.parse(jsonTXT);
-		else
-			return eval('('+jsonTXT+')');
+		return JSON.parse(jsonTXT);
 	}
 	catch(e){
 		return printMsg('Invald Javascript Object Notation:','<textarea onclick="this.select()" style="width:100%;height:80px;">'+encodeHTML(jsonTXT)+'</textarea><br/>If you are reading this please report it as a bug. Please copy/paste the above, something as simple as a line break can cause errors here. If want to read this I suggest pasting it onto <a target="_blank" href="http://jsonlint.com/">jsonlint.com</a>.','center',0);
@@ -537,35 +515,34 @@ function inArray(arr,val){
 	return false;
 }
 function scannerChange(ele){
-	var form=document.scanning, val=form.source.value, def=false, settings={};
-	if(typeof(localStorage)!='undefined'){
-		settings=localStorage.getItem('default');
-		def=settings!=null;
-		settings=def?parseJSON(settings):{};
-		if(val==''&&def){// JS about to populate the select menus
-			if(form.scanner.value!=settings.scanner){
-				form.scanner.value=settings.scanner;
-				for(var i=0,s=form.scanner.childNodes.length;i<s;i++){
-					def=form.scanner.childNodes[i];
-					if(def.value==settings.scanner)
-						def.setAttribute('selected','selected');
-					else
-						def.removeAttribute('selected');
-				}
-				return scannerChange(ele);
+	var form=document.scanning, val=form.source.value, def=false, settings={},
+		info,html='',text,sources;
+	settings=localStorage.getItem('default');
+	def=settings!=null;
+	settings=def?parseJSON(settings):{};
+	if(val==''&&def){// JS about to populate the select menus
+		if(form.scanner.value!=settings.scanner){
+			form.scanner.value=settings.scanner;
+			for(var i=0,s=form.scanner.childNodes.length;i<s;i++){
+				def=form.scanner.childNodes[i];
+				if(def.value==settings.scanner)
+					def.setAttribute('selected','selected');
+				else
+					def.removeAttribute('selected');
 			}
-			config({
-				'bright':settings.bright,
-				'contrast':settings.contrast,
-				'rotate':settings.rotate,
-				'scale':settings.scale,
-				'filetype':settings.filetype,
-				'lang':settings.lang
-			});
+			return scannerChange(ele);
 		}
+		config({
+			'bright':settings.bright,
+			'contrast':settings.contrast,
+			'rotate':settings.rotate,
+			'scale':settings.scale,
+			'filetype':settings.filetype,
+			'lang':settings.lang
+		});
 	}
-	var info=scanners[ele.selectedIndex],
-		html='',text,sources=info['SOURCE'].split('|');
+	info=scanners[ele.selectedIndex];
+	sources=info['SOURCE'].split('|');
 	for(var i=0,s=sources.length;i<s;i++){
 		switch(sources[i]){
 			case 'ADF': text='Automatic Document Feeder';break;
@@ -574,10 +551,7 @@ function scannerChange(ele){
 		}
 		html+='<option value="'+sources[i]+'"'+(def?(settings.source==sources[i]?' selected="selected"':''):'')+'>'+text+'</option>';
 	}
-	if(document.all)// http://support.microsoft.com/kb/276228
-		form.source.parentNode.innerHTML='<select name="source" class="title" onchange="sourceChange(this)">'+html+'</select>';
-	else
-		form.source.innerHTML=html;
+	form.source.innerHTML=html;
 	if(inArray(sources,val))
 		form.source.value=val;
 	if(form.source.value=='Inactive')
@@ -590,11 +564,9 @@ function sourceChange(ele){
 	var i,max,text,html1,html2,html3,html4,dpi,modes,valA,valB,valC,valD,duplex,papers,size,width,height,
 		info=document.scanning.scanner,settings,def=false;
 	info=scanners[info.selectedIndex];
-	if(typeof(localStorage)!='undefined'){
-		settings=localStorage.getItem('default');
-		def=settings!=null;
-		settings=def?parseJSON(settings):{};
-	}
+	settings=localStorage.getItem('default');
+	def=settings!=null;
+	settings=def?parseJSON(settings):{};
 	// Change Mode
 	html1='';
 	modes=info['MODE-'+ele.value].split('|');
@@ -639,18 +611,10 @@ function sourceChange(ele){
 	valB=document.scanning.size.value;
 	valC=document.scanning.quality.value;
 	valD=document.scanning.duplex.value;
-	if(document.all){// http://support.microsoft.com/kb/276228
-		document.scanning.mode.parentNode.innerHTML='<select name="mode" class="title">'+html1+'</select>';
-		document.scanning.size.parentNode.innerHTML='<select onchange="paperChange(this);" name="size">'+html2+'</select>';
-		document.scanning.quality.parentNode.innerHTML='<select name="quality" class="upper">'+html3+'</select>';
-		document.scanning.duplex.parentNode.innerHTML='<select name="duplex" class="title">'+html4+'</select>';
-	}
-	else{
-		document.scanning.mode.innerHTML=html1;
-		document.scanning.size.innerHTML=html2;
-		document.scanning.quality.innerHTML=html3;
-		document.scanning.duplex.innerHTML=html4;
-	}
+	document.scanning.mode.innerHTML=html1;
+	document.scanning.size.innerHTML=html2;
+	document.scanning.quality.innerHTML=html3;
+	document.scanning.duplex.innerHTML=html4;
 	if(inArray(modes,valA))
 		document.scanning.mode.value=valA;
 	if(inArray(papers,valB))
@@ -667,7 +631,7 @@ function sourceChange(ele){
 	sendE(document.scanning.size,'change');
 }
 function paperChange(ele){
-	ele.parentNode.nextSibling[TC]=ele.childNodes[ele.selectedIndex].title;
+	ele.nextSibling.textContent=ele.childNodes[ele.selectedIndex].title;
 	var json=scanners[document.scanning.scanner.selectedIndex],
 		width=json['WIDTH-'+document.scanning.source.value],
 		height=json['HEIGHT-'+document.scanning.source.value];
@@ -685,12 +649,10 @@ function paperChange(ele){
 	}
 	else{
 		document.scanning.ornt.removeAttribute('disabled');
-		if(typeof(localStorage)!='undefined'){
-			var settings=localStorage.getItem('default');
-			if(settings!=null){
-				settings=parseJSON(settings);
-				document.scanning.ornt.value=settings.ornt;
-			}
+		var settings=localStorage.getItem('default');
+		if(settings!=null){
+			settings=parseJSON(settings);
+			document.scanning.ornt.value=settings.ornt;
 		}
 	}
 	updateRulers(document.scanning.ornt.value=='vert'?sheet:sheet.reverse());
@@ -706,23 +668,14 @@ function rotateChange(ele){
 	if(!previewIMG)
 		return;
 	var val=Number(ele.value);
-	ele.nextSibling[TC]=(val==180?'Upside-down':(val<0?'Counterclockwise':'Clockwise'));
-	var prefixes = 't WebkitT MozT OT msT'.split(' ');
-	for(var prefix in prefixes){
-		if(typeof(document.body.style[prefixes[prefix]+'ransform'])!="undefined"){
-			prefix=prefixes[prefix]+'ransform';
-			break;
-		}
-	}
-	if(prefix.length<9||val==0)
-		return;
+	ele.nextSibling.textContent=(val==180?'Upside-down':(val<0?'Counterclockwise':'Clockwise'));
 	ele=previewIMG;
 	if(ele.src.indexOf('res/images/blank.gif')>-1)
 		return;
 	ias.setOptions({ "hide": true, "disable": true, "fadeSpeed": false, "rotating": true });
 	// If you hava  a fear of numbers do not even try to read this function
 	clearTimeout(rotateTimer);
-	ele.style[prefix]='rotate('+val+'deg) scale('+
+	ele.style.transform='rotate('+val+'deg) scale('+
 		(function(deg,h,w){ // Credit: http://userscripts.org/topics/127570?page=1#posts-502266 (http://jsfiddle.net/swU6Z/)
 			// scale = sin(phi) / sin(phi + theta)
 			// phi being the original rectangle's first diagonal's angle
@@ -732,23 +685,23 @@ function rotateChange(ele){
 			return Math.abs(Math.sin(phi)/Math.sin(psi));
 		})(val,ele.offsetHeight,ele.offsetWidth)+')';
 	rotateTimer=setTimeout(function(){// We can not leave it rotated, it brutally screws up cropping
-		ele.style[prefix]='';
+		ele.style.transform='';
 		rotateTimer=setTimeout(function(){
 			ias.setOptions({ "hide": false, "disable": false, "fadeSpeed": 850, "rotating": false });
 			if(document.scanning.loc_width.value>0&&document.scanning.loc_height.value>0)
 				setRegion(ias);
-		},prefix=='msTransform'?5:805);// 800ms is the animation duration in the css
-	},prefix=='msTransform'?1200:2000);// Should be long enough to see how it looks, given there is a 800ms animation
-	// msTransform is IE9 ONLY, different values since it does not support animation
+		},805);// 800ms is the animation duration in the css
+	},2000);// Should be long enough to see how it looks, given there is a 800ms animation
 }
-function changeBrightContrast(){// Webkit based only :(
+function changeBrightContrast(){
 	// Does not work properly so lets disable it: brightness/contrast have a screwed up/illogical max %
 	// Seriously 0 to 100 scales like a percentage to darken, but brightening is 101 to infinity
-	//if(typeof(document.body.style.webkitFilter)!='string') 
-		return;
+	if(true)return;// Disable, delete this line to enable
 	if(previewIMG.src.indexOf('res/images/blank.gif')>-1)
 		return;
-	previewIMG.style.webkitFilter='brightness('+(Number(document.scanning.bright.value)+100)+'%) contrast('+(Number(document.scanning.contrast.value)+100)+'%)';
+	if(typeof(document.body.style.filter)!='string')// IE 11 does not support this
+		return;
+	previewIMG.style.filter='brightness('+(Number(document.scanning.bright.value)+100)+'%) contrast('+(Number(document.scanning.contrast.value)+100)+'%)';
 }
 function fileChange(type){
 	if(type=='txt'){
@@ -781,14 +734,14 @@ function toggleDebug(keyboard){
 			debug.removeAttribute('style');
 			Set_Cookie('debug',false,1,false,null,null);
 			if(keyboard&&debugLink)
-				debugLink[TC]='Show';
+				debugLink.textContent='Show';
 			return false;
 		}
 		else{
 			debug.style.display='inherit';
 			Set_Cookie('debug',true,1,false,null,null);
 			if(keyboard&&debugLink)
-				debugLink[TC]='Hide';
+				debugLink.textContent='Hide';
 			return true;
 		}
 	}
@@ -826,20 +779,11 @@ function disableIcons(){// Converts disabled icons to act like disabled icons
 			icon.href="javascript:void();";
 			icon.setAttribute("onclick","return false;");
 			icon.setAttribute('style','cursor:inherit;');
-			icon.childNodes[0][TC]+=" (Disabled)";
+			icon.childNodes[0].textContent+=" (Disabled)";
 		}
 	}
-	catch(e){
-		if(typeof(document.getElementsByClassName)=='function')//second most efficient
-			var icons=document.getElementsByClassName('tool icon');
-		else{// very inefficient 
-			var a=document.getElementsByTagName('a'),icons=Array();
-			for(var i=0;i<a.length;i++){
-				if(a[i].className.indexOf('tool icon')>-1){
-					icons.push(a[i]);
-				}
-			}
-		}
+	catch(e){// IE 11
+		var icons=document.getElementsByClassName('tool icon');
 		for(var i=0;i<icons.length;i++){
 			if(icons[i].className.indexOf('-off')>-1){
 				if(icons[i].tagName.toUpperCase()!='A')
@@ -847,7 +791,7 @@ function disableIcons(){// Converts disabled icons to act like disabled icons
 				icons[i].href="javascript:void();";
 				icons[i].setAttribute("onclick","return false;");
 				icons[i].setAttribute('style','cursor:inherit;');
-				icons[i].childNodes[0][TC]+=" (Disabled)";
+				icons[i].childNodes[0].textContent+=" (Disabled)";
 			}
 		}
 	}
@@ -892,7 +836,7 @@ function PDF_popup(files,print){
 			if(i=='Letter')
 				opt.selected="selected";
 			opt.title=paper[i]['width']+' mm x '+paper[i]['height']+' mm';
-			opt[TC]=i+': '+roundNumber(paper[i]['width']/25.4,2)+'" x '+roundNumber(paper[i]['height']/25.4,2)+'"';
+			opt.textContent=i+': '+roundNumber(paper[i]['width']/25.4,2)+'" x '+roundNumber(paper[i]['height']/25.4,2)+'"';
 			ele.appendChild(opt);
 		}
 	}
@@ -916,7 +860,7 @@ function PDF_popup(files,print){
 							text=debug.textContent;
 						text=text.substr(0,text.indexOf('$')+2);
 						debug.textContent+=json['command']+'\n'+json['message']+text;
-						printMsg(encodeHTML(json['printer']),'Your document is being processed:<br/><pre title="'+encodeHTML(json['command'])+'">'+encodeHTML(json['message'])+'</pre>','center',0);
+						printMsg(encodeHTML(json['printer']),'Your document is being processed:<br/><pre>'+encodeHTML(json['message'])+'</pre>','center',0);
 						if(json['debug']){
 							debug.textContent+=json['debug']+text;
 						}
@@ -934,8 +878,6 @@ function PDF_popup(files,print){
 		return false;
 	}
 	else{
-		if(typeof(JSON)!='object')
-			return printMsg('Sorry',supportErrorA+"JSON object so you can not download PDFs with that button."+supportErrorB,'center',0);
 		var ct=0;
 		for(var i in files){
 			ct++;
@@ -986,18 +928,16 @@ function PDF_popup(files,print){
 	return false;
 }
 function toggleFile(file){
-	if(!filesLst[file[TC]]){
-		filesLst[file[TC]]=1;
+	if(!filesLst[file.textContent]){
+		filesLst[file.textContent]=1;
 		file.className="included";
 	}
 	else{
-		delete(filesLst[file[TC]]);
+		delete(filesLst[file.textContent]);
 		file.className="excluded";
 	}
 }
 function bulkDownload(link,type){
-	if(typeof(JSON)!='object')
-		return printMsg('Sorry',supportErrorA+"JSON object so you can not download scans with that button."+supportErrorB,'center',0);
 	var ct=0;
 	for(var i in filesLst){
 		ct++;
@@ -1011,8 +951,6 @@ function bulkDownload(link,type){
 		return printMsg('Error','No files selected','center',-1);
 }
 function bulkPrint(link){
-	if(typeof(JSON)!='object')
-		return printMsg('Sorry',supportErrorA+"JSON object so you can not print scans with that button."+supportErrorB,'center',0);
 	var ct=0;
 	for(var i in filesLst){
 		if(i.substr(-4)=='tiff'){
@@ -1047,8 +985,6 @@ function bulkDel(){
 	return false;
 }
 function bulkView(link){
-	if(typeof(JSON)!='object')
-		return printMsg('Sorry',supportErrorA+"JSON object so you can not view scans with that button."+supportErrorB,'center',0);
 	var ct=0;
 	for(var i in filesLst){
 		ct++;
@@ -1077,8 +1013,6 @@ function getImgurBox(){
 	return ele;
 }
 function storeImgurAlbum(id,imgs){
-	if(typeof(localStorage)!="object")
-		return false;
 	var data=localStorage.getItem('imgur'),a='';
 	data=(data==null?{"albums":{}}:parseJSON(data));
 	if(!data['albums'])
@@ -1096,8 +1030,6 @@ function storeImgurAlbum(id,imgs){
 	localStorage.setItem('imgur',JSON.stringify(data));
 }
 function storeImgurUploads(img){
-	if(typeof(localStorage)!="object")
-		return false;
 	var data=localStorage.getItem('imgur'),id,b,a,ele,ele2,div,f;
 	data=(data==null?{}:parseJSON(data));
 	ele=getImgurBox();
@@ -1144,8 +1076,6 @@ function bulkUpload(){
 		return upload("Scan_"+i);
 	else if(ct==0)
 		return printMsg('Error','No files selected','center',-1);
-	if(typeof(JSON)!='object'||typeof(XMLHttpRequest)=='undefined')
-		return printMsg('Sorry',supportErrorA+"JSON object and XMLHttpRequest so you can not upload scans with that button."+supportErrorB,'center',0);
 	var title=prompt("Upload New Album to imgur.com\nYou can give it a title (optional):",'Scan Compilation');
 	if(title==null)
 		return false;
@@ -1206,7 +1136,7 @@ function selectScans(b){
 		for(var i=0;i<scans.snapshotLength;i++)
 			toggleFile(scans.snapshotItem(i));
 	}
-	catch(e){// Screw you IE, screw you
+	catch(e){// Screw you IE 11, screw you
 		var list=getID('scans').getElementsByTagName('h2'),stat;
 		for(var i=0,ct=list.length;i<ct;i++){
 			stat=list[i].className;
@@ -1219,21 +1149,17 @@ function selectScans(b){
 	return false;
 }
 function upload(file){
-	if(typeof(XMLHttpRequest)=='undefined')
-		return printMsg('Sorry',supportErrorA+"XMLHttpRequest so you can not upload scans with that button."+supportErrorB,'center',0);
 	if(getID(file)){
 		popup('blanket',365);
 		return false;
 	}
 	var test=true,json;
-	if(typeof(localStorage)=='object'){
-		json=localStorage.getItem('imgur');
-		json=(json==null?{}:parseJSON(json));
-		if(json[file]){
-			test=false;
-			if(confirm("'"+file.substr(5)+"' has been uploaded already!\nOK = Upload Again\nCancel = View Upload dialog")===false)
-				return imgurPopup(file,json[file]);
-		}
+	json=localStorage.getItem('imgur');
+	json=(json==null?{}:parseJSON(json));
+	if(json[file]){
+		test=false;
+		if(confirm("'"+file.substr(5)+"' has been uploaded already!\nOK = Upload Again\nCancel = View Upload dialog")===false)
+			return imgurPopup(file,json[file]);
 	}
 	if(test){
 		if(confirm("Upload '"+file.substr(5)+"' to imgur.com")===false)
@@ -1410,31 +1336,26 @@ function imgurDel(id,img){
 	return false;
 }
 function setClipboard(e){// Everyone except MS considers this a security hole, thus this is IE only; I refuse to use flash circumvent this security feature
+	// I can't figure out how to get navigator.clipboard to work on firefox or chrome
 	if(!window.clipboardData)
 		return false;
 	if(window.clipboardData.setData('Text',e.value)){
 		var span=document.createElement('span');
-		span[TC]="Copied";
+		span.textContent="Copied";
 		span.className="tip";
 		span.style.display="block";
 		e.parentNode.className="tool";
 		e.parentNode.appendChild(span);
 		setTimeout(function(){
 			e.parentNode.removeChild(span);
-		},TC=='textContent'?1600:1000);// relative to transitionTime in style.php
+		},1600);// relative to transitionTime in style.php
 		return true;
 	}
 	return false;
 }
 function emailManager(file){
-	var storeSupport=(typeof(localStorage)=="object"&&typeof(JSON)==="object"?true:false),data=false;
-	if(file==null&&!storeSupport)
-		return printMsg('Sorry',supportErrorA+"localStorge object so you can not save email settings"+supportErrorB,'center',0);
-	if(typeof(XMLHttpRequest)=='undefined')
-		return printMsg('Sorry',supportErrorA+"XMLHttpRequest so you can not email scans with that button."+supportErrorB,'center',0);
+	var data=false;
 	if(file=='Scan_Compilation'){
-		if(typeof(JSON)!='object')
-			return printMsg('Sorry',supportErrorA+"JSON object so you can not upload scans with that button."+supportErrorB,'center',0);
 		var files_ct=0;
 		for(var i in filesLst)
 			files_ct++;
@@ -1442,15 +1363,13 @@ function emailManager(file){
 			return printMsg('Error','No files selected','center',-1);
 	}
 	var html='<div id="email"><h2>'+(file?'Email: '+file.substr(5):'Configure Email')+'</h2>'+
-	'<div class="security"><h2>Security Notice</h2><ul>';
-	if(storeSupport){
-		html+='<li>The remember me option will store your e-mail login data in your <a href="http://dev.w3.org/html5/webstorage/#dom-localstorage" target="_blank">local storage</a> in plain text (unencrypted).</li>'+
+	'<div class="security"><h2>Security Notice</h2><ul>'+
+	'<li>The remember me option will store your e-mail login data in your <a href="http://dev.w3.org/html5/webstorage/#dom-localstorage" target="_blank">local storage</a> in plain text (unencrypted).</li>'+
 		(file?'<li>If you leave it unchecked your login date will not be saved and you will have to re-enter it every time.</li>':'')+
 		'<li>Anyone with access to your account on this computer can get your password if you use '+(file?'remember me':'save it')+'.</li>'+
 		(file?'<li>You can delete your saved data on the <a href="index.php?page=Config"/>Configure</a> page.</li>':'');
-		data=localStorage.getItem("email");
-	}
-	html+='<li>You can double click the password blank to see the password.</li>'+
+		data=localStorage.getItem("email")+
+	'<li>You can double click the password blank to see the password.</li>'+
 	(document.location.protocol=='http:'?'<li>This does not use a secure connection to get your login from your browser to the server.</li>':'')+'</ul></div>'+
 	'<form name="email" target="_blank" action="email.php" onsubmit="return validateEmail(this);" method="POST">'+
 	'<input type="hidden" name="'+(file=='Scan_Compilation'?'json':'file')+'" value="'+(file=='Scan_Compilation'?encodeHTML(JSON.stringify(filesLst)):file)+'"/>'+
@@ -1461,12 +1380,10 @@ function emailManager(file){
 	'<div class="label">Password:</div><div class="control"><input type="password" name="pass" ondblclick="this.type=(this.type==\'text\'?\'password\':\'text\')" autocomplete="off"/></div>'+
 	'<div class="label">Host:</div><div class="control"><input type="text" name="host" value="smtp.gmail.com"/></div>'+
 	'<div class="label">Prefix:</div><div class="control tool"><select name="prefix"><option value="ssl">SSL</option><option value="tls">TLS</option><option value="plain">None</option></select><span class="tip" style="display:none"></span></div>'+
-	'<div class="label">Port:</div><div class="control"><input type="text" name="port" value="587"/></div>';
-	if(storeSupport){
-		html+='<div class="label">Remember Me:</div><div class="control"><input '+(file?'':'checked="checked" ')+'id="email-nopass" onchange="if(this.checked){getID(\'email-pass\').checked=false}'+(file?'':'else if(getID(\'email-nopass\').checked){getID(\'email-pass\').checked=true}')+'" type="checkbox" name="store"/> <small>(Exclude Password)</small></div>'+
-		'<div class="label">Remember Me:</div><div class="control"><input id="email-pass" onchange="if(this.checked){getID(\'email-nopass\').checked=false}'+(file?'':'else if(getID(\'email-pass\').checked){getID(\'email-nopass\').checked=true}')+'" type="checkbox" name="storepass"/> <small>(Include Password)</small></div>';
-	}
-	html+='<input type="submit" value="'+(file?'Send':'Save')+'"/><input style="float:right;" type="button" value="Cancel" onclick="toggle(\'blanket\')"/>'+
+	'<div class="label">Port:</div><div class="control"><input type="text" name="port" value="587"/></div>'+
+	'<div class="label">Remember Me:</div><div class="control"><input '+(file?'':'checked="checked" ')+'id="email-nopass" onchange="if(this.checked){getID(\'email-pass\').checked=false}'+(file?'':'else if(getID(\'email-nopass\').checked){getID(\'email-pass\').checked=true}')+'" type="checkbox" name="store"/> <small>(Exclude Password)</small></div>'+
+		'<div class="label">Remember Me:</div><div class="control"><input id="email-pass" onchange="if(this.checked){getID(\'email-nopass\').checked=false}'+(file?'':'else if(getID(\'email-pass\').checked){getID(\'email-nopass\').checked=true}')+'" type="checkbox" name="storepass"/> <small>(Include Password)</small></div>'+
+	'<input type="submit" value="'+(file?'Send':'Save')+'"/><input style="float:right;" type="button" value="Cancel" onclick="toggle(\'blanket\')"/>'+
 	'</form>'+
 	'<div class="help"><h2>Help Links</h2><p><a target="_blank" href="http://www.google.com">Google</a><br/>eg: What are Yahoo\'s smtp settings</p></div>'+
 	'<div class="help"><h2>Tips</h2><p>'+(file?'Send to multiple people by separating addresses with a comma.<br/>':'')+'Host, prefix, and port are auto detected when you change the '+(file?'From field':'Email Address')+'.</p></div>'+
@@ -1520,7 +1437,7 @@ function validateEmail(ele){
 	return false;
 }
 function configEmail(addr){
-	if(addr.indexOf('@')==-1||typeof(XMLHttpRequest)=='undefined')
+	if(addr.indexOf('@')==-1)
 		return;
 	else
 		addr=addr.substr(addr.indexOf('@')+1);
@@ -1560,8 +1477,6 @@ function configEmail(addr){
 	httpRequest.send(null);
 }
 function sendEmail(ele){
-	if(typeof(XMLHttpRequest)=='undefined')
-		return printMsg('Error',supportErrorA+'<a href="http://www.w3schools.com/xml/xml_http.asp" target="_blank">XMLHttpRequest</a>, so you can not send emails with that button'+supportErrorB,'center',0);
 	var httpRequest,params,
 		now=new Date().getTime();
 	printMsg('Sending Email<span id="email-'+now+'"></span>','Please Wait...<br/>This could take a while depending on the file size of the scan and the upload speed at '+document.domain,'center',0);
@@ -1595,22 +1510,15 @@ function sendEmail(ele){
 	return true;
 }
 function deleteEmail(){
-	if(typeof(localStorage)=="object"&&typeof(JSON)==="object"){
-		if(confirm("Delete Saved Email settings")){
-			localStorage.removeItem("email");
-			printMsg('Success',"Your Email login data has been delted!",'center',0);
-		}
+	if(confirm("Delete Saved Email settings")){
+		localStorage.removeItem("email");
+		printMsg('Success',"Your Email login data has been delted!",'center',0);
 	}
-	else
-		printMsg('Error',"Your browser does not even support saveing email settings, much less deleting them.",'center',0);
 }
 function delScan(file,prompt){
 	if(prompt){
 		if(!confirm("Are you sure you want to delete:\n"+file))
 			return false;
-	}
-	if(typeof(XMLHttpRequest)=='undefined'){
-		return true;
 	}
 	var httpRequest = new XMLHttpRequest();
 	httpRequest.onreadystatechange = function(){
@@ -1638,8 +1546,6 @@ function delScan(file,prompt){
 	return false;
 }
 function updateCheck(vs,e){
-	if(typeof(XMLHttpRequest)=='undefined')
-		return printMsg('Error',supportErrorA+'XMLHttpRequest, so you can not check for updates.'+supportErrorB,'center',0);
 	if(e===true)
 		return printMsg('Update Available',
 			'Version '+vs+' is available for <a target="_blank" href="https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server/wiki/Change-Log">download</a>'+
@@ -1686,21 +1592,21 @@ function enableColumns(ele,e,b){ // They work flawlessly in Firefox so it does n
 			if(ele.className=='columns'){
 				ele.removeAttribute('class');// disable
 				if(e){
-					e.nextSibling[TC]='Enable';
+					e.nextSibling.textContent='Enable';
 					Delete_Cookie('columns',false);
 				}
 			}
 			else if(ele.className.indexOf('columns')==-1){
 				ele.className+=' columns';// enable
 				if(e){
-					e.nextSibling[TC]='Disable';
+					e.nextSibling.textContent='Disable';
 					Set_Cookie('columns',true,1,false,null,null);
 				}
 			}
 			else{
 				ele.className=ele.className.substring(0,ele.className.indexOf(' columns'));// Disable preserve original class name
 				if(e){
-					e.nextSibling[TC]='Enable';
+					e.nextSibling.textContent='Enable';
 					Delete_Cookie('columns',false);
 				}
 			}
@@ -1708,7 +1614,7 @@ function enableColumns(ele,e,b){ // They work flawlessly in Firefox so it does n
 		else{// enable
 			ele.className='columns';
 			if(e){
-				e.nextSibling[TC]='Disable';
+				e.nextSibling.textContent='Disable';
 				Set_Cookie('columns',true,1,false,null,null);
 			}
 		}
@@ -1723,8 +1629,6 @@ function enableColumns(ele,e,b){ // They work flawlessly in Firefox so it does n
 	}
 }
 function login(form){
-	if(typeof(XMLHttpRequest)=='undefined')
-		return printMsg('Error',supportErrorA+'XMLHttpRequest, so you can not login.'+supportErrorB,'center',0);
 	var httpRequest = new XMLHttpRequest();
 	httpRequest.onreadystatechange = function(){
 		if(httpRequest.readyState==4){
@@ -1763,8 +1667,6 @@ function scanFilter(f2,f1){
 	document.location.href="index.php?page=Scans&filter=3&origin="+f1['origin'].value+"&t1="+f1Total+"&t2="+f2Total;
 }
 function setDefault(form){
-	if(typeof(localStorage)=='undefined'||typeof(JSON)!='object')
-		return printMsg('Sorry',supportErrorA+"localStorage and/or the JSON object so you can't set a default."+supportErrorB,'center',0);
 	localStorage.setItem('default',JSON.stringify({
 		"scanner":form.scanner.value,
 		"source":form.source.value,
@@ -1784,8 +1686,6 @@ function setDefault(form){
 		'you can delete them from the <a href="index.php?page=Config">Configure tab</a>','center',-1)
 }
 document.onkeyup=function(event){
-	if(!event)
-		event=window.event;// Stupid IE
 	if(event.ctrlKey&&(event.which==68||event.keyCode==68))// [Ctrl]+[Shift]+[D]
 		toggleDebug(true);
 }

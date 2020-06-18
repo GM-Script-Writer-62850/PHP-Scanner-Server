@@ -7,7 +7,6 @@ $Printer=$GLOBALS['Printer'];
 <!DOCTYPE html><html>
 <head>
 <meta charset="UTF-8"/>
-<!--[if IE]><meta http-equiv="X-UA-Compatible" content="chrome=1"><![endif]-->
 <title><?php echo html($GLOBALS['NAME'].' ~ '.$page.' - '.$title); ?></title>
 <link rel="shortcut icon" href="<?php echo $path; ?>res/images/favicon.png"/>
 <link rel="stylesheet" href="<?php echo $path; ?>res/style.php?theme=<?php echo $Theme; ?>" type="text/css"/>
@@ -27,7 +26,6 @@ echo '<script type="text/javascript">var I='.$GLOBALS['RulerIncrement'].',Replac
 <script type="text/javascript" src="<?php echo $path; ?>res/model-dialog.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>res/cookie.js"></script>
 <script type="text/javascript" src="<?php echo $path; ?>res/main.js"></script>
-<!--[if lt IE 9]><script type="text/javascript">TC='innerText';var ie8=false;</script><link rel="stylesheet" type="text/css" href="<?php echo $path; ?>res/ie.css"/><![endif]-->
 </head>
 <body<?php echo $DarkPicker?' class="darkPicker"':''; ?>>
 <div id="blanket" style="display:none;background-color:transparent;"><div id="popUpDiv" style="opacity:0;"></div></div>
@@ -85,12 +83,10 @@ echo '<script type="text/javascript">var I='.$GLOBALS['RulerIncrement'].',Replac
 <h2>JavaScript Disabled</h2>
 <p class="center">This application requires JavaScript to function. Please enable JavaScript, then reload this page.<?php echo $page=='Login'?'<br/><b>LOGIN REQUIRES JAVASCRIPT</b>':''; ?></p>
 </div>
-</noscript>
-<!--[if IE 8]><script type="text/javascript">ie8=true</script><![endif]-->
-<!--[if lt IE 9]><div style="height:auto;" class="message ie center"><h2><noscript>Unsupported Browser</noscript><script type="text/javascript">document.write(ie8?'Notice: It is Recommended That you Upgrade Your Browser':'Error: Legacy Browsers are NOT Supported');</script></h2>
-<p><noscript>This browser is unusable!</noscript><script type="text/javascript">document.write(ie8?'While you browser will technically works, everything is displays looks horrible.':'You can view the list of supported browsers in the <a href="index.php?page=About">release notes</a>.');</script><br/>
-Please install <a href="http://www.mozilla.com/firefox/">Mozilla Firefox</a> (Recommended) alternatively, you may use<br/>
-<a href="http://lmgtfy.com/?q=Internet+Explorer+10+Download">Internet Explorer 10</a> (Windows 7 and 8 only) or
- <a href="http://code.google.com/chrome/chromeframe/">Google Chrome Frame</a> <sup><i>EOL January 2014</i></sup> for Internet Explorer.<br/>
-<a href="http://lmgtfy.com/?q=Internet+Explorer+9+Download">Internet Explorer 9</a> will function, but you don't get all the fancy eye candy.
+</noscript><!-- I am surprised this still works -->
+<!--[if IE]><div style="height:auto;" class="message ie center"><h2>Unsupported Browser</h2>
+<p>Please install <a href="http://www.mozilla.com/firefox/">Mozilla Firefox</a><sup>(Recommended)</sup>,
+	<a href="https://www.google.com/chrome/">Google Chrome</a>, or
+	<a href="https://www.microsoft.com/en-us/edge">Microsoft Edge</a><sup>(Windows 10)</sup>.<br/>
+	Alternatively, you may use <a href="http://lmgtfy.com/?q=Internet+Explorer+11+Download">Internet Explorer 11</a><sup>(Windows 7+)</sup>.
 </p></div><![endif]-->

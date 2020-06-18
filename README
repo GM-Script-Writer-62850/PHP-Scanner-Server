@@ -6,7 +6,7 @@ Based on Linux Scanner Server 1.2 Beta
 Released under the GPL 2.0
 
 Last Update: 6/17/2020 (Month/Day/Year)
-For Version: 1.7-19_dev
+For Version: 1.7-18_dev
 
 Change Log:
 	https://github.com/GM-Script-Writer-62850/PHP-Scanner-Server/wiki/Change-Log
@@ -73,10 +73,10 @@ Supported Browsers:
 		http://www.apple.com/safari/download/
 	Opera (NOT Opera Mini)
 		http://www.opera.com/browser/
-	IE 8+ (No longer tested, support will be purged at some point)
-		http://windows.microsoft.com/en-us/internet-explorer/ie-10-worldwide-languages
-	IE 6-9 with Google Chrome Frame installed
-		http://code.google.com/chrome/chromeframe/ (EOL: January 2014)
+	Microsoft Edge
+		https://www.microsoft.com/en-us/edge
+	IE 11
+		https://www.microsoft.com/en-us/download/details.aspx?id=41628
 
 Enabling Auto-Deletion of old scans:
 	cleaner.php: Old scan auto-deletion tool.

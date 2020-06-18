@@ -47,8 +47,6 @@
 	border: 2px solid #bfc4ce;
 	border-radius: 2px;
 	overflow: hidden;
-	background-image: url(../images/colorpicker_overlay.png);
-	background-image: -webkit-linear-gradient(bottom, #000, rgba(0,0,0,0)),-webkit-linear-gradient(left, #FFF, rgba(255,255,255,0));
 	background-image: linear-gradient(to top, #000, rgba(0,0,0,0)),linear-gradient(to right, #FFF, rgba(255,255,255,0));
 }
 .colorpicker_color > div {
@@ -57,8 +55,6 @@
 	height: 11px;
 }
 .colorpicker_color > div > div{
-	background-image: url(../images/colorpicker_select.gif);
-	background-image: -webkit-radial-gradient(50% 50%, transparent 40%, #000 50%, #FFF 65%, transparent 80%);
 	background-image: radial-gradient(circle at center, transparent 40%, #000 50%, #FFF 65%, transparent 80%);
 	background-position: center;
 	border-radius: 50%;
@@ -75,8 +71,6 @@
 	width: 18px;
 	height: 150px;
 	cursor: pointer;
-	background: url(../images/colorpicker_hue.png) repeat-x;
-	background: -webkit-linear-gradient(top, #F00, #F0F, #00F, #0FF, #0F0, #FF0, #F00);
 	background: linear-gradient(to bottom, #F00, #F0F, #00F, #0FF, #0F0, #FF0, #F00);
 	border: 2px solid #bfc4ce;
 	border-radius: 2px;

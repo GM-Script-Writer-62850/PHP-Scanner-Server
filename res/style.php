@@ -54,8 +54,6 @@ function getShadow($b,$t){
 }
 body, #container, #header, #message table, .side_box, .side_box h2, #preview, #preview_links img, #preview_img p, #preview h2,
   .box, .box img, .box pre.border, .box h2, #footer, #debug pre, .tab, .tab div, .dualForm .footer, .colorPicker, .message h2 {
-	-webkit-transition-property: background-color, border, color;
-	-webkit-transition-duration: <?php echo $transitionTime; ?>;
 	transition-property: background-color, border, color;
 	transition-duration: <?php echo $transitionTime; ?>;
 }
@@ -81,8 +79,6 @@ input[type="text"][size="3"]{
 
 a {
 	color: #<?php echo $LC_COLOR; ?>;
-	-webkit-transition-property: color;
-	-webkit-transition-duration: <?php echo $transitionTime; ?>;
 	transition-property: color;
 	transition-duration: <?php echo $transitionTime; ?>;
 }
@@ -136,7 +132,6 @@ img{
 	z-index: 3;
 	white-space: nowrap;
 	text-decoration: none;
-	-webkit-animation-duration: <?php echo $transitionTime; ?>;
 	animation-duration: <?php echo $transitionTime; ?>;
 	text-shadow: none;
 	box-shadow: 0 0 3px rgba(255, 255, 255, 0.65);
@@ -178,12 +173,8 @@ img{
 	text-shadow: <?php $S=getShadow($HB_COLOR,$HT_COLOR);echo "0 0 1px $S, 0 0 2px $S, 0 0 3px $S, 0 0 4px $S" ?>;
 	display: block;
 	width: 138px;
-	-webkit-transition-property: color, text-shadow;
-	-webkit-transition-duration: <?php echo $transitionTime; ?>;
 	transition-property: color, text-shadow;
 	transition-duration: <?php echo $transitionTime; ?>;
-	-webkit-transform: rotate(-29deg);
-	-ms-transform: rotate(-29deg);
 	transform: rotate(-29deg);
 	margin-top: 12px;
 }
@@ -276,8 +267,6 @@ h2 > .del {
 	border-radius: 5px 5px 0 0;
 	width: 720px;
 	margin: 0px 0px 0.5em 0.5em;
-	-webkit-transition-property: height, opacity, margin-bottom;
-	-webkit-transition-duration: <?php echo $transitionTime; ?>;
 	transition-property: height, opacity, margin-bottom;
 	transition-duration: <?php echo $transitionTime; ?>;
 	height: 0;
@@ -459,11 +448,6 @@ input.colorPicker{
 	font-size: 12px;
 }
 
-div.ie_276228 {/* http://support.microsoft.com/kb/276228 */
-	margin: 0;
-	padding: 0;
-}
-
 .side_box select, #popUpDiv #p_config select {
 	font-size: 12px;
 	width: 157px;
@@ -472,7 +456,6 @@ div.ie_276228 {/* http://support.microsoft.com/kb/276228 */
 	padding:0;
 	margin-top:3px;
 }
-
 
 .side_box select[name="scanner"] option[disabled] {
 	background-color: yellow;
@@ -535,13 +518,10 @@ select.upper, select.upper option {
 	height: 471px;
 	width: 450px;
 	position: relative;
-	-webkit-transition-property: -webkit-transform, -webkit-filter, transform;
-	-webkit-transition-duration: <?php echo $transitionTime; ?>;
-	transition-property: transform, -webkit-transform, -o-transform, -moz-transform, -webkit-filter;
+	transition-property: transform, filter;
 	transition-duration: <?php echo $transitionTime; ?>;
 	transform: rotate(0) scale(1);
-	-webkit-transform: rotate(0) scale(1);
-	/*-webkit-filter: brightness(100%) contrast(100%);*/
+	filter: brightness(100%) contrast(100%);
 }
 #preview_img #select{/* For imgAreaSelect when using the HTML5 ruler*/
 	position:relative;
@@ -585,8 +565,7 @@ img[src="res/images/blank.gif"] {
 #scans .box h2, .colorPicker { /* Doubleclick tends to highlight text and it does not look right */
 	user-select: none;
 	-ms-user-select: none;
-	-moz-user-select: none;
-	-webkit-user-select: none;
+	-webkit-user-select: none; /* Safari */
 }
 
 #scans .box h2.included {
@@ -596,11 +575,6 @@ img[src="res/images/blank.gif"] {
 }
 
 #scans.columns {
-	-moz-column-count: 3;
-	-moz-column-gap: 0;
-	/* broken tool-tips in opera, chrome, safari, and IE10 (IE10 also breaks some images) */
-	-webkit-column-count: 3;
-	-webkit-column-gap: 0;
 	column-count: 3;
 	column-gap: 0;
 	margin-left: 4px;
@@ -696,11 +670,6 @@ code {
 }
 
 #paper-list.columns ul {
-	-moz-column-count: 3;
-	-moz-column-gap: 50px;
-	/* broken tool-tips in opera/IE10 (IE10 also broke a image), messed up borders and broken tool-tips in chrome and safari */
-	-webkit-column-count: 3;
-	-webkit-column-gap: 50px;
 	column-count: 3;
 	column-gap: 50px;
 }
@@ -767,10 +736,10 @@ code {
 	-ms-flex-pack: center;
 	-ms-flex-align: center;
 	-ms-flex-wrap: wrap; 
-/*	display: -moz-box; Firefox has issues as of writing this
+	display: -moz-box; /* Firefox has issues as of writing this as of 2020 firefox uses the webkit name instead?*/
 	-moz-box-pack: center;
 	-moz-box-align: center;
-	-moz-flex-wrap: wrap;*/
+	-moz-flex-wrap: wrap;
 }
 #imgur-uploads .box .album img {
 	display: inline-block;
@@ -823,8 +792,6 @@ code {
 .dualForm .largeButton span{
 	display: inline-block;
 	transform: rotate(-20deg) scale(5);
-	-ms-transform: rotate(-20deg) scale(5);
-	-webkit-transform: rotate(-20deg) scale(5);
 }
 
 #text-editor {
@@ -850,10 +817,6 @@ code {
 }
 
 #rulegen ul{
-	-moz-column-count: 2;
-	-moz-column-gap: 0;
-	-webkit-column-count: 2;
-	-webkit-column-gap: 0;
 	column-count: 2;
 	column-gap: 0;
 }
@@ -971,8 +934,6 @@ code {
 	left: 0;
 	width: 100%;
 	height: 100%;
-	-webkit-transition-property: background-color;
-	-webkit-transition-duration: <?php echo $transitionTime; ?>;
 	transition-property: background-color;
 	transition-duration: <?php echo $transitionTime; ?>;
 }
@@ -982,8 +943,6 @@ code {
 	text-align: center;
 	z-index: 9002;
 	border-radius: 5px;
-	-webkit-transition-property: opacity;
-	-webkit-transition-duration: <?php echo $transitionTime; ?>;
 	transition-property: opacity;
 	transition-duration: <?php echo $transitionTime; ?>;
 	padding: 5px;
