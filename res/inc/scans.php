@@ -122,5 +122,6 @@ else{
 			'<a class="tool" target="_blank" href="scans/file/Scan_'.url($FILE).'" style="width:100%;"><img src="scans/thumb/'.url($IMAGE).'" alt="'.html($FILE).'" style="width:100%"/><span class="tip">View raw file</span></a>'.
 			'</p></div>';
 	}
+	echo '</div>';
 }
-?></div>
+?>
