@@ -69,11 +69,15 @@ function recursive_scandir($dir,$level,$max){
 	}
 	$files='';
 	$folders='';
+	$end=null;
 	foreach($scan as $file){
 		if($file==='.'||($file==='..'&&$level>0))
 			continue;
-		if(is_file("$dir/$file"))
-			$files.='<li class="'.get_Type(end(explode('.',$file))).'"><a href="'.str_replace(' ',"%20",html("../$dir/$file")).'">'.html($file).'</a></li>';
+		if(is_file("$dir/$file")){
+			$end=explode('.',$file);
+			$end=end($end);
+			$files.='<li class="'.get_Type($end).'"><a href="'.str_replace(' ',"%20",html("../$dir/$file")).'">'.html($file).'</a></li>';
+		}
 		else if($file==='..')
 			$folders.='<li class="parent"><a href="'.$file.'/">Parent Directory</a></li>';
 		else

@@ -1,5 +1,10 @@
 <?php
-$path=is_numeric($page)||$page=='Index Of'?substr($_SERVER['PHP_SELF'],0,strlen(end(explode('/',$_SERVER['PHP_SELF'])))*-1-4):'';
+$path='';
+if(is_numeric($page)||$page=='Index Of'){
+	$path=explode('/',$_SERVER['PHP_SELF']);
+	$path=end($path);
+	$path=substr($_SERVER['PHP_SELF'],0,strlen($path)*-1-4);
+}
 $Theme=isset($_COOKIE["theme"])?url($_COOKIE["theme"]):url($GLOBALS['Theme']);
 $GLOBALS['CurrentTheme']=$Theme;
 $Printer=$GLOBALS['Printer'];

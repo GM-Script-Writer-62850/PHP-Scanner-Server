@@ -482,9 +482,21 @@ function printMsg(t,m,a,r){// if r is -1 message goes at the top of the message 
 	var div=document.createElement('div');
 	var ele=getID('new_mes');
 	div.className="message";
-	div.innerHTML="<h2>"+t+'<a class="icon tool del" onclick="(function(e){e.setAttribute(\'style\',\'height:0;opacity:0;margin-bottom:0;\');setTimeout(function(){e.parentNode.removeChild(e);},800);});'+
-		'(this.parentNode.parentNode);this.setAttribute(\'onclick\',\'return false;\');this.removeChild(this.childNodes[0]);return false;" href="#">'+
+	div.innerHTML="<h2>"+t+'<a class="icon tool del" href="#">'+
 		'<span class="tip">Close</span></a></h2><div'+(a!='center'?' style="text-align:'+a+';"':'')+">"+m+"</div>";
+	div.getElementsByTagName('a')[0].addEventListener('click',function(){
+		if(!this.onclick){
+			(function(e){
+				e.setAttribute('style','height:0;opacity:0;margin-bottom:0;');
+				setTimeout(function(){
+					e.parentNode.removeChild(e);
+				},800);
+			})(this.parentNode.parentNode);
+			this.setAttribute('onclick','return false;');
+			this.removeChild(this.childNodes[0]);
+		}
+		return false;
+	},false);
 	if(r!=-1)
 		ele.insertBefore(div,ele.childNodes[0]);
 	else

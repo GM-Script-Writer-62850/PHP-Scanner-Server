@@ -443,8 +443,8 @@ else if($PAGE=="Printer"){
 				echo '<li>'.html($key).' <a href="index.php?page=Printer&amp;action=List&amp;delete='.html($key).'" class="del icon tool right"><span class="tip">Remove '.html($key).'</span></a><ul>';
 					echo '<li>Location<ul><input name="'.html($key).'" value="'.(isset($json->{"locations"}->{$key})?$json->{"locations"}->{$key}:'').'"/><input type="submit" value="Set"/></ul></li>';
 					for($i=count($val)-1;$i>-1;$i=$i-1){
-						echo "<li>".$val[$i]->{"name"}.
-								"<ul>".implode(", ",$val[$i]->{"value"})."</ul>".
+						echo "<li>".html($val[$i]->{"name"})." (".html($val[$i]->{"default"}).
+								")<ul>".html(implode(", ",$val[$i]->{"value"}))."</ul>".
 							"</li>";
 					}
 				echo "</ul></li>";
@@ -576,6 +576,15 @@ else if($PAGE=="Config"){
 						$values[$y]=substr($values[$y],1);
 						$default=$values[$y];
 						break;
+					}
+				}
+				if($name[0]=='PageSize'){// Remove CLI option: Custom.WIDTHxHEIGHT
+					for($y=count($values)-1;$y>-1;$y=$y-1){
+						if($values[$y]=='Custom.WIDTHxHEIGHT'){
+							unset($values[$y]);
+							$values=array_values($values);
+							break;
+						}
 					}
 				}
 				array_push($arr,

@@ -1,10 +1,12 @@
 <?php
 # This file is used to handle all the print commands
 # This file runs all the print commands, ../download.php and inc/printer.php call this page via include
-# If your printer needs some special options used you want to edit lines 28 and 47
-# You will want to read up on the CUPS command line printing documentation @ http://www.cups.org/documentation.php/options.html
+# If your printer needs some specific native options you should edit line 8
+# You will want to read up on the CUPS command line printing documentation @ https://www.cups.org/doc/options.html
 
 $lpstat='lpstat -a | awk \'{print $1}\'';// Command used to find printers
+$lpDefaults='-o number-up=1 -o page-border=none -o number-up-layout=lrtb';// Default options for lp command
+
 if(!function_exists('busterWorkaround')){
 	function busterWorkaround($file,$cfg){
 		if($cfg==1)// Faster
@@ -30,10 +32,14 @@ if(function_exists('exe')){// Internal call via inc/printer.php
 	if(isset($file)){
 		$_POST['quantity']=intval($_POST['quantity']);
 		$q=$_POST['quantity']>0?$_POST['quantity']:1;
-		$o=escapeshellarg($_POST['options']);
+		$opt=explode(',',$_POST['options']);
+		$o=$lpDefaults;
+		foreach($opt as $v){
+			$o.='-o '.escapeshellarg($v);
+		}
 		if($GLOBALS['BusterPrintBug'] > 0)
 			$file=busterWorkaround($file,$GLOBALS['BusterPrintBug']);
-		$cmd='lp -d '.shell($_POST['printer'])." -n $q -o $o $file";
+		$cmd='lp -d '.shell($_POST['printer'])." -n $q $o $file";
 		Print_Message(
 			$_POST['printer'],
 			'Your document is being processed:<br/><pre title="'.htmlspecialchars($cmd).'">'.html(
@@ -49,7 +55,11 @@ else if(isset($Printer)){ // Internal call via include from ../download.php
 	header('Content-type: application/json; charset=UTF-8');
 	$_GET['quantity']=intval($_GET['quantity']);
 	$q=$_GET['quantity']>0?$_GET['quantity']:1;
-	$o=escapeshellarg($_GET['options']);
+	$opt=explode(',',$_GET['options']);
+	$o=$lpDefaults;
+	foreach($opt as $v){
+		$o.=' -o '.escapeshellarg($v);
+	}
 	$BusterPrintBug=parse_ini_file('config.ini');
 	$BusterPrintBug=(int)$BusterPrintBug['BusterPrintBug'];
 	$debug=false;
@@ -58,7 +68,7 @@ else if(isset($Printer)){ // Internal call via include from ../download.php
 		$debug=$file[1];
 		$file=$file[0];
 	}
-	$cmd='lp -d '.escapeshellarg($_GET['printer'])." -n $q -o $o $file";
+	$cmd='lp -d '.escapeshellarg($_GET['printer'])." -n $q $o $file";
 	echo json_encode((object)array(
 		'printer'=>$_GET['printer'],
 		'command'=>$cmd,
