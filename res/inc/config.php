@@ -23,10 +23,10 @@ Make sure all scanners are plugged in and turned on.
 <h2>Debug Console</h2>
 <p><?php
 if(isset($Fortune)){
-	echo '<a href="javascript:void(\'toggleFortune\')" onclick="this[TC]=toggleFortune(this[TC])?\'Hide\':\'Show\';">'.($_COOKIE["fortune"]?'Hide':'Show').'</a> fortunes. (Refresh to apply)<br/>';
+	echo '<a href="javascript:void(\'toggleFortune\')" onclick="this.textContent=toggleFortune(this.textContent)?\'Hide\':\'Show\';">'.($_COOKIE["fortune"]?'Hide':'Show').'</a> fortunes. (Refresh to apply)<br/>';
 }
 ?>
-<a href="javascript:void('toggleDebug')" id="debug-link" onclick="this[TC]=toggleDebug(false)?'Hide':'Show';"><?php
+<a href="javascript:void('toggleDebug')" id="debug-link" onclick="this.textContent=toggleDebug(false)?'Hide':'Show';"><?php
 if(isset($_COOKIE["debug"]))
 	echo $_COOKIE["debug"]=='true'?'Hide':'Show';
 else
