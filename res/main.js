@@ -841,7 +841,7 @@ function PDF_popup(files,print){
 	}
 	function populateSelect(ele){
 		var opt,ele=getID('PDF_PAPER');
-		ele.removeChild(ele.childNodes[0]);
+		ele.removeChild(ele.children[0]);
 		for(var i in paper){// Similar code in changeSource function
 			opt=document.createElement('option');
 			opt.value=paper[i]['width']+'-'+paper[i]['height'];
