@@ -53,7 +53,7 @@ if(isset($_GET['downloadServer'])){
 else if((isset($_GET['type'])?$_GET['type']:'')=='pdf'&&!isset($_GET['raw'])){
 	if(!is_file($Fpdf_loc))
 		die(returnFile("I have no idea where fpdf is installed to, I just know it is not at '$Fpdf_loc'\nEdit Line 2 of '".$_SERVER["SCRIPT_FILENAME"].
-			"' with the correct info\nTry running this command to find it:\nlocate fpdf.php",'Error.txt','txt'));
+			"' with the correct info\nTry running this command to find it:\nlocate fpdf.php\n\nNote that the debian package is named php-fpdf",'Error.txt','txt'));
 	$Pwidth=215.9;// Letter Paper Width in millimeters
 	$Pheight=279.4;// Letter Paper Height in millimeters
 	if(isset($_GET['size'])){
