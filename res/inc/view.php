@@ -6,7 +6,7 @@ if(file_exists("scans/file/$file")){
 			"<p>$icons</p>".
 			"<pre class=\"border\" id=\"text-file-".html($file)."\">".html(file_get_contents("scans/file/$file"))."</pre></div>".
 			'<script type="text/javascript" src="data:text/javascript;charset=utf-8,'.
-			url('(function(e){if(e.offsetHeight==2)e[TC]="Tesseract was unable to find any text in the scan.";})(getID("text-file-'.js($file).'"));').
+			url('(function(e){if(e.offsetHeight==2)e.textContent="Tesseract was unable to find any text in the scan.";})(getID("text-file-'.js($file).'"));').
 			'"></script>';// Using Data URI as a dirty trick for security (don't want a separate file for this)
 	}
 	else{
