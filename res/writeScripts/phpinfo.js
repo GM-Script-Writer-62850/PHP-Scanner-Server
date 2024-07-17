@@ -26,16 +26,16 @@
 			}
 		}
 		i=content.createElement('style');
-		i[TC]='hr,table{max-width:100%}table{color:#000}';
+		i.textContent='hr,table{max-width:100%}table{color:#000}';
 		content.body.previousElementSibling.appendChild(i);
 		for(var i in s){
-			txt=s[i][TC];
+			txt=s.textContent;
 			if(typeof txt=='undefined')
 				continue;
 			if(s[i].parentNode.parentNode.offsetWidth>600){// Oversized
 				if(txt.indexOf(' ')==-1||txt.indexOf('theme=')>-1){// No spaces or cookie
 					if(txt.indexOf(',')>-1){// Has Commas
-						s[i][TC]=txt.replace(/,/g,', ');
+						s[i].textContent=txt.replace(/,/g,', ');
 					}
 					else{
 						ct=s[i].parentNode.childNodes.length;
