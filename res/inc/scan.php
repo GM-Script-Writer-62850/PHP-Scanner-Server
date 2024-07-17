@@ -192,7 +192,7 @@ Scan Image
 			$key=html(js($key));
 			$str.="'$key':".(is_numeric($val)?$val:"'".html(js($val))."'").",";
 		}
-		echo "$str'set_save':this[TC]});".
+		echo "$str'set_save':this.textContent});".
 			'">'.html($id).'</a>';
 		$i++;
 		if($i<$max)
