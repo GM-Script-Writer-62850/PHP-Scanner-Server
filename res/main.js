@@ -1374,7 +1374,7 @@ function emailManager(file){
 		if(files_ct==0)
 			return printMsg('Error','No files selected','center',-1);
 	}
-	data=localStorage.getItem("email")
+	data=localStorage.getItem("email");
 	var html='<div id="email"><h2>'+(file?'Email: '+file.substr(5):'Configure Email')+'</h2>'+
 	'<div class="security"><h2>Security Notice</h2><ul>'+
 	'<li>The remember me option will store your e-mail login data in your <a href="http://dev.w3.org/html5/webstorage/#dom-localstorage" target="_blank">local storage</a> in plain text (unencrypted).</li>'+
