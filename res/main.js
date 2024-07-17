@@ -1374,13 +1374,13 @@ function emailManager(file){
 		if(files_ct==0)
 			return printMsg('Error','No files selected','center',-1);
 	}
+	data=localStorage.getItem("email")
 	var html='<div id="email"><h2>'+(file?'Email: '+file.substr(5):'Configure Email')+'</h2>'+
 	'<div class="security"><h2>Security Notice</h2><ul>'+
 	'<li>The remember me option will store your e-mail login data in your <a href="http://dev.w3.org/html5/webstorage/#dom-localstorage" target="_blank">local storage</a> in plain text (unencrypted).</li>'+
 		(file?'<li>If you leave it unchecked your login date will not be saved and you will have to re-enter it every time.</li>':'')+
 		'<li>Anyone with access to your account on this computer can get your password if you use '+(file?'remember me':'save it')+'.</li>'+
-		(file?'<li>You can delete your saved data on the <a href="index.php?page=Config"/>Configure</a> page.</li>':'');
-		data=localStorage.getItem("email")+
+		(file?'<li>You can delete your saved data on the <a href="index.php?page=Config"/>Configure</a> page.</li>':'')+
 	'<li>You can double click the password blank to see the password.</li>'+
 	(document.location.protocol=='http:'?'<li>This does not use a secure connection to get your login from your browser to the server.</li>':'')+'</ul></div>'+
 	'<form name="email" target="_blank" action="email.php" onsubmit="return validateEmail(this);" method="POST">'+
